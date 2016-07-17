@@ -9,6 +9,8 @@ It provides several programs (scheduled and configurable) to control a single co
 To start pi-led-control execute:
 
    python3 ledserver.py
+   
+The server is started locally and the UI can be accessed on http://localhost:9000.
 
 Alternatively you can use an interactive CLI:
 
