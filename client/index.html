@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+ Copyright (c) 2016 Sebastian Kanis
+ This file is part of pi-led-control.
+
+ pi-led-control is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ pi-led-control is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LED Control</title>
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- bootstrap -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <!-- bootstrap theme -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
+    <!-- bootstrap script -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <!-- pi led control css -->
+    <link rel="stylesheet" type="text/css" href="/ledclient.css">
+
+    <!-- pi led control js -->
+    <script src="/ledclient.js"></script>
+
+  </head>
+  <body>
+
+    <div class="container">
+      <h1>pi-led-control</h1><span id="status"><span id="currentBrightness"></span><input id="currentColor" type="textarea" readonly="true"></span>
+      <ul class="list-group">
+	<li><button type="button" class="btn btn-block btn-default" id="soft-off-button">Soft Off</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="off-button">Off</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="scheduleOff-button" data-toggle="modal" data-target="#scheduledOffModal">Schedule Off</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="cancelscheduledOff-button">Cancel scheduled Off</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="setBrightness-button" data-toggle="modal" data-target="#brightnessModal">Set Brightness</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="white-button">Full White</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="feed-button">Feed</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="sunrise-button" data-toggle="modal" data-target="#sunriseModal">Sunrise</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="freak-button">Freak</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="randompath-button">Random Path</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal" data-target="#predefinedColorModal">Color</button></li>
+	<li><button type="button" class="btn btn-block btn-default" id="freeButton">Free Color</button></li>
+	
+      </ul>
+    </div>
+    <!-- Brightness Modal -->
+    <div class="modal fade" id="brightnessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Set brightness</h4>
+	  </div>
+	  <div class="modal-body">
+	    <div class="form-group">
+	      <label for="brightnessSlider">Brightness:</label>
+	      <input id="brightnessSlider" class="brightnessSlider" type="range" min="0" max="1" step="0.01">
+	    </div>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <!-- Sunrise Modal -->
+    <div class="modal fade" id="sunriseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Configure Sunrise</h4>
+	  </div>
+	  <div class="modal-body">
+	    <div class="form-group">
+	      <label for="sunriseDuration">Duration in Seconds:</label>
+	      <input type="text" class="form-control" id="sunriseDuration">
+	    </div>
+	    <div class="form-group">
+	      <label for="sunriseStarttime">Starttime (HH:MM:SS) (optional):</label>
+	      <input type="text" class="form-control" id="sunriseStarttime">
+	    </div>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" id="startSunrise-button" class="btn btn-default">Sunrise!</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <!-- Predefined Modal -->
+    <div class="modal fade" id="predefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Select color</h4>
+	  </div>
+	  <div class="modal-body">
+            <ul class="list-group" id="predefinedColor-button-group">
+	    </ul>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <!-- FreeColor Modal -->
+    <div class="modal fade" id="freeColorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Select color</h4>
+	  </div>
+	  <div class="modal-body">
+	    <div class="form-group">
+	      <label for="redSlider">Red (0-255):</label>
+	      <input id="redSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="greenSlider">Green (0-255):</label>
+	      <input id="greenSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="blueSlider">Blue (0-255):</label>
+	      <input id="blueSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="freeColorBrightnessSlider">Brightness:</label>
+	      <input id="freeColorBrightnessSlider" class="brightnessSlider" type="range" min="0" max="1" step="0.01">
+	    </div>
+	    <div class="form-group">
+	      <label for="colorDemo">Color:</label>
+	      <input id="colorDemo" type="textarea" readonly="true" rows="4" cols="50">
+	    </div>
+	    <div class="form-group left-from-group">
+              <button type="button" id="freeColorSave-button" class="btn btn-default">Set</button>
+	    </div>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <!-- ScheduledOffModal -->
+    <div class="modal fade" id="scheduledOffModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Configure Scheduled Off</h4>
+	  </div>
+	  <div class="modal-body">
+	    <div class="form-group">
+	      <label for="scheduleOffDuration">Duration in Minutes:</label>
+	      <input type="text" class="form-control" id="scheduleOffDuration">
+	    </div>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" id="scheduleOffSave-button" class="btn btn-default">Schedule Off</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <div id="footer">
+      <div class="container">
+        <p class="text-muted credit">
+	  <!-- removing this copyright notice is a violation of the AGPL V3-->
+	  Copyright (c) 2016 Sebastian Kanis
+	  <a href="https://github.com/s0riak/pi-led-control" target="_blank">pi-led-control</a> is licensed under the <a href="http://www.gnu.org/licenses/" target="_blank">AGPL V3</<a>
+																						       </p>
+      </div>
+    </div>
+  </body>
+</html>
