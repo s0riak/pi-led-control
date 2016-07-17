@@ -49,11 +49,11 @@ Thus the timezone must be configured correctly, to wake at the expected time:
 
 ##Screenshots
 
-![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshotspi-led-control-main.png)
-![Dialog for scheduled off program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshotspi-led-control-off.png)
-![Dialog for sunrise program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshotspi-led-control-sunrise.png)
-![Dialog for color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshotspi-led-control-color.png)
-![Dialog for free color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshotspi-led-control-freecolor.png)
+![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-main.png)
+![Dialog for scheduled off program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-off.png)
+![Dialog for sunrise program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-sunrise.png)
+![Dialog for color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-color.png)
+![Dialog for free color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-freecolor.png)
 
 ##Environment
 pi-led-control is currently only tested on Ubuntu 15.10 and Raspbian GNU/Linux 8 (jessie).
