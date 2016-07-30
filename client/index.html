@@ -45,24 +45,61 @@
 
     <div class="container">
       <h1>pi-led-control</h1><span id="status"><span id="currentBrightness"></span><input id="currentColor" type="textarea" readonly="true"></span>
-      <ul class="list-group">
-	<li><button type="button" class="btn btn-block btn-default" id="soft-off-button">Soft Off</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="off-button">Off</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="scheduleOff-button" data-toggle="modal" data-target="#scheduledOffModal">Schedule Off</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="cancelscheduledOff-button">Cancel scheduled Off</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="setBrightness-button" data-toggle="modal" data-target="#brightnessModal">Set Brightness</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="white-button">Full White</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="feed-button">Feed</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="sunrise-button" data-toggle="modal" data-target="#sunriseModal">Sunrise</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="freak-button">Freak</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="randompath-button">Random Path</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal" data-target="#predefinedColorModal">Color</button></li>
-	<li><button type="button" class="btn btn-block btn-default" id="freeButton">Free Color</button></li>
-	
-      </ul>
+      <div class="row">
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="soft-off-button">Soft Off</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="off-button">Off</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="scheduleOff-button" data-toggle="modal" data-target="#scheduledOffModal">Schedule Off</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="cancelscheduledOff-button">Cancel scheduled Off</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="setBrightness-button" data-toggle="modal" data-target="#brightnessModal">Set Brightness</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="white-button">Full White</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="feed-button">Feed</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="sunrise-button" data-toggle="modal" data-target="#sunriseModal">Sunrise</button>
+	</div>
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="freak-button">Freak</button>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-xs-10 col-md-11 list-btn-col">
+	  <button type="button" class="btn btn-block btn-default" id="randompath-button">Random Path</button>
+	</div>
+	<div class="col-xs-2 col-md-1 config-btn-col">
+	  <button type="button" class="btn btn-block btn-default" id="randompath-configure-button"><span class="icon icon-equalizer"></span></button>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal" data-target="#predefinedColorModal">Color</button>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-sm-12">
+	  <button type="button" class="btn btn-block btn-default" id="freeButton">Free Color</button>
+	</div>
+      </div>
     </div>
+
     <!-- Brightness Modal -->
     <div class="modal fade" id="brightnessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">

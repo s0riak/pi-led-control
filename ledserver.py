@@ -19,6 +19,8 @@ import os
 from http.server import CGIHTTPRequestHandler, HTTPServer
 import json
 import time
+import chardet
+from chardet.universaldetector import UniversalDetector
 
 from ledmanager import LEDManager
 from programs.offprogram import OffProgram
@@ -52,12 +54,13 @@ class MyHandler(CGIHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         super().__init__(request, client_address, server)
         self.basename = os.path.dirname(os.path.realpath(__file__)) + "/../client/"
+        self._charEncDetector = UniversalDetector()
    
     def setLedManager(ledManager):
         self.ledManager = ledManager
         
     def do_GET(self):
-        validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css"]
+        validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css", "IcoMoon-Free.ttf"]
         if self.path == "" or self.path == "/":
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -70,9 +73,22 @@ class MyHandler(CGIHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/" + self.path.rsplit('.',1)[1])
             self.end_headers()
-            f = open(os.path.dirname(os.path.realpath(__file__)) + "/client/" + self.path[1:])
-            self.wfile.write(bytes(f.read(), 'UTF-8'))
+            resourcePath = os.path.dirname(os.path.realpath(__file__)) + "/client/" + self.path[1:]
+            f = open(resourcePath, 'rb')
+            detector = UniversalDetector()
+            detector.feed(f.read())
             f.close()
+            detector.close()
+            encoding = detector.result['encoding']
+            print(encoding)
+            if encoding == None:
+                f = open(resourcePath, 'rb')
+                self.wfile.write(f.read())
+                f.close()
+            else:
+                f = open(resourcePath, 'r')
+                self.wfile.write(bytes(f.read(), 'UTF-8'))
+                f.close()
             return
         elif self.path.startswith("/getPredefinedColors"):
             result = json.dumps(PredefinedColorProgram.definedColors)
