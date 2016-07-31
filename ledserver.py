@@ -23,6 +23,7 @@ import chardet
 from chardet.universaldetector import UniversalDetector
 
 from ledmanager import LEDManager
+from configmanager import ConfigurationManager
 from programs.offprogram import OffProgram
 from programs.wheelprogram import WheelProgram
 from programs.demoprogram import DemoProgram
@@ -48,6 +49,7 @@ class MyServer(HTTPServer):
     def __init__(self, connection, handlerClass, ledManager):
         super().__init__(connection, MyHandler)
         self.ledManager = ledManager
+        self.config = ConfigurationManager()
         
 class MyHandler(CGIHTTPRequestHandler):
 
@@ -55,7 +57,10 @@ class MyHandler(CGIHTTPRequestHandler):
         super().__init__(request, client_address, server)
         self.basename = os.path.dirname(os.path.realpath(__file__)) + "/../client/"
         self._charEncDetector = UniversalDetector()
-   
+
+    #def log_message(self, format, *args):
+    #    return
+        
     def setLedManager(ledManager):
         self.ledManager = ledManager
         
@@ -80,7 +85,6 @@ class MyHandler(CGIHTTPRequestHandler):
             f.close()
             detector.close()
             encoding = detector.result['encoding']
-            print(encoding)
             if encoding == None:
                 f = open(resourcePath, 'rb')
                 self.wfile.write(f.read())
@@ -96,8 +100,9 @@ class MyHandler(CGIHTTPRequestHandler):
             self.send_header("Content-type", "text/json")
             self.end_headers()            
             self.wfile.write(bytes(result, "utf-8"))
-        elif self.path.startswith("/getPrograms"):
-            result = json.dumps([{"name": "demo"},{"name": "wheel"}])
+        elif self.path.startswith("/getConfiguration"):
+            result = json.dumps(self.server.config.getValue(""))
+            print(result)
             self.send_response(200)
             self.send_header("Content-type", "text/json")
             self.end_headers()            
@@ -232,7 +237,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "randomPath":
-                self.server.ledManager.startProgram(RandomPathProgram(False, list(PredefinedColorProgram.definedColors.values()), 3))
+                self.server.ledManager.startProgram(RandomPathProgram(False, list(PredefinedColorProgram.definedColors.values()), self.server.config.getValue("programs/randomPath/timePerColor")))
                 self.send_response(200)
                 self.end_headers()                
             elif progName  == "scheduledOff":
@@ -247,6 +252,18 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.end_headers()                
             else:
                 self.send_response(400)
+                self.end_headers()
+        if self.path == "/configureProgram":
+            if not "name" in jsonBody:
+                self.send_response(400)
+                self.end_headers()
+                return
+            progName = jsonBody["name"]
+            if progName == "randomPath":
+                params = {"timePerColor": self.server.config.getValue("programs/randomPath/timePerColor")}
+                params  = self.getParamsFromJson(jsonBody, params)
+                self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
+                self.send_response(200)
                 self.end_headers()
 
 

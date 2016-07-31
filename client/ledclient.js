@@ -90,9 +90,16 @@ function timeToSecondsOfDay(x){
     return parseInt(x.substring(0,2)) * 3600 + parseInt(x.substring(3,5)) * 60 + parseInt(x.substring(6,8))
 }
 
+function updateConfiguration(){
+    $.getJSON("/getConfiguration", function( data ){
+	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"])
+    });
+}
+
 $(document).ready(function() {
     var startProgramURL = "/startProgram";
     var setBrightnessURL = "/setBrightness";
+    var configureProgramURL = "configureProgram";
     var currentBrightness = 1;
     //initialize the main buttons
     $( "#off-button" ).on('click', function() {
@@ -218,11 +225,23 @@ $(document).ready(function() {
 	    updateColorFromSliders();
 	});
     });
+    $("#randompath-openconfig-button").on('click', function(){
+	$("#configureRandomModal").modal('show');
+    });
+    $( "#configureRandomPath-button" ).on('click', function() {
+	$.post(configureProgramURL, JSON.stringify({name: "randomPath", params: {timePerColor: $("#timePerColor").val()} }) );
+	$("#configureRandomModal").modal('hide');
+	updateConfiguration();
+    });
+
+    updateConfiguration();
+
     $("#setBrightness-button").on('click', function(){
 	$.getJSON( "/getStatus", function( data ) {
     	    $("#brightnessSlider").val(data["brightness"]);
 	});
     });
+
 
 
     //get the list of predefined colors and add them to the modal for color choice

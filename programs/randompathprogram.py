@@ -29,6 +29,7 @@ class RandomPathProgram(ColorPathProgram):
             #only change the color every second point
             if self._iteration % 2 == 0:
                 newItem = random.choice(self._colorSet)
+                #make sure the next point differs from the current point
                 while(self._nextItem == newItem):
                     newItem = random.choice(self._colorSet)
                 self._nextItem = newItem
