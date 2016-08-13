@@ -28,21 +28,25 @@ class LoopedProgram(AbstractProgram):
             while True:
                 if self.printInfo:
                     print("current iteration: " + str(curIter))
+                if curIter > 0:
+                    self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()
         else:
             for i in range(0, self._iterations):
                 if self.printInfo:
                     print("current iteration: " + str(i))
+                if i > 0:
+                    self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()
 
     def setThreadStopEvent(self, threadStopEvent):
         self._program.setThreadStopEvent(threadStopEvent)
     
-    def getCurrentColor(self):
-        return self._program.getCurrentColor()
+    def getCurrentValue(self):
+        return self._program.getCurrentValue()
 
-    def setLastColor(self, lastColor):
-        self._program.setLastColor(lastColor)
+    def setLastValue(self, lastValue):
+        self._program.setLastValue(lastValue)
 
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
