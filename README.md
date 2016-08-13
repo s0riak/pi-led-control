@@ -1,6 +1,6 @@
 # pi-led-control
 ## Introduction
-This is a control server to set colors using a webinterface for pi-blaster (https://github.com/sarfata/pi-blaster).
+pi-led-control enables you to control a single color RGB led strip attached to the GPIO pins of a raspberry pi running pi-blaster (https://github.com/sarfata/pi-blaster) with a webinterface.
 
 pi-led-control is implemented as python webserver and a webui using jquery and bootstrap.
 It provides several programs (scheduled and configurable) to control a single color LED strip.
@@ -48,6 +48,15 @@ To set the time of a sunrise(-program) the localtime system time is used.
 Thus the timezone must be configured correctly, to wake at the expected time:
 	
    sudo dpkg-reconfigure tzdata
+
+##Automatic startup at boot
+Add the following to your root crontab to autostart pi-blaster at start up of your system
+
+   @reboot /home/pi/pi-blaster-master/pi-blaster
+
+Add the following to your user crontab to autostart pi-led-control at start up of your system
+
+   @reboot python3 /home/pi/pi-led-control/ledserver.py
 
 ##Screenshots
 
