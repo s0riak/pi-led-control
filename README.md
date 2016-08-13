@@ -58,6 +58,26 @@ Add the following to your user crontab to autostart pi-led-control at start up o
 
    @reboot python3 /home/pi/pi-led-control/ledserver.py
 
+##Flic Button integration
+Flic Buttons (https://flic.io/) can be easily integrated to do so, follow the steps at https://github.com/50ButtonsEach/fliclib-linux-hci to setup the server for the buttonsa and pair them.
+
+To set the integration start the flic binary and:
+   ./flic-integrator.py
+   
+This will toogle any between the programs "feed" and "softOff" on any button down.
+To start both at startup, add the following to your root crontab:
+   
+   @reboot /home/pi/fliclib-linux-hci/bin/armv6l/flicd -f /home/pi/flic.sqlite3
+
+
+and the follwing to your user crontab:
+
+   @reboot python3 /home/pi/pi-led-control/flic-integrator.py
+
+To avoid interference with the standard bluetooth service, disable it:
+   
+   sudo update-rc.d bluetooth disable
+
 ##Screenshots
 
 ![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-main.png)
