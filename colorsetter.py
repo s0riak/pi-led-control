@@ -13,53 +13,38 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
+from ledstate import LEDState
 
 class ColorSetter():
 
     def __init__(self, printInfo, brightness):
         self._printInfo = printInfo
-        self._currentColor = None
-        self.setBrightness(brightness)
-        
+        self._ledState = LEDState()
+        self._ledState.brightness = brightness
+
     def setBrightness(self, brightness):
-        self._brightness = min(1, max(0, brightness))
-        if self._currentColor != None:
-            print("resetting color after brightness change {}, {}".format(self._brightness, self._currentColor))
-            self.setColorRGB(self._currentColor[0], self._currentColor[1],self._currentColor[2]) 
+        self._ledState.brightness = brightness
+        if self._ledState.isComplete():
+            print("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
+            self.setValue(self._ledState)
 
     def getBrightness(self):
-        return self._brightness
+        return self._ledState.brightness
 
-    def _rgbBound(self, value):
-        return min(255, max(0, value))
+    def _writePiBlasterValue(self, channel, channelName, value):
+        with open("/dev/pi-blaster", "w") as piblaster:
+            print("{}={}".format(channel, value), file=piblaster)
+            if self._printInfo:
+                print("{}: {} ".format(channelName, value) ,end="",flush=True)
 
-    def setColorRGB(self, r, g, b, s=1):
-        r = self._rgbBound(r)/255
-        g = self._rgbBound(g)/255
-        b = self._rgbBound(b)/255
-        s = min(1, max(0, s))
-        self.setColor(r * s, g * s, b * s)
-
-
-    def setColor(self, r,g,b):
-        if r != None:
-            with open("/dev/pi-blaster", "w") as piblaster:
-                print("17={}".format(r*self._brightness), file=piblaster)
-                if self._printInfo:
-                    print("r: {} ".format(r*self._brightness) ,end="",flush=True)
-        if g != None:
-            with open("/dev/pi-blaster", "w") as piblaster:
-                print("22={}".format(g*self._brightness), file=piblaster)
-                if self._printInfo:
-                    print("g: {} ".format(g*self._brightness) ,end="",flush=True)
-        if b != None:
-            with open("/dev/pi-blaster", "w") as piblaster:
-                print("24={}".format(b*self._brightness), file=piblaster)
-                if self._printInfo:
-                    print("b: {}".format(b*self._brightness) ,end="",flush=True)
-        self._currentColor = (round(r*255), round(g*255), round(b*255))
+    def setValue(self, ledState):
+        self._ledState.updateAvailableValues(ledState)
+        if self._ledState.isComplete():
+            self._writePiBlasterValue(17, "red" , self._ledState.red*self._ledState.brightness)
+            self._writePiBlasterValue(22, "green" , self._ledState.green*self._ledState.brightness)
+            self._writePiBlasterValue(24, "blue" , self._ledState.blue*self._ledState.brightness)
         if self._printInfo:
             print("")
             
-    def getCurrentColor(self):
-        return self._currentColor
+    def getCurrentValue(self):
+        return self._ledState

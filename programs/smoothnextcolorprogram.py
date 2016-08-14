@@ -14,27 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from ledstate import LEDState
 from programs.colorpathprogram import ColorPathProgram
 from programs.programchainprogram import ProgramChainProgram
 from programs.singlecolorprogram import SingleColorProgram
-class SoftOffProgram(ProgramChainProgram):
+class SmoothNextColorProgram(ProgramChainProgram):
 
-    def __init__(self, printInfo):
-        offState = LEDState(0.0,0.0,0.0,0.0)
-        colorPath = [offState]
+    def __init__(self, printInfo, ledValue, switchTime):
+        colorPath = [ledValue]
         interpolationPoints = 50
-        timePerColor = 3/interpolationPoints
+        timePerColor =  switchTime/interpolationPoints
         self._colorPathProgram = ColorPathProgram(printInfo, colorPath, interpolationPoints, timePerColor, True)
-        super().__init__(printInfo, [self._colorPathProgram, SingleColorProgram(printInfo, offState)])
+        super().__init__(printInfo, [self._colorPathProgram, SingleColorProgram(printInfo, ledValue)])
 
     #overridding setLastColor to change duration of softoff based on hue of last Color
-    def setLastValue(self, lastValue):
-        if lastValue != None and lastValue.isComplete():
-            lastHue = (lastValue.red + lastValue.green + lastValue.blue) * lastValue.brightness
+    def setLastColor(self, lastColor):
+        if lastColor != None:
+            lastHue = lastColor[0] + lastColor[1] + lastColor[2]
             totalTime = min(8, max(2, 8 * lastHue / (255*3)))
         else:
             totalTime= 1
         self._colorPathProgram.setTimePerColor(totalTime/50)
-        super().setLastValue(lastValue)
+        super().setLastColor(lastColor)
 

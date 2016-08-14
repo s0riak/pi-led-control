@@ -35,7 +35,7 @@ class LEDManager():
         self.sem = Semaphore()
         self.controlThread = None
         self._cancelPowerOffEvent = None
-        self._colorSetter = ColorSetter(printInfo, 1)
+        self._colorSetter = ColorSetter(printInfo, 1.0)
 
     def setBrightness(self, brightness):
         self._colorSetter.setBrightness(brightness)
@@ -48,16 +48,17 @@ class LEDManager():
         program.setColorSetter(self._colorSetter)
         if self.controlThread != None:
             self.controlThread.threadStopEvent.set()
-            lastColor = self.controlThread.program.getCurrentColor()
-            program.setLastColor(lastColor)
+            lastValue = self.controlThread.program.getCurrentValue()
+            print(str(lastValue))
+            program.setLastValue(lastValue)
         self.controlThread = LEDControlThread(program)
         self.controlThread.start()
         self.sem.release()
 
-    def getCurrentColor(self):
+    def getCurrentValue(self):
         if self.controlThread != None:
             if self.controlThread.program != None:
-                return self.controlThread.program.getCurrentColor()
+                return self.controlThread.program.getCurrentValue()
         return None
 
     def powerOffWaiter(self,duration, cancelEvent):

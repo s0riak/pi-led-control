@@ -27,7 +27,7 @@ class ProgramChainProgram(AbstractProgram):
         self._currentProgram = self._programs[0]
         self._currentProgram.run()
         for program in self._programs[1:]:
-            program.setLastColor(self._currentProgram.getCurrentColor())
+            program.setLastValue(self._currentProgram.getCurrentValue())
             self._currentProgram = program
             program.run()
         
@@ -42,10 +42,10 @@ class ProgramChainProgram(AbstractProgram):
             program.setColorSetter(colorSetter)
 
             
-    def getCurrentColor(self):
-        return self._currentProgram.getCurrentColor()
+    def getCurrentValue(self):
+        return self._currentProgram.getCurrentValue()
 
-    def setLastColor(self, lastColor):
-        self._programs[0].setLastColor(lastColor)
+    def setLastValue(self, lastValue):
+        self._programs[0].setLastValue(lastValue)
 
 

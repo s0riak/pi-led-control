@@ -66,7 +66,11 @@ function updateStatus(){
     $.getJSON( "/getStatus", function( data ) {
 	colors = data["color"];
 	if(colors != null){
-	    $("#currentColor").css('background-color', 'rgb('+ colors["red"] +','+ colors["green"] + ','+ colors["blue"] + ')');
+	    red = Math.round(colors["red"]*255.0*data["brightness"]);
+	    green = Math.round(colors["green"]*255.0*data["brightness"]);
+	    blue = Math.round(colors["blue"]*255.0*data["brightness"]);
+	    
+	    $("#currentColor").css('background-color', 'rgb('+ red +','+ green + ','+ blue + ')');
 	    $("#currentColor").val("");
 	}else{
 	    $("#currentColor").css('background-color', '#FFFFFF');
@@ -79,7 +83,7 @@ function updateStatus(){
 	    $( "#cancelscheduledOff-button" ).hide();
 	    $( "#scheduleOff-button" ).show();
 	}
-	$("#currentBrightness").text(data["brightness"]*100 + "%");
+	$("#currentBrightness").text(Math.round(data["brightness"]*100) + "%");
     }).error(function() {
     });
     setTimeout(updateStatus, 500);
@@ -217,9 +221,9 @@ $(document).ready(function() {
 	$("#freeColorModal").modal('show');
 	$.getJSON( "/getStatus", function( data ) {
 	    colors = data["color"];
-	    $("#redSlider").val(colors["red"]);
-	    $("#greenSlider").val(colors["green"]);
-	    $("#blueSlider").val(colors["blue"]);
+	    $("#redSlider").val(colors["red"]*255);
+	    $("#greenSlider").val(colors["green"]*255);
+	    $("#blueSlider").val(colors["blue"]*255);
 	    $("#brightnessSlider").val(data["brightness"]);
 	    $("#freeColorBrightnessSlider").val(data["brightness"]);
 	    updateColorFromSliders();
@@ -247,7 +251,7 @@ $(document).ready(function() {
     //get the list of predefined colors and add them to the modal for color choice
     $.getJSON( "/getPredefinedColors", function( data ) {
 	$.each( data, function( key, value ) {
-	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + key + "-button' style='background-color: rgb("+ value[0] +","+ value[1] + ","+ value[2] + ")'>" + key + "</button></li>");
+	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + key + "-button' style='background-color: rgb("+ Math.round(value[0]*255) +","+ Math.round(value[1]*255) + ","+ Math.round(value[2]*255) + ")'>" + key + "</button></li>");
 	    $("#" + key + "-button").on('click', function(){
 		$.post( startProgramURL,
 			JSON.stringify({name: "predefined", params: {colorName: key} }) )	    });
