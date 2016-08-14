@@ -66,7 +66,11 @@ function updateStatus(){
     $.getJSON( "/getStatus", function( data ) {
 	colors = data["color"];
 	if(colors != null){
-	    $("#currentColor").css('background-color', 'rgb('+ colors["red"]*255 +','+ colors["green"]*255 + ','+ colors["blue"]*255 + ')');
+	    red = Math.round(colors["red"]*255.0*data["brightness"]);
+	    green = Math.round(colors["green"]*255.0*data["brightness"]);
+	    blue = Math.round(colors["blue"]*255.0*data["brightness"]);
+	    
+	    $("#currentColor").css('background-color', 'rgb('+ red +','+ green + ','+ blue + ')');
 	    $("#currentColor").val("");
 	}else{
 	    $("#currentColor").css('background-color', '#FFFFFF');
