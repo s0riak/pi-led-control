@@ -17,11 +17,9 @@
 from programs.abstractprogram import AbstractProgram
 class SingleColorProgram(AbstractProgram):
 
-    def __init__(self, printInfo, r, g, b):
+    def __init__(self, printInfo, value):
         super().__init__(printInfo)
-        self._r = r
-        self._g = g
-        self._b = b
-
+        self.__value = value
+        
     def run(self):
-        self._setColor(self._r/255, self._g/255, self._b/255)
+        self._setValue(self.__value)

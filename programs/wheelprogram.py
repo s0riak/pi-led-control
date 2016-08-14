@@ -13,15 +13,15 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-
+from ledstate import LEDState
 from programs.loopedprogram import LoopedProgram
 from programs.colorpathprogram import ColorPathProgram
 class WheelProgram(LoopedProgram):
 
     def __init__(self, printInfo, interations, minValue, maxValue):
-        minValue = min(255, max(0, minValue))
-        maxValue = min(255, max(0, maxValue))
-        colorPath = [(maxValue,minValue,minValue),(minValue,maxValue,minValue),(minValue, minValue, maxValue),(maxValue,minValue,minValue)]
+        minValue = min(1.0, max(0.0, minValue))
+        maxValue = min(1.0, max(0.0, maxValue))
+        colorPath = [LEDState(maxValue,minValue,minValue),LEDState(minValue,maxValue,minValue),LEDState(minValue, minValue, maxValue)]
         program = ColorPathProgram(printInfo, colorPath, 50, 0.1)
         
         super().__init__(printInfo, program)

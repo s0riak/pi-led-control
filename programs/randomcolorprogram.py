@@ -15,6 +15,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
+from ledstate import LEDState
 from programs.abstractprogram import AbstractProgram
 class RandomColorProgram(AbstractProgram):
 
@@ -25,10 +26,13 @@ class RandomColorProgram(AbstractProgram):
         self._secondsPerColor = secondsPerColor
 
     def run(self):
-        r = round(random.uniform(self._minColor, self._maxColor), 3)
-        g = round(random.uniform(self._minColor, self._maxColor), 3)
-        b = round(random.uniform(self._minColor, self._maxColor), 3)
-        if self.printInfo:
-            print("r: {}, g: {}, b: {}".format(r,g,b))
-        self._setColor(r, g, b)
+        ledValue = LEDState()
+        ledValue.red = round(random.uniform(self._minColor, self._maxColor), 3)
+        ledValue.green = round(random.uniform(self._minColor, self._maxColor), 3)
+        ledValue.blue = round(random.uniform(self._minColor, self._maxColor), 3)
+        if not self._lastValue == None and not self._lastValue.brightness == None:
+            ledValue.brightness = self._lastValue.brightness
+        else:
+            ledValue.brightness = 1.0
+        self._setValue(ledValue)
         self._waitIfNotStopped(self._secondsPerColor)

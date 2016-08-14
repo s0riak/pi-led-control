@@ -13,8 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-
+from ledstate import LEDState
 from programs.abstractprogram import AbstractProgram
 class OffProgram(AbstractProgram):
     def run(self):
-        self._setColor(0, 0, 0)
+        self._setValue(LEDState(0.0, 0.0, 0.0, 1.0))

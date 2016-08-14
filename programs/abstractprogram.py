@@ -1,5 +1,5 @@
 # Copyright (c) 2016 Sebastian Kanis
-# This file is part of pi-led-control.
+# this file is part of pi-led-control.
 
 # pi-led-control is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,27 +23,24 @@ class AbstractProgram(ABC):
     def __init__(self, printInfo):
         self.threadStopEvent = None
         self.printInfo = printInfo
-        self._lastColor = None
+        self._lastValue = None
         self._colorSetter = None
 
     #needs to be called before run
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
                 
-    def _setColorRGB(self, r, g, b, s=1):
-        self._colorSetter.setColorRGB(r,g,b,s)
-            
-    def _setColor(self, r,g,b):
-        self._colorSetter.setColor(r,g,b)
+    def _setValue(self, value):
+        self._colorSetter.setValue(value)
 
-    def getCurrentColor(self):
+    def getCurrentValue(self):
         if self._colorSetter != None:
-            return self._colorSetter.getCurrentColor()
+            return self._colorSetter.getCurrentValue()
         else:
             return None
 
-    def setLastColor(self, lastColor):
-        self._lastColor = lastColor
+    def setLastValue(self, lastValue):
+        self._lastValue = lastValue
         
     @abstractmethod
     def run(self):

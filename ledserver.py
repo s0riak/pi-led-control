@@ -24,6 +24,7 @@ from chardet.universaldetector import UniversalDetector
 
 from ledmanager import LEDManager
 from configmanager import ConfigurationManager
+from ledstate import LEDState
 from programs.offprogram import OffProgram
 from programs.wheelprogram import WheelProgram
 from programs.demoprogram import DemoProgram
@@ -40,6 +41,7 @@ from programs.scheduledprogram import ScheduledProgram
 from programs.loopedprogram import LoopedProgram
 from programs.programchainprogram import ProgramChainProgram
 from programs.randompathprogram import RandomPathProgram
+from programs.smoothnextcolorprogram import SmoothNextColorProgram
 
 hostName = ""
 hostPort = 9000
@@ -95,7 +97,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 f.close()
             return
         elif self.path.startswith("/getPredefinedColors"):
-            result = json.dumps(PredefinedColorProgram.definedColors)
+            result = json.dumps(PredefinedColorProgram.getPredefinedColorsAsDict())
             self.send_response(200)
             self.send_header("Content-type", "text/json")
             self.end_headers()            
@@ -110,12 +112,13 @@ class MyHandler(CGIHTTPRequestHandler):
         elif self.path.startswith("/getStatus"):
             resultDict = {}
             resultDict["powerOffScheduled"] = self.server.ledManager.isPowerOffScheduled()
-            resultDict["brightness"] = self.server.ledManager.getBrightness()
-            color = self.server.ledManager.getCurrentColor()
-            if color == None:
-                resultDict["color"] = None
+            value = self.server.ledManager.getCurrentValue()
+            if not value == None and value.isComplete():
+                    resultDict["color"] = {"red": value.red, "green": value.green, "blue": value.blue}
+                    resultDict["brightness"] = value.brightness
             else:
-                resultDict["color"] = {"red": color[0], "green": color[1], "blue": color[2]}
+                resultDict["brightness"] = None
+                resultDict["color"] = None
             result = json.dumps(resultDict)
             self.send_response(200)
             self.send_header("Content-type", "text/json")
@@ -164,7 +167,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 return
             progName = jsonBody["name"]
             if progName == "wheel":
-                params = {"iterations": 0, "minValue": 0, "maxValue": 255}
+                params = {"iterations": 0, "minValue": 0.0, "maxValue": 1.0}
                 params  = self.getParamsFromJson(jsonBody, params)
                 self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"]))
                 self.send_response(200)
@@ -173,10 +176,10 @@ class MyHandler(CGIHTTPRequestHandler):
                 params = {"duration": 30, "timeOfDay": -1}
                 params  = self.getParamsFromJson(jsonBody, params)
                 if params["timeOfDay"] == -1:
-                    self.server.ledManager.setBrightness(1)
+                    self.server.ledManager.setBrightness(1.0)
                     self.server.ledManager.startProgram(SunriseProgram(False, params["duration"]))
                 else:
-                    self.server.ledManager.setBrightness(1)
+                    self.server.ledManager.setBrightness(1.0)
                     self.server.ledManager.startProgram(ScheduledProgram(False, SunriseProgram(False, params["duration"]), params["timeOfDay"]))
                 self.send_response(200)
                 self.end_headers()
@@ -202,16 +205,15 @@ class MyHandler(CGIHTTPRequestHandler):
                     self.send_response(200)
                 self.end_headers()
             elif progName == "single":
-                params = {"red": 0, "green": 0, "blue": 0}
+                params = {"red": 0.0, "green": 0.0, "blue": 0.0}
                 params  = self.getParamsFromJson(jsonBody, params)
-                red = params["red"]
-                green = params["green"]
-                blue = params["blue"]
-                print(params)
-                if not (red >= 0 and red < 256) or not (green >= 0 and green < 256) or not (blue >= 0 and blue < 256):
-                    self.send_response(400, params["colorName"] + " not in " + colors)
+                if not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
+                    self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
                 else:
-                    self.server.ledManager.startProgram(SingleColorProgram(False, red, green, blue))
+                    red = params["red"]/255
+                    green = params["green"]/255
+                    blue = params["blue"]/255
+                    self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(red, green, blue, self.server.ledManager.getBrightness())))
                     self.send_response(200)
                 self.end_headers()
             elif progName == "softOff":
@@ -227,13 +229,11 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "white":
-                self.server.ledManager.setBrightness(1)
-                self.server.ledManager.startProgram(SingleColorProgram(False, 255, 255, 255))
+                self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(1.0, 1.0, 1.0, 1.0)))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "feed":
-                self.server.ledManager.setBrightness(1)
-                self.server.ledManager.startProgram(SingleColorProgram(False, 20, 0, 0))
+                self.server.ledManager.startProgram(SmoothNextColorProgram(False, LEDState(0.05, 0.0, 0.0, 1.0), 3))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "randomPath":
