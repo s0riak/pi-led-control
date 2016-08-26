@@ -78,6 +78,12 @@ To avoid interference with the standard bluetooth service, disable it:
    
    sudo update-rc.d bluetooth disable
 
+After that when everything (flicserver, flic-integrator and ledserver) is running and flic-buttons are paired with the flicserver (can be done with the simpleClient provided by flic) you use the button for the following:
+
+0. Single Click - If the state is 'off the Feedprogram is started, if state is 'on' the softoff program
+0. Double Click - The Full White program is started
+0. Hold - The following programs are rotated with every hold: randomPath, 4colorloop, wheel, freak
+
 ##Screenshots
 
 ![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-main.png)
