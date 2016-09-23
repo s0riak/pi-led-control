@@ -97,6 +97,7 @@ function timeToSecondsOfDay(x){
 function updateConfiguration(){
     $.getJSON("/getConfiguration", function( data ){
 	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"])
+	$("#feedBrightnessSlider").val(data["programs"]["feed"]["brightness"])
     });
 }
 
@@ -235,6 +236,15 @@ $(document).ready(function() {
     $( "#configureRandomPath-button" ).on('click', function() {
 	$.post(configureProgramURL, JSON.stringify({name: "randomPath", params: {timePerColor: $("#timePerColor").val()} }) );
 	$("#configureRandomModal").modal('hide');
+	updateConfiguration();
+    });
+
+    $("#feed-openconfig-button").on('click', function(){
+	$("#configureFeedModal").modal('show');
+    });
+    $( "#configureFeed-button" ).on('click', function() {
+	$.post(configureProgramURL, JSON.stringify({name: "feed", params: {brightness: $("#feedBrightnessSlider").val()} }) );
+	$("#configureFeedModal").modal('hide');
 	updateConfiguration();
     });
 
