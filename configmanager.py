@@ -38,7 +38,10 @@ class ConfigurationManager():
     def _getDefaultConfiguration(self):
         return {
             "programs":
-                {"randomPath": {"timePerColor": 3}}
+                {
+                    "randomPath": {"timePerColor": 3},
+                    "feed": {"brightness": 0.05}
+                }
         }
 
     def splitKeyValue(self, pathPart):

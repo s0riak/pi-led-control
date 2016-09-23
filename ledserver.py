@@ -233,7 +233,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "feed":
-                self.server.ledManager.startProgram(SmoothNextColorProgram(False, LEDState(0.05, 0.0, 0.0, 1.0), 3))
+                self.server.ledManager.startProgram(SmoothNextColorProgram(False, LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 3))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "randomPath":
@@ -264,6 +264,17 @@ class MyHandler(CGIHTTPRequestHandler):
                 params  = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
                 self.send_response(200)
+                self.end_headers()
+            if progName == "feed":
+                params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
+                params  = self.getParamsFromJson(jsonBody, params)
+                print(params)
+                self.server.config.setValue("programs/feed/brightness", params["brightness"])
+                self.send_response(200)
+                self.end_headers()
+
+            else:
+                self.send_response(400)
                 self.end_headers()
 
 
