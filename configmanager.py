@@ -39,8 +39,9 @@ class ConfigurationManager():
         return {
             "programs":
                 {
-                    "randomPath": {"timePerColor": 3},
-                    "feed": {"brightness": 0.05}
+                    "randomPath": {"timePerColor": 3.0},
+                    "feed": {"brightness": 0.05},
+                    "freak": {"secondsPerColor": 2.0}
                 }
         }
 

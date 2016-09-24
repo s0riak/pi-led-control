@@ -98,6 +98,7 @@ function updateConfiguration(){
     $.getJSON("/getConfiguration", function( data ){
 	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"])
 	$("#feedBrightnessSlider").val(data["programs"]["feed"]["brightness"])
+	$("#freakSecondsPerColor").val(data["programs"]["freak"]["secondsPerColor"])
     });
 }
 
@@ -248,6 +249,16 @@ $(document).ready(function() {
 	updateConfiguration();
     });
 
+    $("#freak-openconfig-button").on('click', function(){
+	$("#configureFreakModal").modal('show');
+    });
+    $( "#configureFreak-button" ).on('click', function() {
+	$.post(configureProgramURL, JSON.stringify({name: "freak", params: {secondsPerColor: $("#freakSecondsPerColor").val()} }) );
+	$("#configureFreakModal").modal('hide');
+	updateConfiguration();
+    });
+
+    
     updateConfiguration();
 
     $("#setBrightness-button").on('click', function(){
