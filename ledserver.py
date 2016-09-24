@@ -184,7 +184,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "freak":
-                params = {"minColor": 0, "maxColor": 1, "secondsPerColor": 0.2}
+                params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
                 params  = self.getParamsFromJson(jsonBody, params)
                 self.server.ledManager.startProgram(LoopedProgram(False, RandomColorProgram(False, params["minColor"], params["maxColor"], params["secondsPerColor"])))
                 self.send_response(200)
@@ -265,14 +265,22 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
                 self.send_response(200)
                 self.end_headers()
-            if progName == "feed":
+            elif progName == "feed":
                 params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
                 params  = self.getParamsFromJson(jsonBody, params)
                 print(params)
                 self.server.config.setValue("programs/feed/brightness", params["brightness"])
                 self.send_response(200)
                 self.end_headers()
-
+            elif progName == "freak":
+                print("configureFreak")
+                params = {"secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
+                print(jsonBody)
+                params  = self.getParamsFromJson(jsonBody, params)
+                print(params)
+                self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
+                self.send_response(200)
+                self.end_headers()
             else:
                 self.send_response(400)
                 self.end_headers()
