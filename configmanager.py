@@ -41,7 +41,8 @@ class ConfigurationManager():
                 {
                     "randomPath": {"timePerColor": 3.0},
                     "feed": {"brightness": 0.05},
-                    "freak": {"secondsPerColor": 2.0}
+                    "freak": {"secondsPerColor": 2.0},
+                    "sunrise": {"duration": 300, "timeOfDay": -1}
                 }
         }
 
@@ -66,11 +67,9 @@ class ConfigurationManager():
                         currentConfig = value["values"]
         return currentConfig
     
+    #expects the key/path to be existent in the configuration
     def setValue(self, path, value):
         config = self.loadConfig()
-        path.split('/')
-        config = self.loadConfig()
-        print(config)
         currentConfig = config
         splitParts = path.split('/')
         for i in range(0, len(splitParts)):

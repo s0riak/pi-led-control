@@ -94,11 +94,36 @@ function timeToSecondsOfDay(x){
     return parseInt(x.substring(0,2)) * 3600 + parseInt(x.substring(3,5)) * 60 + parseInt(x.substring(6,8))
 }
 
+//converts seconds to time of day in current day
+function secondsOfDayToTime(x){
+    var hours = Math.floor(x/3600);
+    var minutes = Math.floor(x-3600*hours);
+    var seconds = Math.floor(x-3600*hours-60*minutes);
+    if(hours < 10){
+	hours = "0" + hours;
+    }
+    if(minutes < 10){
+	minutes = "0" + minutes;
+    }
+    if(seconds < 10){
+	seconds = "0" + seconds;
+    }
+    return hours + ":" + minutes + ":" + seconds;
+}
+
+
 function updateConfiguration(){
     $.getJSON("/getConfiguration", function( data ){
-	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"])
-	$("#feedBrightnessSlider").val(data["programs"]["feed"]["brightness"])
-	$("#freakSecondsPerColor").val(data["programs"]["freak"]["secondsPerColor"])
+	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"]);
+	$("#feedBrightnessSlider").val(data["programs"]["feed"]["brightness"]);
+	$("#freakSecondsPerColor").val(data["programs"]["freak"]["secondsPerColor"]);
+	$("#sunriseDuration").val(data["programs"]["sunrise"]["duration"]);
+	var timeOfDay = data["programs"]["sunrise"]["timeOfDay"];
+	if(timeOfDay == -1){
+	    $('#sunriseStarttime').val("");
+	}else{
+	    $('#sunriseStarttime').val(secondsOfDayToTime(timeOfDay));
+	}
     });
 }
 
@@ -168,6 +193,7 @@ $(document).ready(function() {
 	    }else{
 		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration}}));
 	    }
+	    updateConfiguration();
 	    $('#sunriseModal').modal('hide');
 	}
     });
