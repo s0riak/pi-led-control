@@ -66,11 +66,9 @@ class ConfigurationManager():
                         currentConfig = value["values"]
         return currentConfig
     
+    #expects the key/path to be existent in the configuration
     def setValue(self, path, value):
         config = self.loadConfig()
-        path.split('/')
-        config = self.loadConfig()
-        print(config)
         currentConfig = config
         splitParts = path.split('/')
         for i in range(0, len(splitParts)):
