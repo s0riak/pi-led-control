@@ -41,7 +41,8 @@ class ConfigurationManager():
                 {
                     "randomPath": {"timePerColor": 3.0},
                     "feed": {"brightness": 0.05},
-                    "freak": {"secondsPerColor": 2.0}
+                    "freak": {"secondsPerColor": 2.0},
+                    "sunrise": {"duration": 300, "timeOfDay": -1}
                 }
         }
 
