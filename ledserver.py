@@ -173,15 +173,16 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "sunrise":
-                params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay": self.server.config.getValue("programs/sunrise/timeOfDay")}
+                params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay": -1, "brightness": 1.0}
                 params  = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/sunrise/duration", params["duration"])                
                 self.server.config.setValue("programs/sunrise/timeOfDay", params["timeOfDay"])
+                self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
                 if params["timeOfDay"] == -1:
-                    self.server.ledManager.setBrightness(1.0)
+                    self.server.ledManager.setBrightness(params["brightness"])
                     self.server.ledManager.startProgram(SunriseProgram(False, params["duration"]))
                 else:
-                    self.server.ledManager.setBrightness(1.0)
+                    self.server.ledManager.setBrightness(params["brightness"])
                     self.server.ledManager.startProgram(ScheduledProgram(False, SunriseProgram(False, params["duration"]), params["timeOfDay"]))
                 self.send_response(200)
                 self.end_headers()

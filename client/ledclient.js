@@ -124,6 +124,7 @@ function updateConfiguration(){
 	}else{
 	    $('#sunriseStarttime').val(secondsOfDayToTime(timeOfDay));
 	}
+	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
     });
 }
 
@@ -189,9 +190,9 @@ $(document).ready(function() {
 	}
 	if(valid){
 	    if(sunriseStarttime != ""){
-		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration, timeOfDay: timeToSecondsOfDay(sunriseStarttime)}}));
+		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration, timeOfDay: timeToSecondsOfDay(sunriseStarttime), brightness: $('#sunriseBrightnessSlider').val()}}));
 	    }else{
-		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration}}));
+		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration, brightness: $('#sunriseBrightnessSlider').val()}}));
 	    }
 	    updateConfiguration();
 	    $('#sunriseModal').modal('hide');
