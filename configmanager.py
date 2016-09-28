@@ -21,8 +21,8 @@ from pprint import pprint
 #to work correctly configuration key must not contain '/'s
 class ConfigurationManager():
     
-    def __init__(self):
-        self._configPath = 'config.json'
+    def __init__(self, configPath="config.json"):
+        self._configPath = configPath
         
     def loadConfig(self):
         if not os.path.isfile(self._configPath):
