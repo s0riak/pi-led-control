@@ -16,6 +16,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import argparse
 from http.server import CGIHTTPRequestHandler, HTTPServer
 import json
 import time
@@ -43,15 +44,13 @@ from programs.programchainprogram import ProgramChainProgram
 from programs.randompathprogram import RandomPathProgram
 from programs.smoothnextcolorprogram import SmoothNextColorProgram
 
-hostName = ""
-hostPort = 9000
 
 class MyServer(HTTPServer):
 
-    def __init__(self, connection, handlerClass, ledManager):
+    def __init__(self, connection, handlerClass, ledManager, configManager):
         super().__init__(connection, MyHandler)
         self.ledManager = ledManager
-        self.config = ConfigurationManager()
+        self.config = configManager
         
 class MyHandler(CGIHTTPRequestHandler):
 
@@ -288,14 +287,18 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
 
+parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
+parser.add_argument('-n','--name', help='the hostname on which pi-led-control is served', default='')
+parser.add_argument('-p','--port', help='the port on which pi-led-control is served', default=9000)
+parser.add_argument('-c','--configPath', help='the path to the config file to be used', default="pi-led-control.config")
+args = vars(parser.parse_args())
 
-
-myServer = MyServer((hostName, hostPort), MyHandler, LEDManager(False))
+myServer = MyServer((args['name'], args['port']), MyHandler, LEDManager(False), ConfigurationManager(args['configPath']))
 try:
-    print("running server from {} at {} started on {}:{}".format(os.path.dirname(os.path.realpath(__file__)), time.asctime(), hostName, hostPort))
+    print("running server from {} at {} started on {}:{}".format(os.path.dirname(os.path.realpath(__file__)), time.asctime(), args['name'], args['port']))
     myServer.serve_forever()
 except KeyboardInterrupt:
     pass
 myServer.server_close()
-print("server stopped at {} started on {}:{}".format(time.asctime(), hostName, hostPort))
+print("server stopped at {} started on {}:{}".format(time.asctime(), args['name'], args['port']))
 
