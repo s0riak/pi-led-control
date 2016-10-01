@@ -131,6 +131,7 @@ function updateConfiguration(){
 	}
 	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
 	//update predefined colors
+	$("#predefinedColor-button-group").empty()
 	$.each(data["userDefinedColors"], function(key,value){
 	    console.log("name: " + value["name"] + "value: " + value["colors"]["red"] + " " + value["colors"]["green"] + " " + value["colors"]["blue"]);
 	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + value["name"] + "-button' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + ")'>" + value["name"] + "</button></li>");
