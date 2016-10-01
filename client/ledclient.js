@@ -131,14 +131,35 @@ function updateConfiguration(){
 	}
 	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
 	//update predefined colors
-	$("#predefinedColor-button-group").empty()
+	$("#predefinedColor-button-group").empty();
+	$("#configurePredefinedColor-button-group").empty();
 	$.each(data["userDefinedColors"], function(key,value){
 	    console.log("name: " + value["name"] + "value: " + value["colors"]["red"] + " " + value["colors"]["green"] + " " + value["colors"]["blue"]);
 	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + value["name"] + "-button' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + ")'>" + value["name"] + "</button></li>");
 	    $("#" + value["name"] + "-button").on('click', function(){
 		body = JSON.stringify({name: "predefined", params: {colorName: value["name"]} })
 		$.post( startProgramURL, body)});	    
-	});	
+	    $("#configurePredefinedColor-body").append(
+	    "<div class='row'>\
+                <div class='col-xs-1 col-md-3 list-btn-col' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + "); height:18pt'>\
+                </div>\
+	        <div class='col-xs-4 col-md-3 list-btn-col'>\
+                   " + value["name"] + "\
+                </div>\
+	        <div class='col-xs-3 col-md-3 list-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='edit-" + value["name"] + "-button'>Edit</button>\
+	        </div>\
+	        <div class='col-xs-3 col-md-3 config-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='delete-" + value["name"] + "-button'>Delete</span></button>\
+	        </div>\
+            <div>");
+	    $("#edit-" + value["name"] + "-button").on('click', function(){
+		console.log("edit " + value["name"]);
+	    });
+	    $("#delete-" + value["name"] + "-button").on('click', function(){
+		console.log("delete " + value["name"]);
+	    });
+	});
     });
 }
 
@@ -295,6 +316,11 @@ $(document).ready(function() {
 	updateConfiguration();
     });
 
+    $("#predefined-openconfig-button").on('click', function(){
+	$("#configurePredefinedColorModal").modal('show');
+    });
+
+    
     
     updateConfiguration();
 
