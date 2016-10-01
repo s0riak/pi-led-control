@@ -15,6 +15,11 @@
  You should have received a copy of the GNU General Public License
  along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 */
+var startProgramURL = "/startProgram";
+var setBrightnessURL = "/setBrightness";
+var configureProgramURL = "configureProgram";
+var currentBrightness = 1;
+
 
 //check if variable is int
 function isInteger(x) {
@@ -125,14 +130,18 @@ function updateConfiguration(){
 	    $('#sunriseStarttime').val(secondsOfDayToTime(timeOfDay));
 	}
 	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
+	//update predefined colors
+	$.each(data["userDefinedColors"], function(key,value){
+	    console.log("name: " + value["name"] + "value: " + value["colors"]["red"] + " " + value["colors"]["green"] + " " + value["colors"]["blue"]);
+	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + value["name"] + "-button' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + ")'>" + value["name"] + "</button></li>");
+	    $("#" + value["name"] + "-button").on('click', function(){
+		body = JSON.stringify({name: "predefined", params: {colorName: value["name"]} })
+		$.post( startProgramURL, body)});	    
+	});	
     });
 }
 
 $(document).ready(function() {
-    var startProgramURL = "/startProgram";
-    var setBrightnessURL = "/setBrightness";
-    var configureProgramURL = "configureProgram";
-    var currentBrightness = 1;
     //initialize the main buttons
     $( "#off-button" ).on('click', function() {
 	$.post( startProgramURL, JSON.stringify({name: "off", params: [] }) );
@@ -294,15 +303,4 @@ $(document).ready(function() {
 	});
     });
 
-
-
-    //get the list of predefined colors and add them to the modal for color choice
-    $.getJSON( "/getPredefinedColors", function( data ) {
-	$.each( data, function( key, value ) {
-	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + key + "-button' style='background-color: rgb("+ Math.round(value[0]*255) +","+ Math.round(value[1]*255) + ","+ Math.round(value[2]*255) + ")'>" + key + "</button></li>");
-	    $("#" + key + "-button").on('click', function(){
-		$.post( startProgramURL,
-			JSON.stringify({name: "predefined", params: {colorName: key} }) )	    });
-	});
-    });    
 });

@@ -34,7 +34,6 @@ from programs.randomcolorprogram import RandomColorProgram
 from programs.smoothrandomprogram import SmoothRandomProgram
 from programs.smoothrandomwalkprogram import SmoothRandomWalkProgram
 from programs.singlecolorprogram import SingleColorProgram
-from programs.predefinedcolorprogram import PredefinedColorProgram
 from programs.colorpathprogram import ColorPathProgram
 from programs.sunriseprogram import SunriseProgram
 from programs.softoffprogram import SoftOffProgram
@@ -95,12 +94,6 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.wfile.write(bytes(f.read(), 'UTF-8'))
                 f.close()
             return
-        elif self.path.startswith("/getPredefinedColors"):
-            result = json.dumps(PredefinedColorProgram.getPredefinedColorsAsDict())
-            self.send_response(200)
-            self.send_header("Content-type", "text/json")
-            self.end_headers()            
-            self.wfile.write(bytes(result, "utf-8"))
         elif self.path.startswith("/getConfiguration"):
             result = json.dumps(self.server.config.getValue(""))
             print(result)
@@ -148,6 +141,19 @@ class MyHandler(CGIHTTPRequestHandler):
                     result[key] = json["params"][key]
         return result
     
+    def getPredefinedColor(self, name):
+        for color in self.server.config.getValue("userDefinedColors"):
+            if color["name"] == name:
+                return LEDState(color["colors"]["red"], color["colors"]["green"], color["colors"]["blue"])
+        return LEDState(0.0, 0.0, 0.0)
+
+    def getPredefinedColors(self):
+        result = []
+        for color in self.server.config.getValue("userDefinedColors"):
+            result.append(LEDState(color["colors"]["red"], color["colors"]["green"], color["colors"]["blue"]))
+        return result
+
+    
     def do_POST(self):
         content_len = int(self.headers.get('content-length', 0))
         requestBody = self.rfile.read(content_len)
@@ -194,18 +200,23 @@ class MyHandler(CGIHTTPRequestHandler):
             elif progName == "predefined":
                 params = {"colorName": ""}
                 params  = self.getParamsFromJson(jsonBody, params)
-                colors = ""
-                for key, value in PredefinedColorProgram.definedColors.items() :
-                    if colors == "":
-                        colors = key
-                    else:
-                        colors = colors + ", " + key
-                if not params["colorName"] in PredefinedColorProgram.definedColors.keys():
-                    self.send_response(400, params["colorName"] + " not in " + colors)
+                colors = []
+                predefinedColors = self.server.config.getValue("userDefinedColors")
+                for color in predefinedColors :
+                    colors.append(color["name"])
+                if not params["colorName"] in colors:
+                    print(params["colorName"] + " not in " + str(colors))
+                    self.send_response(400, params["colorName"] + " not in " + str(colors))
                 else:
-                    self.server.ledManager.startProgram(PredefinedColorProgram(False, params["colorName"]))
-                    self.send_response(200)
-                self.end_headers()
+                    for predefinedColor in predefinedColors:
+                        if params["colorName"] == predefinedColor["name"]:
+                           color  = predefinedColor["colors"]
+                           print(color)
+                           ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
+                           self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
+                           self.send_response(200)
+                           self.end_headers()
+                           break
             elif progName == "single":
                 params = {"red": 0.0, "green": 0.0, "blue": 0.0}
                 params  = self.getParamsFromJson(jsonBody, params)
@@ -227,7 +238,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "4colorloop":
-                self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, [PredefinedColorProgram.definedColors["blue"],PredefinedColorProgram.definedColors["red"],PredefinedColorProgram.definedColors["yellow"],PredefinedColorProgram.definedColors["green"]], 1, 1), 0))
+                self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, [self.getPredefinedColor("blue"), self.getPredefinedColor("red"), self.getPredefinedColor("yellow"), self.getPredefinedColor("green")], 1, 1), 0))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "white":
@@ -239,7 +250,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "randomPath":
-                self.server.ledManager.startProgram(RandomPathProgram(False, list(PredefinedColorProgram.definedColors.values()), self.server.config.getValue("programs/randomPath/timePerColor")))
+                self.server.ledManager.startProgram(RandomPathProgram(False, self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
                 self.send_response(200)
                 self.end_headers()                
             elif progName  == "scheduledOff":

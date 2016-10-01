@@ -43,7 +43,19 @@ class ConfigurationManager():
                     "feed": {"brightness": 0.05},
                     "freak": {"secondsPerColor": 2.0},
                     "sunrise": {"duration": 300, "timeOfDay": -1, "brightness": 1}
-                }
+                },
+            "userDefinedColors":
+            [
+                {"name": "red",  "colors": {"red": 1.0, "green": 0.0, "blue": 0.0}},
+                {"name": "green",  "colors": {"red": 0.0, "green": 1.0, "blue": 0.0}},
+                {"name": "blue", "colors": {"red": 0.0, "green": 0.0, "blue": 1.0}},
+                {"name": "yellow", "colors": {"red": 1.0, "green": 1.0, "blue": 0.0}},
+                {"name": "violet", "colors": {"red": 0.58, "green": 0.0, "blue": 0.82}},
+                {"name": "orange", "colors": {"red": 1.0, "green": 0.65, "blue": 0.0}},
+                {"name": "darkorange", "colors": {"red": 1.0, "green": 0.56, "blue": 0.06}},
+                {"name": "pink", "colors": {"red": 0.99, "green": 0.0, "blue": 0.59}},
+                {"name": "turquoise", "colors": {"red": 0.0, "green": 0.88, "blue": 0.78}}
+            ]
         }
 
     def splitKeyValue(self, pathPart):
