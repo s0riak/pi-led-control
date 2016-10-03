@@ -5,11 +5,7 @@ import unittest
 
 from configmanager import ConfigurationManager
 
-
-class MockedConfigManager(ConfigurationManager):
-    
-    def _getDefaultConfiguration(self):
-        return {
+testData = {
             "dictOfDicts":
                 {
                     "name1": {"intAttribute": 42},
@@ -27,10 +23,17 @@ class MockedConfigManager(ConfigurationManager):
             ]
         }
 
+testEditData = {"newAttribute1": 42, "newAttribute2": "wow"}
+
+class MockedConfigManager(ConfigurationManager):
+    
+    def _getDefaultConfiguration(self):
+        return testData
+
 class ConfigurationManagerTest(unittest.TestCase):
     
     def setUp(self):
-        self.testConfigPath = str(time.time()) + "configManagerTest.config"    
+        self.testConfigPath = "configManagerTest_" + str(time.time()) + ".config"    
         self.config = MockedConfigManager(self.testConfigPath)
         
     def tearDown(self):
@@ -91,6 +94,71 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.assertTrue(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute3"))
         self.assertFalse(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute4"))
         self.assertFalse(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/abc"))
+        
+    def test_rootGetValue(self):
+        self.assertEqual(self.config.getValue(""), testData)
+        
+    def test_firstLevelDictGetValue(self):
+        self.assertEqual(self.config.getValue("dictOfDicts"), testData["dictOfDicts"])
+        self.assertEqual(self.config.getValue("arrayOfDicts"), testData["arrayOfDicts"])
+        
+    def test_secondLevelDictGetValue(self):
+        self.assertEqual(self.config.getValue("dictOfDicts/name1"), testData["dictOfDicts"]["name1"])
+        self.assertEqual(self.config.getValue("dictOfDicts/name4"), testData["dictOfDicts"]["name4"])
+        
+    def test_secondLevelArrayIndexGetValue(self):
+        for i in range(0, len(testData["arrayOfDicts"])):
+            with self.subTest(i=i):
+                self.assertEqual(self.config.getValue("arrayOfDicts/" + str(i)), testData["arrayOfDicts"][i])
+        with self.assertRaises(IndexError):
+            self.config.getValue("arrayOfDicts/-1")
+        with self.assertRaises(IndexError):
+            self.config.getValue("arrayOfDicts/20")
+    
+    def test_secondLevelArrayAttributeGetValue(self):
+        self.assertEqual(self.config.getValue("arrayOfDicts/pivotAttribute1=pivotValue3"), testData["arrayOfDicts"][2])
+        with self.assertRaises(KeyError):
+            self.config.getValue("arrayOfDicts/pivotAttribute1=abc")
+        with self.assertRaises(KeyError):
+            self.config.getValue("arrayOfDicts/pivotAttribute1=pivotValue5")
+        with self.assertRaises(KeyError):
+            self.config.getValue("arrayOfDicts/abc=pivotValue3")
+    
+    def test_rootLevelEditValue(self):
+        self.config.setValue("", testEditData)
+        self.assertEqual(self.config.getValue(""), testEditData)
+    
+    def test_firstLevelEditValue(self):
+        self.config.setValue("dictOfDicts", testEditData)
+        self.assertEqual(self.config.getValue("dictOfDicts"), testEditData)
+    
+    def test_secondLevelDictEditValue(self):
+        self.config.setValue("dictOfDicts/name2", testEditData)
+        self.assertEqual(self.config.getValue("dictOfDicts/name2"), testEditData)
+    
+    def test_secondLevelArrayIndexEditValue(self):
+        self.config.setValue("arrayOfDicts/2", testEditData)
+        self.assertEqual(self.config.getValue("arrayOfDicts/2"), testEditData)
+    
+    def test_secondLevelArrayAttributeEditValue(self):
+        self.config.setValue("arrayOfDicts/pivotAttribute1=pivotValue3", testEditData)
+        self.assertEqual(self.config.getValue("arrayOfDicts/newAttribute1=42"), testEditData)
+    
+    def test_thirdLevelDictEditValue(self):
+        self.config.setValue("dictOfDicts/name4/secondAttribute", testEditData)
+        self.assertEqual(self.config.getValue("dictOfDicts/name4/secondAttribute"), testEditData)
+    
+    def test_thirdLevelArrayIndexEditValue(self):
+        self.config.setValue("arrayOfDicts/2/otherAttribute3", testEditData)
+        self.assertEqual(self.config.getValue("arrayOfDicts/2/otherAttribute3"), testEditData)
+    
+    def test_thirdLevelArrayAttributeEditValue(self):
+        self.config.setValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3", testEditData)
+        self.assertEqual(self.config.getValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3"), testEditData)
+        
+    def test_rootLevelAddValue(self):
+        self.config.setValue("newNode", testEditData, True)
+        self.assertEqual(self.config.getValue("newNode"), testEditData)
         
 if __name__ == '__main__':
     unittest.main()
