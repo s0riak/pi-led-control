@@ -76,14 +76,15 @@ class ConfigurationManager():
         
     def pathExists(self, path):
         config = self.loadConfig()
+        if not path:
+            return True
         currentConfig = config
         pathParts = path.split('/')
         for i in range(0, len(pathParts)) :
             pathPart = pathParts[i]
-            #print("pathPart: " + pathPart)
-            #print("currentConfig: ")
-            #pprint(currentConfig)
             if isinstance(currentConfig, dict):
+                if self.convertsToInt(pathPart):
+                    raise KeyError("invalid Path " + path)
                 if pathPart in currentConfig:
                     if i == len(pathParts) - 1:
                         return True
@@ -94,6 +95,8 @@ class ConfigurationManager():
             else:
                 if self.convertsToInt(pathPart):
                     index = int(pathPart)
+                    if index < 0:
+                        raise IndexError("invalid Path " + path)
                     if index >= len(currentConfig):
                         return False
                     else:
@@ -117,10 +120,58 @@ class ConfigurationManager():
                     if not foundInList:
                         return False
                 else:
-                    raise ValueError("invalid Path " + path)
-        return True
-        
+                    raise KeyError("invalid Path " + path)
+    
     def getValue(self, path):
+        config = self.loadConfig()
+        if not path:
+            return config
+        currentConfig = config
+        pathParts = path.split('/')
+        for i in range(0, len(pathParts)) :
+            pathPart = pathParts[i]
+            if isinstance(currentConfig, dict):
+                if self.convertsToInt(pathPart):
+                    raise KeyError("invalid Path " + path)
+                if pathPart in currentConfig:
+                    if i == len(pathParts) - 1:
+                        return currentConfig[pathPart]
+                    else:
+                        currentConfig = currentConfig[pathPart]
+                else:
+                    raise KeyError("path doesn't exist, key " + pathPart + " not in dict")
+            else:
+                if self.convertsToInt(pathPart):
+                    index = int(pathPart)
+                    if index < 0:
+                        raise IndexError("invalid Path " + path)
+                    if index >= len(currentConfig):
+                        raise KeyError("path doesn't exist, index " + str(index) + "out of range")
+                    else:
+                        if i == len(pathParts) - 1:
+                            return currentConfig[index]
+                        else:
+                            currentConfig = currentConfig[index]
+                elif '=' in pathPart:
+                    attributeName = pathPart.split('=')[0]
+                    attributeValue = pathPart.split('=')[1]
+                    foundInList = False
+                    for value in currentConfig:
+                        if attributeName in value:
+                            if value[attributeName] == attributeValue:
+                                if i == len(pathParts) - 1:
+                                    return value
+                                else:                                
+                                    currentConfig = value
+                                foundInList = True
+                                break
+                    if not foundInList:
+                        raise KeyError("path doesn't exist, attribute " + attributeName + " with value " + attributeValue + " not in dict")
+                else:
+                    raise KeyError("invalid Path " + path)
+        return config
+        
+    def getValueOld(self, path):
         config = self.loadConfig()
         currentConfig = config
         for pathPart in path.split('/'):
