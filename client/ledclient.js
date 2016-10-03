@@ -64,6 +64,15 @@ function updateColorFromSliders(){
     $("#colorDemo").val("red: " + red + " green: " + green + " blue: " + blue + " brightness: " + brightness * 100 + "%");
 }
 
+function updatePredefinedColorDemo(){
+    red = $( "#editPredefinedRedSlider").val();
+    green= $( "#editPredefinedGreenSlider").val();
+    blue= $( "#editPredefinedBlueSlider").val();
+    brightness= 1.0;
+    $("#editPredefinedColorDemo").css('background-color', 'rgb(' + Math.round(parseInt(red)*parseFloat(brightness)) + ','+ Math.round(parseInt(green)*parseFloat(brightness)) + ',' + Math.round(parseInt(blue)*parseFloat(brightness)) + ')');
+    $("#editPredefinedColorDemo").text("red: " + red + " green: " + green + " blue: " + blue + " brightness: " + brightness * 100 + "%");
+}   
+
 /*frequently update the status from the server
   the status currently contains the current color and if a (power) off is scheduled
 */
@@ -116,6 +125,62 @@ function secondsOfDayToTime(x){
     return hours + ":" + minutes + ":" + seconds;
 }
 
+function initEditPredefinedModal(name, red, green, blue){
+    $("#editPredefinedColorName").val(name);
+    $("#editPredefinedRedSlider").val(red);
+    $("#editPredefinedGreenSlider").val(green);
+    $("#editPredefinedBlueSlider").val(blue);
+    updatePredefinedColorDemo();
+    $("#editPredefinedPreview-button").on('click', function(){
+	redValue = $( "#editPredefinedRedSlider").val();
+	greenValue = $( "#editPredefinedGreenSlider").val();
+	blueValue = $( "#editPredefinedBlueSlider").val();
+	$.post( startProgramURL, JSON.stringify({name: "single", params: {red: redValue, green: greenValue, blue: blueValue} }) );
+	$.post( setBrightnessURL, JSON.stringify({params: {brightness: 1.0} }));	
+    });
+    $("#editPredefinedColorModal").modal('show');
+}
+
+function updatePredefinedColors(colors){
+    $("#predefinedColor-button-group").empty();
+    $("#configurePredefinedColor-button-group").empty();
+    $.each(colors, function(key,value){
+	console.log(value)
+	name = value["name"];
+	red = Math.round(value["values"]["red"]*255);
+	green = Math.round(value["values"]["green"]*255);
+	blue = Math.round(value["values"]["blue"]*255);
+			 
+	$("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + name + "-button' style='background-color: rgb("+ red +","+ green + ","+ blue + ")'>" + name + "</button></li>");
+	$("#" + value["name"] + "-button").on('click', function(){
+	    body = JSON.stringify({name: "predefined", params: {colorName: name} })
+	    $.post( startProgramURL, body)});	    
+	$("#configurePredefinedColor-body").append(
+	    "<div class='row' style='padding:2px'>\
+                <div class='col-xs-6 col-md-6 list-btn-col vcenter'>\
+                   <button type='button' class='btn btn-block' id='activate" + name + "-button' style='background-color: rgb("+ red +","+ green + ","+ blue + ")'>" + name + "</button>\
+                </div>\
+	        <div class='col-xs-3 col-md-3 list-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='edit-" + name + "-button'>Edit</button>\
+	        </div>\
+	        <div class='col-xs-3 col-md-3 config-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='delete-" + name + "-button'>Delete</span></button>\
+	        </div>\
+            <div>");
+	$("#activate" + name + "-button").on('click', function(){
+	    $.post( startProgramURL, JSON.stringify({name: "predefined", params: {colorName: name} }))});
+	$("#edit-" + name + "-button").on('click', function(){
+	    name = value["name"];
+	    red = Math.round(value["values"]["red"]*255);
+	    green = Math.round(value["values"]["green"]*255);
+	    blue = Math.round(value["values"]["blue"]*255);
+	    initEditPredefinedModal(name, red, green, blue);
+	});
+	$("#delete-" + name + "-button").on('click', function(){
+	    console.log("delete " + name);
+	});
+    });
+}
 
 function updateConfiguration(){
     $.getJSON("/getConfiguration", function( data ){
@@ -131,35 +196,7 @@ function updateConfiguration(){
 	}
 	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
 	//update predefined colors
-	$("#predefinedColor-button-group").empty();
-	$("#configurePredefinedColor-button-group").empty();
-	$.each(data["userDefinedColors"], function(key,value){
-	    console.log("name: " + value["name"] + "value: " + value["colors"]["red"] + " " + value["colors"]["green"] + " " + value["colors"]["blue"]);
-	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + value["name"] + "-button' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + ")'>" + value["name"] + "</button></li>");
-	    $("#" + value["name"] + "-button").on('click', function(){
-		body = JSON.stringify({name: "predefined", params: {colorName: value["name"]} })
-		$.post( startProgramURL, body)});	    
-	    $("#configurePredefinedColor-body").append(
-	    "<div class='row'>\
-                <div class='col-xs-1 col-md-3 list-btn-col' style='background-color: rgb("+ Math.round(value["colors"]["red"]*255) +","+ Math.round(value["colors"]["green"]*255) + ","+ Math.round(value["colors"]["blue"]*255) + "); height:18pt'>\
-                </div>\
-	        <div class='col-xs-4 col-md-3 list-btn-col'>\
-                   " + value["name"] + "\
-                </div>\
-	        <div class='col-xs-3 col-md-3 list-btn-col'>\
-		   <button type='button' class='btn btn-block btn-default' id='edit-" + value["name"] + "-button'>Edit</button>\
-	        </div>\
-	        <div class='col-xs-3 col-md-3 config-btn-col'>\
-		   <button type='button' class='btn btn-block btn-default' id='delete-" + value["name"] + "-button'>Delete</span></button>\
-	        </div>\
-            <div>");
-	    $("#edit-" + value["name"] + "-button").on('click', function(){
-		console.log("edit " + value["name"]);
-	    });
-	    $("#delete-" + value["name"] + "-button").on('click', function(){
-		console.log("delete " + value["name"]);
-	    });
-	});
+	updatePredefinedColors(data["userDefinedColors"]);
     });
 }
 
@@ -263,17 +300,28 @@ $(document).ready(function() {
 
     //listeners for sliders in free color modal
     $( "#redSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#greenSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#blueSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#freeColorBrightnessSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
+    //listeners for sliders in edit predefined color modal
+    $( "#editPredefinedRedSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+    $( "#editPredefinedGreenSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+    $( "#editPredefinedBlueSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+
     //start update of status
     updateStatus();
     //initialize the slides in free color modal from the last status when the modal is opened

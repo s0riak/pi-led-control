@@ -157,7 +157,15 @@ class MyHandler(CGIHTTPRequestHandler):
     def do_POST(self):
         content_len = int(self.headers.get('content-length', 0))
         requestBody = self.rfile.read(content_len)
-        jsonBody = json.loads(requestBody.decode("utf-8"))
+        if requestBody != "":
+            try:
+                jsonBody = json.loads(requestBody.decode("utf-8"))
+            except:
+                self.send_response(400, "invalid payload")
+                self.end_headers()
+                return
+        else:
+            jsonBody = None
         if self.path == "/setBrightness":
             params = {"brightness": 0.0}
             params  = self.getParamsFromJson(jsonBody, params)
@@ -297,7 +305,26 @@ class MyHandler(CGIHTTPRequestHandler):
             else:
                 self.send_response(400)
                 self.end_headers()
+        if self.path == "/configureColor":
+            params = {"name": "", "red": -1, "green": -1, "blue": -1}
+            params  = self.getParamsFromJson(jsonBody, params)
+            if params["name"] == "":
+                print("no color name given")
+                self.send_response(400, params["colorName"] + " not in " + str(colors))             
+            elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
+                self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
+            else:
+                print("pathExists userDefinedColors/" + params["name"] + "/red " + str(self.server.config.pathExists("userDefinedColors/" + params["name"] + "/red")))
+                self.server.config.setValue("userDefinedColors/" + params["name"] + "/red", float(params["red"])/255)
+                self.server.config.setValue("userDefinedColors/" + params["name"] + "/values/green", float(params["green"])/255)
+                self.server.config.setValue("userDefinedColors/" + params["name"] + "/values/blue", float(params["blue"])/255)
+                self.send_response(200)
+                self.end_headers()
+        else:
+            self.send_response(400)
+            self.end_headers()
 
+                
 parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
 parser.add_argument('-n','--name', help='the hostname on which pi-led-control is served', default='')
 parser.add_argument('-p','--port', help='the port on which pi-led-control is served', default=9000)
