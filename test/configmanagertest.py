@@ -54,8 +54,7 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.assertTrue(self.config.pathExists("dictOfDicts/name4"))
         self.assertFalse(self.config.pathExists("dictOfDicts/abc"))
         self.assertFalse(self.config.pathExists("dictOfDicts/name5"))
-        with self.assertRaises(KeyError):
-            self.config.pathExists("dictOfDicts/42")
+        self.assertFalse(self.config.pathExists("dictOfDicts/42"))
         
     def test_secondLevelArrayByIndexPathExists(self):
         self.assertTrue(self.config.pathExists("arrayOfDicts/0"))
@@ -156,9 +155,10 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.config.setValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3", testEditData)
         self.assertEqual(self.config.getValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3"), testEditData)
         
-    def test_rootLevelAddValue(self):
-        self.config.setValue("newNode", testEditData, True)
-        self.assertEqual(self.config.getValue("newNode"), testEditData)
+    #def test_rootLevelAddArray(self):
+    #    self.config.addArray("newNode")
+    #    self.assertTrue(self.config.pathExists("newNode"))
+    #    self.assertEqual(self.config.getValue("newNode"), [])
         
 if __name__ == '__main__':
     unittest.main()

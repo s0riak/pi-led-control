@@ -73,10 +73,9 @@ class ConfigurationManager():
         except ValueError:
             return False
         
-    def pathExists(self, path):
-        config = self.loadConfig()
+    def _traverseAndExecute(self, config, path, leafFunction):
         if not path:
-            return True
+            return leafFunction(config)
         currentConfig = config
         pathParts = path.split('/')
         for i in range(0, len(pathParts)) :
@@ -86,69 +85,21 @@ class ConfigurationManager():
                     raise KeyError("invalid Path " + path)
                 if pathPart in currentConfig:
                     if i == len(pathParts) - 1:
-                        return True
+                        return leafFunction(currentConfig[pathPart])
                     else:
                         currentConfig = currentConfig[pathPart]
                 else:
-                    return False;
+                    raise KeyError("invalid Path " + path)
             else:
                 if self.convertsToInt(pathPart):
                     index = int(pathPart)
                     if index < 0:
                         raise IndexError("invalid Path " + path)
                     if index >= len(currentConfig):
-                        return False
-                    else:
-                        if i == len(pathParts) - 1:
-                            return True
-                        else:
-                            currentConfig = currentConfig[index]
-                elif '=' in pathPart:
-                    attributeName = pathPart.split('=')[0]
-                    attributeValue = pathPart.split('=')[1]
-                    foundInList = False
-                    for value in currentConfig:
-                        if attributeName in value:
-                            if value[attributeName] == attributeValue:
-                                if i == len(pathParts) - 1:
-                                    return True
-                                else:                                
-                                    currentConfig = value
-                                foundInList = True
-                                break
-                    if not foundInList:
-                        return False
-                else:
-                    raise KeyError("invalid Path " + path)
-    
-    def getValue(self, path):
-        config = self.loadConfig()
-        if not path:
-            return config
-        currentConfig = config
-        pathParts = path.split('/')
-        for i in range(0, len(pathParts)) :
-            pathPart = pathParts[i]
-            if isinstance(currentConfig, dict):
-                if self.convertsToInt(pathPart):
-                    raise KeyError("invalid Path " + path)
-                if pathPart in currentConfig:
-                    if i == len(pathParts) - 1:
-                        return currentConfig[pathPart]
-                    else:
-                        currentConfig = currentConfig[pathPart]
-                else:
-                    raise KeyError("path doesn't exist, key " + pathPart + " not in dict")
-            else:
-                if self.convertsToInt(pathPart):
-                    index = int(pathPart)
-                    if index < 0:
                         raise IndexError("invalid Path " + path)
-                    if index >= len(currentConfig):
-                        raise IndexError("path doesn't exist, index " + str(index) + "out of range")
                     else:
                         if i == len(pathParts) - 1:
-                            return currentConfig[index]
+                            return leafFunction(currentConfig[index])
                         else:
                             currentConfig = currentConfig[index]
                 elif '=' in pathPart:
@@ -159,26 +110,26 @@ class ConfigurationManager():
                         if attributeName in value:
                             if str(value[attributeName]) == attributeValue:
                                 if i == len(pathParts) - 1:
-                                    return value
+                                    return leafFunction(value)
                                 else:                                
                                     currentConfig = value
                                 foundInList = True
                                 break
                     if not foundInList:
-                        raise KeyError("path doesn't exist, attribute " + attributeName + " with value " + attributeValue + " not in dict")
+                        raise KeyError("invalid Path " + path)
                 else:
                     raise KeyError("invalid Path " + path)
-        return config
+        
+    def pathExists(self, path):
+        config = self.loadConfig()
+        try:
+            return self._traverseAndExecute(config, path, lambda x: True)
+        except:
+            return False
     
-    def addArray(self, path):
-        raise NotImplemented
-    
-    def addArrayEntry(self, path, value):
-        raise NotImplemented
-    def addDict(self, path):
-        raise NotImplemented
-    def addDictEntry(self, path, value):
-        raise NotImplemented
+    def getValue(self, path):
+        config = self.loadConfig()
+        return self._traverseAndExecute(config, path, lambda x: x)
     
     def setValue(self, path, value):
         if not path:
@@ -230,41 +181,20 @@ class ConfigurationManager():
                     else:
                         raise KeyError("invalid Path " + path)
         self.storeConfig(config)
-
-    #TODO Fix "Name/Value" "Logic" in Lists
-    #expects the key/path to be existent in the configuration
-    def setValueOld(self, path, value):
-        print("path " + path + " value " + str(value))
+    
+    def addArray(self, path):
         config = self.loadConfig()
         currentConfig = config
-        splitParts = path.split('/')
-        try:
-            for i in range(0, len(splitParts)):
-                pathPart = splitParts[i]
-                #print("pathPart: " + pathPart)
-                #print("currentConfig: ")
-                #pprint(currentConfig)
-                if isinstance(currentConfig, dict):
-                    if pathPart in currentConfig:
-                        if i == len(splitParts) -1:
-                            #print(path + " found")
-                            currentConfig[pathPart] = value
-                        else:
-                            currentConfig = currentConfig[pathPart]
-                else:
-                    foundInList = False
-                    for listElem in currentConfig:
-                        #print("listElem: " + str(listElem))
-                        if listElem["name"] == pathPart:
-                            foundInList = True
-                            if i == len(splitParts) -1:
-                                #print(path + " found")
-                                listElem["values"] = value
-                            else:
-                                currentConfig = listElem["values"]
-                    if not foundInList:
-                        raise ValueError("path " + path + " not found")
-            self.storeConfig(config)
-        except:
-            print("error storing value")
-            traceback.print_exc()
+        pathParts = path.split('/')
+        if not self.pathExists("".join(pathParts[0, -1])):
+            raise KeyError ("parent path " + "".join(pathParts[0, -1]) + " doesn't exist")
+        
+        
+    def addArrayEntry(self, path, value):
+        raise NotImplementedError
+    def addDict(self, path):
+        raise NotImplementedError
+    def addDictEntry(self, path, value):
+        raise NotImplementedError
+    
+
