@@ -72,5 +72,25 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.assertTrue(self.config.pathExists("arrayOfDicts/pivotAttribute2=pivotValue5"))
         self.assertFalse(self.config.pathExists("arrayOfDicts/pivotAttribute2=pivotValue1"))
         
+    def test_thirdLevelDictPathExists(self):
+        self.assertTrue(self.config.pathExists("dictOfDicts/name4/firstAttribute"))
+        self.assertTrue(self.config.pathExists("dictOfDicts/name4/secondAttribute"))
+        self.assertFalse(self.config.pathExists("dictOfDicts/name4/thirdAttribute"))
+        self.assertFalse(self.config.pathExists("dictOfDicts/name3/firstAttribute"))
+        
+    def test_thirdLevelArrayByIndexPathExists(self):
+        self.assertTrue(self.config.pathExists("arrayOfDicts/2/otherAttribute3/deepAttribute1"))
+        self.assertTrue(self.config.pathExists("arrayOfDicts/2/otherAttribute3/deepAttribute2"))
+        self.assertTrue(self.config.pathExists("arrayOfDicts/2/otherAttribute3/deepAttribute3"))
+        self.assertFalse(self.config.pathExists("arrayOfDicts/2/otherAttribute3/deepAttribute4"))
+        self.assertFalse(self.config.pathExists("arrayOfDicts/2/otherAttribute3/abc"))
+
+    def test_thirdLevelArrayByAttributePathExists(self):
+        self.assertTrue(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute1"))
+        self.assertTrue(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute2"))
+        self.assertTrue(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute3"))
+        self.assertFalse(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/deepAttribute4"))
+        self.assertFalse(self.config.pathExists("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3/abc"))
+        
 if __name__ == '__main__':
     unittest.main()
