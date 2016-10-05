@@ -133,6 +133,11 @@ class ConfigurationManager():
             config = self.loadConfig()
         return self._traverseAndExecute(config, path, lambda x: x)
     
+    def getChildCount(self, path, config=None):
+        if config == None:
+            config = self.loadConfig()
+        return self._traverseAndExecute(config, path, lambda x: len(x))
+    
     def setValue(self, path, value, createNewLeafs=False):
         if not self.pathExists(path) and not createNewLeafs:
             raise KeyError("invalid Path " + path)

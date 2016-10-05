@@ -199,7 +199,25 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.assertTrue(self.config.pathExists("newEntry/0/newLeafList/2"))
         self.assertEqual(self.config.getValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/0"), "value1")
         self.assertEqual(self.config.getValue("newEntry/0/newLeafList/1"), "value2")
-        self.assertEqual(self.config.getValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/2"), "value3")    
+        self.assertEqual(self.config.getValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/2"), "value3")
+    
+    def test_childCountRoot(self):
+        self.assertEqual(self.config.getChildCount(""), 2)
+    
+    def test_childCountFirstLevelArray(self):
+        self.assertEqual(self.config.getChildCount("arrayOfDicts"), 5)
         
+    def test_childCountFirstLevelDict(self):
+        self.assertEqual(self.config.getChildCount("dictOfDicts"), 4)
+    
+    def test_childCountSecondLevelDictOfDict(self):
+        self.assertEqual(self.config.getChildCount("dictOfDicts/name4"), 2)
+        
+    def test_childCountSecondLevelDictInArray(self):
+        self.assertEqual(self.config.getChildCount("arrayOfDicts/pivotAttribute1=pivotValue4"), 2)
+        
+    def test_childCountThirdLevel(self):
+        self.assertEqual(self.config.getChildCount("arrayOfDicts/pivotAttribute1=pivotValue4/otherAttribute3"), 3)
+
 if __name__ == '__main__':
     unittest.main()
