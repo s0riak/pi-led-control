@@ -180,7 +180,26 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.config.setValue("dictOfDicts/newArray", [], True)
         self.assertTrue(self.config.pathExists("dictOfDicts/newArray"))
         self.assertEqual(self.config.getValue("dictOfDicts/newArray"), [])
-    
+        
+    def test_secondLevelAddArrayToDictInArray(self):
+        testPath = "arrayOfDicts/pivotAttribute1=pivotValue2/newAttribute"
+        self.config.setValue(testPath, [], True)
+        self.assertTrue(self.config.pathExists(testPath))
+        self.assertEqual(self.config.getValue(testPath), [])
+
+    def test_multiAddPath(self):
+        self.config.setValue("newEntry", [], True)
+        self.config.setValue("newEntry/0", {"newAttributeName": "innerAttributeValue"}, True)
+        self.config.setValue("newEntry/newAttributeName=innerAttributeValue/newLeafList", [], True)
+        self.config.setValue("newEntry/0/newLeafList/0", "value1", True)
+        self.config.setValue("newEntry/0/newLeafList/1", "value2", True)
+        self.config.setValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/2", "value3", True)
+        self.assertTrue(self.config.pathExists("newEntry/0/newLeafList/0"))
+        self.assertTrue(self.config.pathExists("newEntry/newAttributeName=innerAttributeValue/newLeafList/1"))
+        self.assertTrue(self.config.pathExists("newEntry/0/newLeafList/2"))
+        self.assertEqual(self.config.getValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/0"), "value1")
+        self.assertEqual(self.config.getValue("newEntry/0/newLeafList/1"), "value2")
+        self.assertEqual(self.config.getValue("newEntry/newAttributeName=innerAttributeValue/newLeafList/2"), "value3")    
         
 if __name__ == '__main__':
     unittest.main()
