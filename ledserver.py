@@ -61,7 +61,7 @@ class MyHandler(CGIHTTPRequestHandler):
     #def log_message(self, format, *args):
     #    return
         
-    def setLedManager(ledManager):
+    def setLedManager(self, ledManager):
         self.ledManager = ledManager
         
     def do_GET(self):
@@ -218,13 +218,13 @@ class MyHandler(CGIHTTPRequestHandler):
                 else:
                     for predefinedColor in predefinedColors:
                         if params["colorName"] == predefinedColor["name"]:
-                           color  = predefinedColor["colors"]
-                           print(color)
-                           ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
-                           self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
-                           self.send_response(200)
-                           self.end_headers()
-                           break
+                            color  = predefinedColor["values"]
+                            print(color)
+                            ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
+                            self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
+                            self.send_response(200)
+                            self.end_headers()
+                            break
             elif progName == "single":
                 params = {"red": 0.0, "green": 0.0, "blue": 0.0}
                 params  = self.getParamsFromJson(jsonBody, params)
@@ -306,18 +306,23 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
         if self.path == "/configureColor":
-            params = {"name": "", "red": -1, "green": -1, "blue": -1}
+            params = {"oldName": "", "name": "", "red": -1, "green": -1, "blue": -1}
             params  = self.getParamsFromJson(jsonBody, params)
+            print(params);
             if params["name"] == "":
                 print("no color name given")
-                self.send_response(400, params["colorName"] + " not in " + str(colors))             
+                self.send_response(400, "no color name given")             
             elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
                 self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
             else:
-                print("pathExists userDefinedColors/" + params["name"] + "/red " + str(self.server.config.pathExists("userDefinedColors/" + params["name"] + "/red")))
-                self.server.config.setValue("userDefinedColors/" + params["name"] + "/red", float(params["red"])/255)
-                self.server.config.setValue("userDefinedColors/" + params["name"] + "/values/green", float(params["green"])/255)
-                self.server.config.setValue("userDefinedColors/" + params["name"] + "/values/blue", float(params["blue"])/255)
+                if not self.server.config.pathExists("userDefinedColors/name=" + params["oldName"]):
+                    colorCount = self.server.config.getChildCount("userDefinedColors")
+                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"]}, True)
+                else:
+                    self.server.config.setValue("userDefinedColors/name=" + params["oldName"] + "/name", params["name"])
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"])/255)
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/green", float(params["green"])/255)
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/blue", float(params["blue"])/255)
                 self.send_response(200)
                 self.end_headers()
         else:
