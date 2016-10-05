@@ -155,10 +155,32 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.config.setValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3", testEditData)
         self.assertEqual(self.config.getValue("arrayOfDicts/pivotAttribute1=pivotValue3/otherAttribute3"), testEditData)
         
-    #def test_rootLevelAddArray(self):
-    #    self.config.addArray("newNode")
-    #    self.assertTrue(self.config.pathExists("newNode"))
-    #    self.assertEqual(self.config.getValue("newNode"), [])
+    def test_rootLevelAddArray(self):
+        self.config.setValue("newArray", [], True)
+        self.assertTrue(self.config.pathExists("newArray"))
+        self.assertEqual(self.config.getValue("newArray"), [])
+
+    def test_rootLevelAddDict(self):
+        self.config.setValue("newDict", {}, True)
+        self.assertTrue(self.config.pathExists("newDict"))
+        self.assertEqual(self.config.getValue("newDict"), {})
+        
+    def test_firstLevelAddArrayToArrayByIndex(self):
+        self.config.setValue("arrayOfDicts/5", [], True)
+        self.assertTrue(self.config.pathExists("arrayOfDicts/5"))
+        self.assertEqual(self.config.getValue("arrayOfDicts/5"), [])
+
+    def test_firstLevelAddDictToArrayByAttribute(self):
+        newDict = {"newAttributeName": "newAttributeValue"}
+        self.config.setValue("arrayOfDicts/newAttributeName=newAttributeValue", newDict, True)
+        self.assertTrue(self.config.pathExists("arrayOfDicts/newAttributeName=newAttributeValue"))
+        self.assertEqual(self.config.getValue("arrayOfDicts/newAttributeName=newAttributeValue"), newDict)
+    
+    def test_firstLevelAddArrayToDict(self):
+        self.config.setValue("dictOfDicts/newArray", [], True)
+        self.assertTrue(self.config.pathExists("dictOfDicts/newArray"))
+        self.assertEqual(self.config.getValue("dictOfDicts/newArray"), [])
+    
         
 if __name__ == '__main__':
     unittest.main()

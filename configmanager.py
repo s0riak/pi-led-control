@@ -133,8 +133,8 @@ class ConfigurationManager():
             config = self.loadConfig()
         return self._traverseAndExecute(config, path, lambda x: x)
     
-    def setValue(self, path, value):
-        if not self.pathExists(path):
+    def setValue(self, path, value, createNewLeafs=False):
+        if not self.pathExists(path) and not createNewLeafs:
             raise KeyError("invalid Path " + path)
         if not path:
             config = value
@@ -147,6 +147,8 @@ class ConfigurationManager():
             else:
                 key = pathParts[1]                
                 parentPath = pathParts[0]
+                if not self.pathExists(parentPath):
+                    raise KeyError("invalid Path " + path)
                 parent = self.getValue(parentPath, config)
             if isinstance(parent, dict):
                 parent[key] = value
@@ -154,28 +156,27 @@ class ConfigurationManager():
                 if '=' in key:
                     attributeName = key.split('=')[0]
                     attributeValue = key.split('=')[1]
+                    foundInArray = False
                     for j in range(0, len(parent)):
                         oldValue = parent[j]
                         if attributeName in oldValue:
                             if oldValue[attributeName] == attributeValue:
                                 parent[j] = value
+                                foundInArray = True
+                    if not foundInArray:
+                        if not createNewLeafs:
+                            raise KeyError("invalid Path " + path)
+                        else:
+                            parent.append(value)
                 else:
-                    parent[int(key)] = value
+                    if int(key) > len(parent) - 1:
+                        if not createNewLeafs:
+                            raise KeyError("invalid Path " + path)
+                        else:
+                            if int(key) != len(parent):
+                                raise KeyError("invalid Path " + path)
+                            else:
+                                parent.append(value)
+                    else:
+                        parent[int(key)] = value
         self.storeConfig(config)
-    
-    def addArray(self, path):
-        config = self.loadConfig()
-        currentConfig = config
-        pathParts = path.split('/')
-        if not self.pathExists("".join(pathParts[0, -1])):
-            raise KeyError ("parent path " + "".join(pathParts[0, -1]) + " doesn't exist")
-        
-        
-    def addArrayEntry(self, path, value):
-        raise NotImplementedError
-    def addDict(self, path):
-        raise NotImplementedError
-    def addDictEntry(self, path, value):
-        raise NotImplementedError
-    
-
