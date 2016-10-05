@@ -120,66 +120,47 @@ class ConfigurationManager():
                 else:
                     raise KeyError("invalid Path " + path)
         
-    def pathExists(self, path):
-        config = self.loadConfig()
+    def pathExists(self, path, config=None):
+        if config == None:
+            config = self.loadConfig()
         try:
             return self._traverseAndExecute(config, path, lambda x: True)
         except:
             return False
     
-    def getValue(self, path):
-        config = self.loadConfig()
+    def getValue(self, path, config=None):
+        if config == None:
+            config = self.loadConfig()
         return self._traverseAndExecute(config, path, lambda x: x)
     
     def setValue(self, path, value):
+        if not self.pathExists(path):
+            raise KeyError("invalid Path " + path)
         if not path:
             config = value
         else:
             config = self.loadConfig()
-            currentConfig = config
-            pathParts = path.split('/')
-            for i in range(0, len(pathParts)) :
-                pathPart = pathParts[i]
-                if isinstance(currentConfig, dict):
-                    if self.convertsToInt(pathPart):
-                        raise KeyError("invalid Path " + path)
-                    if pathPart in currentConfig:
-                        if i == len(pathParts) - 1:
-                            currentConfig[pathPart] = value
-                        else:
-                            currentConfig = currentConfig[pathPart]
-                    else:
-                        raise KeyError("path doesn't exist, key " + pathPart + " not in dict")
+            pathParts = path.rsplit('/',1)
+            if len(pathParts) == 1:
+                key = pathParts[0]
+                parent = config
+            else:
+                key = pathParts[1]                
+                parentPath = pathParts[0]
+                parent = self.getValue(parentPath, config)
+            if isinstance(parent, dict):
+                parent[key] = value
+            else:
+                if '=' in key:
+                    attributeName = key.split('=')[0]
+                    attributeValue = key.split('=')[1]
+                    for j in range(0, len(parent)):
+                        oldValue = parent[j]
+                        if attributeName in oldValue:
+                            if oldValue[attributeName] == attributeValue:
+                                parent[j] = value
                 else:
-                    if self.convertsToInt(pathPart):
-                        index = int(pathPart)
-                        if index < 0:
-                            raise IndexError("invalid Path " + path)
-                        if index >= len(currentConfig):
-                            raise IndexError("path doesn't exist, index " + str(index) + "out of range")
-                        else:
-                            if i == len(pathParts) - 1:
-                                currentConfig[index] = value
-                            else:
-                                currentConfig = currentConfig[index]
-                    elif '=' in pathPart:
-                        attributeName = pathPart.split('=')[0]
-                        attributeValue = pathPart.split('=')[1]
-                        foundInList = False
-                        for j in range(0, len(currentConfig)):
-                            oldValue = currentConfig[j]
-                            if attributeName in oldValue:
-                                if oldValue[attributeName] == attributeValue:
-                                    if i == len(pathParts) - 1:
-                                        currentConfig[j] = value
-                                    else:                                
-                                        currentConfig = oldValue
-                                    foundInList = True
-                                    break
-                        if not foundInList:
-                            raise KeyError("path doesn't exist, attribute " + attributeName + " with value " + attributeValue + " not in dict")
-                    else:
-                        raise KeyError("invalid Path " + path)
+                    parent[int(key)] = value
         self.storeConfig(config)
     
     def addArray(self, path):
