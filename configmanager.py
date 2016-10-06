@@ -18,6 +18,7 @@ import json
 import os.path
 import traceback
 from pprint import pprint
+from _ast import List
 
 #to work correctly configuration key must not contain '/'s and '='s
 #paths must be given as key1/key2/key3 in case all levels are dictionaries
@@ -184,4 +185,55 @@ class ConfigurationManager():
                                 parent.append(value)
                     else:
                         parent[int(key)] = value
+        self.storeConfig(config)
+        
+    def removeChildren(self, path, childrenId=None):
+        if not self.pathExists(path):
+            raise KeyError("invalid Path " + path)
+        if not path and childrenId == None:
+            config = {}
+        else:
+            config = self.loadConfig()
+            if not path:
+                parent = config
+            else:
+                parent = self.getValue(path, config)
+            if childrenId == None:
+                if isinstance(parent, dict):
+                    parent.clear()
+                elif isinstance(parent, list):
+                    parent[:] = []
+                else:
+                    raise KeyError("invalid Path " + path + "not a list or dict") 
+            else:
+                if '=' in childrenId:
+                    if isinstance(parent, dict):
+                        raise KeyError("invalid key " + childrenId + " for array at path " + path)
+                    attributeName = childrenId.split('=')[0]
+                    attributeValue = childrenId.split('=')[1]
+                    foundInArray = False
+                    for child in parent:
+                        if attributeName in child:
+                            if child[attributeName] == attributeValue:
+                                parent.remove(child)
+                                foundInArray = True
+                                break
+                    if not foundInArray:
+                        raise KeyError("invalid child " + childrenId)
+                else:
+                    if isinstance(parent, dict):
+                        if childrenId in parent:
+                            parent.pop(childrenId)
+                        else:
+                            raise KeyError("invalid child " + childrenId)
+                    elif isinstance(parent, list):
+                        if self.convertsToInt(childrenId):
+                            if int(childrenId) > len(parent) - 1:
+                                raise KeyError("invalid child " + childrenId)
+                            else:
+                                parent.pop(int(childrenId))
+                        else:
+                            raise KeyError("invalid child " + childrenId)
+                    else:
+                        raise KeyError("path " + path + " doesn't contain dict or list")                               
         self.storeConfig(config)

@@ -218,6 +218,127 @@ class ConfigurationManagerTest(unittest.TestCase):
         
     def test_childCountThirdLevel(self):
         self.assertEqual(self.config.getChildCount("arrayOfDicts/pivotAttribute1=pivotValue4/otherAttribute3"), 3)
+        
+    def test_removeChildrenRoot(self):
+        self.config.removeChildren("")
+        self.assertEqual(self.config.getValue(""), {})
+        
+    def test_removeDictFirstLevel(self):
+        self.config.removeChildren("", "dictOfDicts")
+        self.assertEqual(self.config.getValue(""), {"arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue3", "otherAttribute3": {"deepAttribute1": 1001001, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute1": "pivotValue4", "otherAttribute3": {"deepAttribute1": 110110, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]})
+    
+    def test_removeArrayFirstLevel(self):
+        self.config.removeChildren("", "arrayOfDicts")
+        self.assertEqual(self.config.getValue(""), {"dictOfDicts":
+                {
+                    "name1": {"intAttribute": 42},
+                    "name2": {"floatAttribute": 3.5},
+                    "name3": {"stringAttribute": "fortytwo"},
+                    "name4": {"firstAttribute": 73, "secondAttribute": "thirtyseven"}
+                }})
+    
+    def test_removeDictSecondLevel(self):
+        self.config.removeChildren("dictOfDicts")
+        self.assertEqual(self.config.getValue(""), {
+            "dictOfDicts":{},
+            "arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue3", "otherAttribute3": {"deepAttribute1": 1001001, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute1": "pivotValue4", "otherAttribute3": {"deepAttribute1": 110110, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]
+        })
+    
+    def test_removeDictFromArrayIndex(self):
+        self.config.removeChildren("arrayOfDicts", "3");
+        self.assertEqual(self.config.getValue(""), {
+            "dictOfDicts":
+                {
+                    "name1": {"intAttribute": 42},
+                    "name2": {"floatAttribute": 3.5},
+                    "name3": {"stringAttribute": "fortytwo"},
+                    "name4": {"firstAttribute": 73, "secondAttribute": "thirtyseven"}
+                },
+            "arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue3", "otherAttribute3": {"deepAttribute1": 1001001, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]
+        })
+        
+    def test_removeDictFromArrayAttribute(self):
+        self.config.removeChildren("arrayOfDicts", "pivotAttribute1=pivotValue3");
+        self.maxDiff = 1500
+        self.assertEqual(self.config.getValue(""), {
+            "dictOfDicts":
+                {
+                    "name1": {"intAttribute": 42},
+                    "name2": {"floatAttribute": 3.5},
+                    "name3": {"stringAttribute": "fortytwo"},
+                    "name4": {"firstAttribute": 73, "secondAttribute": "thirtyseven"}
+                },
+            "arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue4", "otherAttribute3": {"deepAttribute1": 110110, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]
+        })
+        
+    def test_removeDictThirdLevelIndex(self):
+        self.config.removeChildren("arrayOfDicts/2", "otherAttribute3");
+        self.maxDiff = 1500
+        self.assertEqual(self.config.getValue(""), {
+            "dictOfDicts":
+                {
+                    "name1": {"intAttribute": 42},
+                    "name2": {"floatAttribute": 3.5},
+                    "name3": {"stringAttribute": "fortytwo"},
+                    "name4": {"firstAttribute": 73, "secondAttribute": "thirtyseven"}
+                },
+            "arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue3"},
+                {"pivotAttribute1": "pivotValue4", "otherAttribute3": {"deepAttribute1": 110110, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]
+        })
+        
+    def test_removeDictThirdLevelAttribute(self):
+        self.config.removeChildren("arrayOfDicts/pivotAttribute1=pivotValue3", "otherAttribute3");
+        self.maxDiff = 1500
+        self.assertEqual(self.config.getValue(""), {
+            "dictOfDicts":
+                {
+                    "name1": {"intAttribute": 42},
+                    "name2": {"floatAttribute": 3.5},
+                    "name3": {"stringAttribute": "fortytwo"},
+                    "name4": {"firstAttribute": 73, "secondAttribute": "thirtyseven"}
+                },
+            "arrayOfDicts":
+            [
+                {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
+                {"pivotAttribute1": "pivotValue2",  "otherAttribute2": "12"},
+                {"pivotAttribute1": "pivotValue3"},
+                {"pivotAttribute1": "pivotValue4", "otherAttribute3": {"deepAttribute1": 110110, "deepAttribute2": "Anagram", "deepAttribute3": None}},
+                {"pivotAttribute2": "pivotValue5", "otherAttribute4": "justAnotherValue"}
+            ]
+        })
+
 
 if __name__ == '__main__':
     unittest.main()
