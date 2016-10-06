@@ -138,6 +138,7 @@ function initEditPredefinedModal(oldColorName, red, green, blue){
 	   $.post( startProgramURL, JSON.stringify({name: "single", params: {red: redValue, green: greenValue, blue: blueValue} }) );
 	   $.post( setBrightnessURL, JSON.stringify({params: {brightness: 1.0} }));	
     });
+    //TODO add errorhandling
     $("#savePredefinedColor-button").on('click', function(){
        var colorName = $("#editPredefinedColorName").val();
        var redValue = $( "#editPredefinedRedSlider").val();
@@ -190,6 +191,13 @@ function updatePredefinedColors(colors){
 	$("#delete-" + name + "-button").on('click', function(){
 	    window.console.log("delete " + name);
 	});
+    });
+    $("#add-new-predefined-button").on('click', function(){
+        var name = "";
+        var red = Math.round(0.5*255);
+        var green = Math.round(0.5*255);
+        var blue = Math.round(0.5*255);
+        initEditPredefinedModal(name, red, green, blue);
     });
 }
 

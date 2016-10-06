@@ -317,7 +317,7 @@ class MyHandler(CGIHTTPRequestHandler):
             else:
                 if not self.server.config.pathExists("userDefinedColors/name=" + params["oldName"]):
                     colorCount = self.server.config.getChildCount("userDefinedColors")
-                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"]}, True)
+                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"], "values": {"red": -1.0, "green": -1.0, "blue": -1.0}}, True)
                 else:
                     self.server.config.setValue("userDefinedColors/name=" + params["oldName"] + "/name", params["name"])
                 self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"])/255)
