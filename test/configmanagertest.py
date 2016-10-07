@@ -299,7 +299,6 @@ class ConfigurationManagerTest(unittest.TestCase):
         
     def test_removeDictThirdLevelIndex(self):
         self.config.removeChildren("arrayOfDicts/2", "otherAttribute3");
-        self.maxDiff = 1500
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
                 {
@@ -320,7 +319,6 @@ class ConfigurationManagerTest(unittest.TestCase):
         
     def test_removeDictThirdLevelAttribute(self):
         self.config.removeChildren("arrayOfDicts/pivotAttribute1=pivotValue3", "otherAttribute3");
-        self.maxDiff = 1500
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
                 {

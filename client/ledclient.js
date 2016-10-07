@@ -125,6 +125,7 @@ function secondsOfDayToTime(x){
     return hours + ":" + minutes + ":" + seconds;
 }
 
+
 function initEditPredefinedModal(oldColorName, red, green, blue){
     $("#editPredefinedColorName").val(oldColorName);
     $("#editPredefinedRedSlider").val(red);
@@ -138,6 +139,10 @@ function initEditPredefinedModal(oldColorName, red, green, blue){
 	   $.post( startProgramURL, JSON.stringify({name: "single", params: {red: redValue, green: greenValue, blue: blueValue} }) );
 	   $.post( setBrightnessURL, JSON.stringify({params: {brightness: 1.0} }));	
     });
+    //remove all existing listeners
+    var el = document.getElementById('savePredefinedColor-button'),
+    elClone = el.cloneNode(true);
+    el.parentNode.replaceChild(elClone, el);
     //TODO add errorhandling
     $("#savePredefinedColor-button").on('click', function(){
        var colorName = $("#editPredefinedColorName").val();
@@ -189,15 +194,9 @@ function updatePredefinedColors(colors){
 	    initEditPredefinedModal(name, red, green, blue);
 	});
 	$("#delete-" + name + "-button").on('click', function(){
-	    window.console.log("delete " + name);
-	});
-    });
-    $("#add-new-predefined-button").on('click', function(){
-        var name = "";
-        var red = Math.round(0.5*255);
-        var green = Math.round(0.5*255);
-        var blue = Math.round(0.5*255);
-        initEditPredefinedModal(name, red, green, blue);
+	   $.post( "/deleteColor", JSON.stringify({params: {name: name} }));
+	   updateConfiguration();
+	   });
     });
 }
 
@@ -388,7 +387,13 @@ $(document).ready(function() {
 	$("#configurePredefinedColorModal").modal('show');
     });
 
-    
+    $("#add-new-predefined-button").on('click', function(){
+        var name = "";
+        var red = Math.round(0.5*255);
+        var green = Math.round(0.5*255);
+        var blue = Math.round(0.5*255);
+        initEditPredefinedModal(name, red, green, blue);
+    });
     
     updateConfiguration();
 

@@ -74,6 +74,9 @@ class ConfigurationManager():
         except ValueError:
             return False
         
+    def pprint(self):
+        pprint(self.loadConfig())
+        
     def _traverseAndExecute(self, config, path, leafFunction):
         if not path:
             return leafFunction(config)
