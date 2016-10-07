@@ -190,7 +190,7 @@ class ConfigurationManager():
                         parent[int(key)] = value
         self.storeConfig(config)
         
-    def removeChildren(self, path, childrenId=None):
+    def removeChild(self, path, childrenId=None):
         if not self.pathExists(path):
             raise KeyError("invalid Path " + path)
         if not path and childrenId == None:
