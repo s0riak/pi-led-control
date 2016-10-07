@@ -144,7 +144,7 @@ class MyHandler(CGIHTTPRequestHandler):
     def getPredefinedColor(self, name):
         for color in self.server.config.getValue("userDefinedColors"):
             if color["name"] == name:
-                return LEDState(color["colors"]["red"], color["colors"]["green"], color["colors"]["blue"])
+                return LEDState(color["values"]["red"], color["values"]["green"], color["values"]["blue"])
         return LEDState(0.0, 0.0, 0.0)
 
     def getPredefinedColors(self):
