@@ -31,6 +31,7 @@ class LoopedProgram(AbstractProgram):
                 if curIter > 0:
                     self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()
+                curIter = curIter + 1
         else:
             for i in range(0, self._iterations):
                 if self.printInfo:

@@ -15,6 +15,11 @@
  You should have received a copy of the GNU General Public License
  along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 */
+var startProgramURL = "/startProgram";
+var setBrightnessURL = "/setBrightness";
+var configureProgramURL = "configureProgram";
+var currentBrightness = 1;
+
 
 //check if variable is int
 function isInteger(x) {
@@ -23,7 +28,7 @@ function isInteger(x) {
 
 //check if variable is float
 function isFloat(x) {
-    return !isNaN(parseFloat(x))
+    return !isNaN(parseFloat(x));
 }
 
 //check if variable is time of format HH:MM:SS
@@ -31,9 +36,9 @@ function isValidTime(x){
     if(x.length != 8){
 	return false;
     }
-    hours = x.substring(0,2);
-    minutes = x.substring(3,5);
-    seconds = x.substring(6,7);
+    var hours = x.substring(0,2);
+    var minutes = x.substring(3,5);
+    var seconds = x.substring(6,7);
     if(!isInteger(hours) || !isInteger(minutes) || !isInteger(seconds)){
 	return false;
     }
@@ -51,24 +56,33 @@ function isValidTime(x){
 
 //update the colors in the demo area (free color) from the slider values
 function updateColorFromSliders(){
-    red = $( "#redSlider").val();
-    green= $( "#greenSlider").val();
-    blue= $( "#blueSlider").val();
-    brightness= $( "#freeColorBrightnessSlider").val();
+    var red = $( "#redSlider").val();
+    var green= $( "#greenSlider").val();
+    var blue= $( "#blueSlider").val();
+    var brightness= $( "#freeColorBrightnessSlider").val();
     $("#colorDemo").css('background-color', 'rgb(' + Math.round(parseInt(red)*parseFloat(brightness)) + ','+ Math.round(parseInt(green)*parseFloat(brightness)) + ',' + Math.round(parseInt(blue)*parseFloat(brightness)) + ')');
     $("#colorDemo").val("red: " + red + " green: " + green + " blue: " + blue + " brightness: " + brightness * 100 + "%");
 }
+
+function updatePredefinedColorDemo(){
+    var red = $( "#editPredefinedRedSlider").val();
+    var green= $( "#editPredefinedGreenSlider").val();
+    var blue= $( "#editPredefinedBlueSlider").val();
+    var brightness= 1.0;
+    $("#editPredefinedColorDemo").css('background-color', 'rgb(' + Math.round(parseInt(red)*parseFloat(brightness)) + ','+ Math.round(parseInt(green)*parseFloat(brightness)) + ',' + Math.round(parseInt(blue)*parseFloat(brightness)) + ')');
+    $("#editPredefinedColorDemo").text("red: " + red + " green: " + green + " blue: " + blue + " brightness: " + brightness * 100 + "%");
+}   
 
 /*frequently update the status from the server
   the status currently contains the current color and if a (power) off is scheduled
 */
 function updateStatus(){
     $.getJSON( "/getStatus", function( data ) {
-	colors = data["color"];
-	if(colors != null){
-	    red = Math.round(colors["red"]*255.0*data["brightness"]);
-	    green = Math.round(colors["green"]*255.0*data["brightness"]);
-	    blue = Math.round(colors["blue"]*255.0*data["brightness"]);
+	var colors = data.color;
+	if(colors !== null){
+	    var red = Math.round(colors.red*255.0*data.brightness);
+	    var green = Math.round(colors.green*255.0*data.brightness);
+	    var blue = Math.round(colors.blue*255.0*data.brightness);
 	    
 	    $("#currentColor").css('background-color', 'rgb('+ red +','+ green + ','+ blue + ')');
 	    $("#currentColor").val("");
@@ -76,14 +90,14 @@ function updateStatus(){
 	    $("#currentColor").css('background-color', '#FFFFFF');
 	    $("#currentColor").val("NA");
 	}
-	if(data["powerOffScheduled"]){
+	if(data.powerOffScheduled){
 	    $( "#cancelscheduledOff-button" ).show();
 	    $( "#scheduleOff-button" ).hide();
 	}else{
 	    $( "#cancelscheduledOff-button" ).hide();
 	    $( "#scheduleOff-button" ).show();
 	}
-	$("#currentBrightness").text(Math.round(data["brightness"]*100) + "%");
+	$("#currentBrightness").text(Math.round(data.brightness*100) + "%");
     }).error(function() {
     });
     setTimeout(updateStatus, 500);
@@ -91,7 +105,7 @@ function updateStatus(){
 
 //converts a time of day to seconds in current day
 function timeToSecondsOfDay(x){
-    return parseInt(x.substring(0,2)) * 3600 + parseInt(x.substring(3,5)) * 60 + parseInt(x.substring(6,8))
+    return parseInt(x.substring(0,2)) * 3600 + parseInt(x.substring(3,5)) * 60 + parseInt(x.substring(6,8));
 }
 
 //converts seconds to time of day in current day
@@ -112,27 +126,102 @@ function secondsOfDayToTime(x){
 }
 
 
+function initEditPredefinedModal(oldColorName, red, green, blue){
+    $("#editPredefinedColorName").val(oldColorName);
+    $("#editPredefinedRedSlider").val(red);
+    $("#editPredefinedGreenSlider").val(green);
+    $("#editPredefinedBlueSlider").val(blue);
+    updatePredefinedColorDemo();
+    $("#editPredefinedPreview-button").on('click', function(){
+       var redValue = $( "#editPredefinedRedSlider").val();
+	   var greenValue = $( "#editPredefinedGreenSlider").val();
+	   var blueValue = $( "#editPredefinedBlueSlider").val();
+	   $.post( startProgramURL, JSON.stringify({name: "single", params: {red: redValue, green: greenValue, blue: blueValue} }) );
+	   $.post( setBrightnessURL, JSON.stringify({params: {brightness: 1.0} }));	
+    });
+    //remove all existing listeners
+    var el = document.getElementById('savePredefinedColor-button'),
+    elClone = el.cloneNode(true);
+    el.parentNode.replaceChild(elClone, el);
+    //TODO add errorhandling
+    $("#savePredefinedColor-button").on('click', function(){
+       var colorName = $("#editPredefinedColorName").val();
+       var redValue = $( "#editPredefinedRedSlider").val();
+       var greenValue = $( "#editPredefinedGreenSlider").val();
+       var blueValue = $( "#editPredefinedBlueSlider").val();
+       var jsonBody = JSON.stringify({params: {oldName: oldColorName, name: colorName, red: redValue, green: greenValue, blue: blueValue} });
+       $.post( "/configureColor", jsonBody);
+       updateConfiguration();
+    });
+    $("#editPredefinedColorModal").modal('show');
+}
+
+function updatePredefinedColors(colors){
+    $("#predefinedColor-button-group").empty();
+    $("#configurePredefinedColor-body").empty();
+    $.each(colors, function(key,value){
+	var name = value.name;
+	var red = Math.round(value.values.red*255);
+	var green = Math.round(value.values.green*255);
+	var blue = Math.round(value.values.blue*255);
+	
+	
+	$("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + name + "-button' style='background-color: rgb("+ red +","+ green + ","+ blue + ")'>" + name + "</button></li>");
+	$("#" + value.name + "-button").on('click', function(){
+	    var body = JSON.stringify({name: "predefined", params: {colorName: value.name} });
+	    $.post( startProgramURL, body);});
+  
+	$("#configurePredefinedColor-body").append(
+	   /*jshint multistr: true */
+	    "<div class='row' style='padding:2px'>\
+                <div class='col-xs-6 col-md-6 list-btn-col vcenter'>\
+                   <button type='button' class='btn btn-block' id='activate" + name + "-button' style='background-color: rgb("+ red +","+ green + ","+ blue + ")'>" + name + "</button>\
+                </div>\
+	        <div class='col-xs-3 col-md-3 list-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='edit-" + name + "-button'>Edit</button>\
+	        </div>\
+	        <div class='col-xs-3 col-md-3 config-btn-col'>\
+		   <button type='button' class='btn btn-block btn-default' id='delete-" + name + "-button'>Delete</span></button>\
+	        </div>\
+            <div>");
+	$("#activate" + name + "-button").on('click', function(){
+	    $.post( startProgramURL, JSON.stringify({name: "predefined", params: {colorName: name} }));});
+	$("#edit-" + name + "-button").on('click', function(){
+	    name = value.name;
+	    red = Math.round(value.values.red*255);
+	    green = Math.round(value.values.green*255);
+	    blue = Math.round(value.values.blue*255);
+	    initEditPredefinedModal(name, red, green, blue);
+	});
+	$("#delete-" + name + "-button").on('click', function(){
+	   $.post( "/deleteColor", JSON.stringify({params: {name: name} }));
+	   updateConfiguration();
+	   });
+    });
+}
+
 function updateConfiguration(){
     $.getJSON("/getConfiguration", function( data ){
-	$("#timePerColor").val(data["programs"]["randomPath"]["timePerColor"]);
-	$("#feedBrightnessSlider").val(data["programs"]["feed"]["brightness"]);
-	$("#freakSecondsPerColor").val(data["programs"]["freak"]["secondsPerColor"]);
-	$("#sunriseDuration").val(data["programs"]["sunrise"]["duration"]);
-	var timeOfDay = data["programs"]["sunrise"]["timeOfDay"];
+	$("#timePerColor").val(data.programs.randomPath.timePerColor);
+	$("#feedBrightnessSlider").val(data.programs.feed.brightness);
+	$("#freakSecondsPerColor").val(data.programs.freak.secondsPerColor);
+	$("#wheelSecondsPerColor").val(data.programs.wheel.timePerColor);
+	$("#wheelMinBrightnessSlider").val(data.programs.wheel.minBrightness);
+    $("#wheelMaxBrightnessSlider").val(data.programs.wheel.maxBrightness);
+    $("#sunriseDuration").val(data.programs.sunrise.duration);
+	var timeOfDay = data.programs.sunrise.timeOfDay;
 	if(timeOfDay == -1){
 	    $('#sunriseStarttime').val("");
 	}else{
 	    $('#sunriseStarttime').val(secondsOfDayToTime(timeOfDay));
 	}
-	$("#sunriseBrightnessSlider").val(data["programs"]["sunrise"]["brightness"]);
+	$("#sunriseBrightnessSlider").val(data.programs.sunrise.brightness);
+	//update predefined colors
+	updatePredefinedColors(data.userDefinedColors);
     });
 }
 
 $(document).ready(function() {
-    var startProgramURL = "/startProgram";
-    var setBrightnessURL = "/setBrightness";
-    var configureProgramURL = "configureProgram";
-    var currentBrightness = 1;
     //initialize the main buttons
     $( "#off-button" ).on('click', function() {
 	$.post( startProgramURL, JSON.stringify({name: "off", params: [] }) );
@@ -140,7 +229,7 @@ $(document).ready(function() {
     $( "#soft-off-button" ).on('click', function() {
 	$.post( startProgramURL, JSON.stringify({name: "softOff", params: [] }) );
     });
-    $( "#cancelscheduledOff-button" ).hide()
+    $( "#cancelscheduledOff-button" ).hide();
     $( "#cancelscheduledOff-button" ).on('click', function() {
 	$.post( startProgramURL, JSON.stringify({name: "cancelScheduledOff", params: [] }) );
     });
@@ -165,31 +254,31 @@ $(document).ready(function() {
 
     //listener for startSunrise including input validation
     $( "#startSunrise-button" ).on('click', function() {
-	var sunriseDuration = $('#sunriseDuration').val()
-	var sunriseStarttime = $('#sunriseStarttime').val()
+	var sunriseDuration = $('#sunriseDuration').val();
+	var sunriseStarttime = $('#sunriseStarttime').val();
 	var valid = false;
 	$('#sunriseDuration').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
 	$('#sunriseStarttime').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
 	if (isInteger(sunriseDuration)){
-	    $('#sunriseDuration').parent().removeClass("has-error")
-	    $('#sunriseDuration').parent().removeClass("has-feedback")
+	    $('#sunriseDuration').parent().removeClass("has-error");
+	    $('#sunriseDuration').parent().removeClass("has-feedback");
 	    valid = true;	    
 	}else{
-	    $('#sunriseDuration').parent().addClass("has-feedback")
-	    $('#sunriseDuration').parent().addClass("has-error")
+	    $('#sunriseDuration').parent().addClass("has-feedback");
+	    $('#sunriseDuration').parent().addClass("has-error");
 	}
-	if(sunriseStarttime != ""){
+	if(sunriseStarttime !== ""){
 	    if (isValidTime(sunriseStarttime)){
-		$('#sunriseStarttime').parent().removeClass("has-error")
-		$('#sunriseStarttime').parent().removeClass("has-feedback")
+		$('#sunriseStarttime').parent().removeClass("has-error");
+		$('#sunriseStarttime').parent().removeClass("has-feedback");
 		valid = true;	    
 	    }else{
-		$('#sunriseStarttime').parent().addClass("has-feedback")
-		$('#sunriseStarttime').parent().addClass("has-error")
+		$('#sunriseStarttime').parent().addClass("has-feedback");
+		$('#sunriseStarttime').parent().addClass("has-error");
 	    }
 	}
 	if(valid){
-	    if(sunriseStarttime != ""){
+	    if(sunriseStarttime !== ""){
 		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration, timeOfDay: timeToSecondsOfDay(sunriseStarttime), brightness: $('#sunriseBrightnessSlider').val()}}));
 	    }else{
 		$.post( startProgramURL, JSON.stringify({name: "sunrise", params: {duration: sunriseDuration, brightness: $('#sunriseBrightnessSlider').val()}}));
@@ -200,61 +289,73 @@ $(document).ready(function() {
     });
     //listener for scheduledOff including input validation
     $( "#scheduleOffSave-button" ).on('click', function() {
-	var scheduleOffDuration = $('#scheduleOffDuration').val()
-	$('#scheduleOffDuration').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
-	if (isFloat(scheduleOffDuration) || isInt(scheduledOffDuration)){
-	    $('#scheduleOffDuration').parent().removeClass("has-error")
-	    $('#scheduleOffDuration').parent().removeClass("has-feedback")
+	var scheduledOffDuration = $('#scheduleOffDuration').val();
+	$('#scheduledOffDuration').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
+	var valid = false;
+	if (isFloat(scheduledOffDuration) || Math.isInt(scheduledOffDuration)){
+	    $('#scheduleOffDuration').parent().removeClass("has-error");
+	    $('#scheduleOffDuration').parent().removeClass("has-feedback");
 	    valid = true;	    
 	}else{
-	    $('#scheduleOffDuration').parent().addClass("has-feedback")
-	    $('#scheduleOffDuration').parent().addClass("has-error")
+	    $('#scheduleOffDuration').parent().addClass("has-feedback");
+	    $('#scheduleOffDuration').parent().addClass("has-error");
 	}
 	if(valid){
-	    $.post( startProgramURL, JSON.stringify({name: "scheduledOff", params: {duration: scheduleOffDuration*60} }) );
+	    $.post( startProgramURL, JSON.stringify({name: "scheduledOff", params: {duration: scheduledOffDuration*60} }));
 	    $('#scheduledOffModal').modal('hide');
 	}
     });
 
     //listner for free color button
     $( "#freeColorSave-button" ).on('click', function() {
-	redValue = $( "#redSlider").val();
-	greenValue = $( "#greenSlider").val();
-	blueValue = $( "#blueSlider").val();
+	var redValue = $( "#redSlider").val();
+	var greenValue = $( "#greenSlider").val();
+	var blueValue = $( "#blueSlider").val();
 	$.post( startProgramURL, JSON.stringify({name: "single", params: {red: redValue, green: greenValue, blue: blueValue} }) );
-	brightnessValue = $( "#freeColorBrightnessSlider").val();
+	var brightnessValue = $( "#freeColorBrightnessSlider").val();
 	$.post( setBrightnessURL, JSON.stringify({params: {brightness: brightnessValue} }));
     });
     $( "#brightnessSlider" ).change(function() {
-	brightnessValue = $( "#brightnessSlider").val();
+	   var brightnessValue = $( "#brightnessSlider").val();
 	$.post( setBrightnessURL, JSON.stringify({params: {brightness: brightnessValue} }));
     });
 
     //listeners for sliders in free color modal
     $( "#redSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#greenSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#blueSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
     $( "#freeColorBrightnessSlider" ).change(function(){
-	updateColorFromSliders()
+	updateColorFromSliders();
     });
+    //listeners for sliders in edit predefined color modal
+    $( "#editPredefinedRedSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+    $( "#editPredefinedGreenSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+    $( "#editPredefinedBlueSlider" ).change(function(){
+	updatePredefinedColorDemo();
+    });
+
     //start update of status
     updateStatus();
     //initialize the slides in free color modal from the last status when the modal is opened
     $("#freeButton").on('click', function(){
 	$("#freeColorModal").modal('show');
 	$.getJSON( "/getStatus", function( data ) {
-	    colors = data["color"];
-	    $("#redSlider").val(colors["red"]*255);
-	    $("#greenSlider").val(colors["green"]*255);
-	    $("#blueSlider").val(colors["blue"]*255);
-	    $("#brightnessSlider").val(data["brightness"]);
-	    $("#freeColorBrightnessSlider").val(data["brightness"]);
+	    var colors = data.color;
+	    $("#redSlider").val(colors.red*255);
+	    $("#greenSlider").val(colors.green*255);
+	    $("#blueSlider").val(colors.blue*255);
+	    $("#brightnessSlider").val(data.brightness);
+	    $("#freeColorBrightnessSlider").val(data.brightness);
 	    updateColorFromSliders();
 	});
     });
@@ -275,7 +376,27 @@ $(document).ready(function() {
 	$("#configureFeedModal").modal('hide');
 	updateConfiguration();
     });
-
+    $("#wheel-openconfig-button").on('click', function(){
+    $("#configureWheelModal").modal('show');
+    });
+    $("#configureWheel-button").on('click', function(){
+        var wheelSecondsPerColor = $('#wheelSecondsPerColor').val();
+        $('#wheelSecondsPerColor').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
+        var valid = false;
+        if (isFloat(wheelSecondsPerColor) || Math.isInt(wheelSecondsPerColor)){
+            $('#wheelSecondsPerColor').parent().removeClass("has-error");
+            $('#wheelSecondsPerColor').parent().removeClass("has-feedback");
+            valid = true;       
+        }else{
+            $('#wheelSecondsPerColor').parent().addClass("has-feedback");
+            $('#wheelSecondsPerColor').parent().addClass("has-error");
+        }
+        if(valid){
+            $.post(configureProgramURL, JSON.stringify({name: "wheel", params: {timePerColor: wheelSecondsPerColor, minValue: $('#wheelMinBrightnessSlider').val(), maxValue:$('#wheelMaxBrightnessSlider').val()} }));
+            $('#configureWheelModal').modal('hide');
+            updateConfiguration();
+        }
+    });
     $("#freak-openconfig-button").on('click', function(){
 	$("#configureFreakModal").modal('show');
     });
@@ -285,24 +406,24 @@ $(document).ready(function() {
 	updateConfiguration();
     });
 
+    $("#predefined-openconfig-button").on('click', function(){
+	$("#configurePredefinedColorModal").modal('show');
+    });
+
+    $("#add-new-predefined-button").on('click', function(){
+        var name = "";
+        var red = Math.round(0.5*255);
+        var green = Math.round(0.5*255);
+        var blue = Math.round(0.5*255);
+        initEditPredefinedModal(name, red, green, blue);
+    });
     
     updateConfiguration();
 
     $("#setBrightness-button").on('click', function(){
 	$.getJSON( "/getStatus", function( data ) {
-    	    $("#brightnessSlider").val(data["brightness"]);
+    	    $("#brightnessSlider").val(data.brightness);
 	});
     });
 
-
-
-    //get the list of predefined colors and add them to the modal for color choice
-    $.getJSON( "/getPredefinedColors", function( data ) {
-	$.each( data, function( key, value ) {
-	    $("#predefinedColor-button-group").append("<li><button type='button' class='btn btn-block' id='" + key + "-button' style='background-color: rgb("+ Math.round(value[0]*255) +","+ Math.round(value[1]*255) + ","+ Math.round(value[2]*255) + ")'>" + key + "</button></li>");
-	    $("#" + key + "-button").on('click', function(){
-		$.post( startProgramURL,
-			JSON.stringify({name: "predefined", params: {colorName: key} }) )	    });
-	});
-    });    
 });

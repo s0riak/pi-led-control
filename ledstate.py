@@ -25,7 +25,10 @@ class LEDState():
 
     def __str__(self):
         return "red: {}, green: {}, blue: {}, brightness: {}".format(self.red, self.green, self.blue, self.brightness)
-        
+    
+    def __repr__(self):
+        return self.__str__()
+           
     def __init__(self, red=None, green=None, blue=None, brightness=None):
         if red == None:
             self.__red = None
@@ -99,3 +102,13 @@ class LEDState():
             self.blue = newState.blue
         if not newState.brightness == None:
             self.brightness = newState.brightness
+    
+    #doesn't take brightness into account for equality check
+    def colorsEqual(self, comparedState):
+        if self.red != comparedState.red:
+            return False
+        if self.green != comparedState.green:
+            return False
+        if self.blue != comparedState.blue:
+            return False
+        return True

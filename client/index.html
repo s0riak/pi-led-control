@@ -88,10 +88,13 @@
 	  <button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button>
 	</div>
       </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
-	</div>
+            <div class="row">
+    <div class="col-xs-10 col-md-11 list-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
+    </div>
+    <div class="col-xs-2 col-md-1 config-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="wheel-openconfig-button"><span class="icon icon-equalizer"></span></button>
+    </div>
       </div>
       <div class="row">
 	<div class="col-sm-12">
@@ -115,8 +118,11 @@
 	</div>
       </div>
       <div class="row">
-	<div class="col-sm-12">
+	<div class="col-xs-10 col-md-11 list-btn-col">
 	  <button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal" data-target="#predefinedColorModal">Color</button>
+	</div>
+	<div class="col-xs-2 col-md-1 config-btn-col">
+	  <button type="button" class="btn btn-block btn-default" id="predefined-openconfig-button"><span class="icon icon-equalizer"></span></button>
 	</div>
       </div>
       <div class="row">
@@ -165,6 +171,35 @@
             <button type="button" id="configureFeed-button" class="btn btn-default">OK</button>
 	  </div>
 	</div>
+	    </div>
+      </div>
+    <!-- Configure Wheel Modal -->
+    <div class="modal fade" id="configureWheelModal" tabindex="-1" role="dialog" aria-labelledby="configureWheelModalLabel">
+      <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="configureWheelModalLabel">Configure Wheel</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="wheelSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
+          <input type="text" class="form-control" id="wheelSecondsPerColor">
+        </div>
+        <div class="form-group">
+          <label for="wheelMinBrightnessSlider">Minium Brightness:</label>
+          <input id="wheelMinBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="wheelMaxBrightnessSlider">Maximum Brightness:</label>
+          <input id="wheelMaxBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" id="configureWheel-button" class="btn btn-default">OK</button>
+      </div>
+    </div>
       </div>
     </div>
     <!-- Sunrise Modal -->
@@ -256,6 +291,65 @@
 	</div>
       </div>
     </div>
+    <!-- Predefined Configuration Modal -->
+    <div class="modal fade" id="configurePredefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="configurePredefinedColorModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="configurePredefinedColorModalLabel">Configure predefined colors</h4>
+	  </div>
+	  <div class="modal-body" id="configurePredefinedColor-body">	    
+	  </div>
+	  <div class="modal-footer">
+	    <button type="button" class="btn btn-default" id="add-new-predefined-button">Add new Color</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+    <!-- Edit Predefined Color Modal -->
+    <div class="modal fade" id="editPredefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="editPredefinedColorModalLabel">
+      <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="editPredefinedColorModalLabel">Choose predefined color</h4>
+	  </div>
+	  <div class="modal-body">
+	    <div class="form-group">
+	      <label for="editPredefinedColorName">Name:</label>
+	      <input type="text" class="form-control" id="editPredefinedColorName">
+	    </div>
+	    <div class="form-group">
+	      <label for="editPredefinedRedSlider">Red (0-255):</label>
+	      <input id="editPredefinedRedSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="editPredefinedGreenSlider">Green (0-255):</label>
+	      <input id="editPredefinedGreenSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="editPredefinedBlueSlider">Blue (0-255):</label>
+	      <input id="editPredefinedBlueSlider" type="range" min="0" max="255" step="1">
+	    </div>
+	    <div class="form-group">
+	      <label for="editPredefinedColorDemo">Color:</label>
+	      <span id="editPredefinedColorDemo" style="height: 18pt; width:100px"></span>
+	    </div>
+	    <div class="form-group left-from-group">
+              <button type="button" id="editPredefinedPreview-button" class="btn btn-default">Preview</button>
+	    </div>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="savePredefinedColor-button">Save</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+
     <!-- FreeColor Modal -->
     <div class="modal fade" id="freeColorModal" tabindex="-1" role="dialog" aria-labelledby="freeColorModalLabel">
       <div class="modal-dialog" role="document">

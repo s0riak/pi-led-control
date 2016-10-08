@@ -14,11 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 
 from threading import Thread
 from threading import Event
-from threading import Semaphore
 from programs.abstractprogram import AbstractProgram
 
 from interruptionexception import InterruptionException
