@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
+
 from ledstate import LEDState
 from programs.abstractprogram import AbstractProgram
+
 class ColorPathProgram(AbstractProgram):
 
     class PathIterator:
@@ -29,6 +32,11 @@ class ColorPathProgram(AbstractProgram):
             if self._currentIndex >= len(self._colorPath):
                 raise StopIteration
             return self._colorPath[self._currentIndex]
+        def __repr__(self):
+            result = "PathIterator: "
+            for color in self._colorPath:
+                result = result + str(color) + " "
+            return result
             
     #timePerColor is the time the color is shown at each interpolationPoint not for one point on the colorpath
     def __init__(self, printInfo, colorPath, interpolationPoints, timePerColor, startFromCurrent=False):
@@ -63,7 +71,8 @@ class ColorPathProgram(AbstractProgram):
     def run(self):
         if self._startFromCurrent:
             if self._lastValue != None and self._lastValue.isComplete():
-                self._colorPath.insert(0, self._lastValue)
+                if not self._colorPath[0].colorsEqual(self._lastValue):
+                    self._colorPath.insert(0, copy.deepcopy(self._lastValue))
             else:
                 print("warning last color not available")
         self.initColorIterator(self._colorPath)

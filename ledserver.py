@@ -19,6 +19,7 @@ import os
 from http.server import CGIHTTPRequestHandler, HTTPServer
 import json
 import time
+from chardet.universaldetector import UniversalDetector
 
 from ledmanager import LEDManager
 from ledstate import LEDState
@@ -54,8 +55,9 @@ class MyHandler(CGIHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         super().__init__(request, client_address, server)
         self.basename = os.path.dirname(os.path.realpath(__file__)) + "/../client/"
-   
-    def setLedManager(ledManager):
+        self._charEncDetector = UniversalDetector()
+        
+    def setLedManager(self, ledManager):
         self.ledManager = ledManager
         
     def do_GET(self):
@@ -70,7 +72,7 @@ class MyHandler(CGIHTTPRequestHandler):
             return
         if self.path[1:] in validClientFiles:
             self.send_response(200)
-            self.send_header("Content-type", "text/" + self.path.rsplit('.',1)[1])
+            self.send_header("Content-type", "text/" + self.path.rsplit('.', 1)[1])
             self.end_headers()
             f = open(os.path.dirname(os.path.realpath(__file__)) + "/client/" + self.path[1:])
             self.wfile.write(bytes(f.read(), 'UTF-8'))
@@ -108,8 +110,8 @@ class MyHandler(CGIHTTPRequestHandler):
     def getParamsFromJson(self, json, result):
         if not "params" in json:
             print("missing params")
-            #TODO errorhandling        
-        #print(result.values())
+            # TODO errorhandling        
+        # print(result.values())
         for key, value in result.items():
             if key in json["params"]:
                 if type(value) is int:
@@ -117,13 +119,13 @@ class MyHandler(CGIHTTPRequestHandler):
                         result[key] = int(json["params"][key])
                     except ValueError:
                         print("int expected for key " + key)
-                        #TODO correct errorhandling
+                        # TODO correct errorhandling
                 elif type(value) is float:
                     try:
                         result[key] = float(json["params"][key])
                     except ValueError:
                         print("float expected for key " + key)
-                        #TODO correct errorhandling
+                        # TODO correct errorhandling
                 else:
                     result[key] = json["params"][key]
         return result
@@ -134,7 +136,7 @@ class MyHandler(CGIHTTPRequestHandler):
         jsonBody = json.loads(requestBody.decode("utf-8"))
         if self.path == "/setBrightness":
             params = {"brightness": 0.0}
-            params  = self.getParamsFromJson(jsonBody, params)
+            params = self.getParamsFromJson(jsonBody, params)
             print(params["brightness"])
             self.server.ledManager.setBrightness(params["brightness"])
             self.send_response(200)
@@ -146,9 +148,9 @@ class MyHandler(CGIHTTPRequestHandler):
                 return
             progName = jsonBody["name"]
             if progName == "wheel":
-                params = {"iterations": 0, "minValue": 0.0, "maxValue": 1.0}
-                params  = self.getParamsFromJson(jsonBody, params)
-                self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"]))
+                params = {"iterations": 0, "minValue": 0.0, "maxValue": 1.0, "timePerColor": 2.0}
+                params = self.getParamsFromJson(jsonBody, params)
+                self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "sunrise":
@@ -185,13 +187,13 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.end_headers()
             elif progName == "single":
                 params = {"red": 0.0, "green": 0.0, "blue": 0.0}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 if not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
                     self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
                 else:
-                    red = params["red"]/255
-                    green = params["green"]/255
-                    blue = params["blue"]/255
+                    red = params["red"] / 255
+                    green = params["green"] / 255
+                    blue = params["blue"] / 255
                     self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(red, green, blue, self.server.ledManager.getBrightness())))
                     self.send_response(200)
                 self.end_headers()
@@ -219,9 +221,9 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.server.ledManager.startProgram(RandomPathProgram(False, list(PredefinedColorProgram.definedColors.values()), 3))
                 self.send_response(200)
                 self.end_headers()                
-            elif progName  == "scheduledOff":
+            elif progName == "scheduledOff":
                 params = {"duration": 0}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 self.server.ledManager.schedulePowerOff(params["duration"])
                 self.send_response(200)
                 self.end_headers()                
@@ -232,8 +234,6 @@ class MyHandler(CGIHTTPRequestHandler):
             else:
                 self.send_response(400)
                 self.end_headers()
-
-
 
 myServer = MyServer((hostName, hostPort), MyHandler, LEDManager(False))
 try:
