@@ -88,10 +88,13 @@
 	  <button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button>
 	</div>
       </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
-	</div>
+            <div class="row">
+    <div class="col-xs-10 col-md-11 list-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
+    </div>
+    <div class="col-xs-2 col-md-1 config-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="wheel-openconfig-button"><span class="icon icon-equalizer"></span></button>
+    </div>
       </div>
       <div class="row">
 	<div class="col-sm-12">
@@ -168,6 +171,35 @@
             <button type="button" id="configureFeed-button" class="btn btn-default">OK</button>
 	  </div>
 	</div>
+	    </div>
+      </div>
+    <!-- Configure Wheel Modal -->
+    <div class="modal fade" id="configureWheelModal" tabindex="-1" role="dialog" aria-labelledby="configureWheelModalLabel">
+      <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="configureWheelModalLabel">Configure Wheel</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="wheelSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
+          <input type="text" class="form-control" id="wheelSecondsPerColor">
+        </div>
+        <div class="form-group">
+          <label for="wheelMinBrightnessSlider">Minium Brightness:</label>
+          <input id="wheelMinBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="wheelMaxBrightnessSlider">Maximum Brightness:</label>
+          <input id="wheelMaxBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" id="configureWheel-button" class="btn btn-default">OK</button>
+      </div>
+    </div>
       </div>
     </div>
     <!-- Sunrise Modal -->

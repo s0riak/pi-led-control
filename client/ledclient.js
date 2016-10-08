@@ -205,7 +205,10 @@ function updateConfiguration(){
 	$("#timePerColor").val(data.programs.randomPath.timePerColor);
 	$("#feedBrightnessSlider").val(data.programs.feed.brightness);
 	$("#freakSecondsPerColor").val(data.programs.freak.secondsPerColor);
-	$("#sunriseDuration").val(data.programs.sunrise.duration);
+	$("#wheelSecondsPerColor").val(data.programs.wheel.timePerColor);
+	$("#wheelMinBrightnessSlider").val(data.programs.wheel.minBrightness);
+    $("#wheelMaxBrightnessSlider").val(data.programs.wheel.maxBrightness);
+    $("#sunriseDuration").val(data.programs.sunrise.duration);
 	var timeOfDay = data.programs.sunrise.timeOfDay;
 	if(timeOfDay == -1){
 	    $('#sunriseStarttime').val("");
@@ -373,7 +376,27 @@ $(document).ready(function() {
 	$("#configureFeedModal").modal('hide');
 	updateConfiguration();
     });
-
+    $("#wheel-openconfig-button").on('click', function(){
+    $("#configureWheelModal").modal('show');
+    });
+    $("#configureWheel-button").on('click', function(){
+        var wheelSecondsPerColor = $('#wheelSecondsPerColor').val();
+        $('#wheelSecondsPerColor').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");
+        var valid = false;
+        if (isFloat(wheelSecondsPerColor) || Math.isInt(wheelSecondsPerColor)){
+            $('#wheelSecondsPerColor').parent().removeClass("has-error");
+            $('#wheelSecondsPerColor').parent().removeClass("has-feedback");
+            valid = true;       
+        }else{
+            $('#wheelSecondsPerColor').parent().addClass("has-feedback");
+            $('#wheelSecondsPerColor').parent().addClass("has-error");
+        }
+        if(valid){
+            $.post(configureProgramURL, JSON.stringify({name: "wheel", params: {timePerColor: wheelSecondsPerColor, minValue: $('#wheelMinBrightnessSlider').val(), maxValue:$('#wheelMaxBrightnessSlider').val()} }));
+            $('#configureWheelModal').modal('hide');
+            updateConfiguration();
+        }
+    });
     $("#freak-openconfig-button").on('click', function(){
 	$("#configureFreakModal").modal('show');
     });

@@ -176,14 +176,14 @@ class MyHandler(CGIHTTPRequestHandler):
                 return
             progName = jsonBody["name"]
             if progName == "wheel":
-                params = {"iterations": 0, "minValue": 0.0, "maxValue": 1.0, "timePerColor": 2.0}
+                params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
                 params = self.getParamsFromJson(jsonBody, params)
                 self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "sunrise":
-                params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay": -1, "brightness": 1.0}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay":-1, "brightness": 1.0}
+                params = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/sunrise/duration", params["duration"])                
                 self.server.config.setValue("programs/sunrise/timeOfDay", params["timeOfDay"])
                 self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
@@ -197,13 +197,13 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.end_headers()
             elif progName == "freak":
                 params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 self.server.ledManager.startProgram(LoopedProgram(False, RandomColorProgram(False, params["minColor"], params["maxColor"], params["secondsPerColor"])))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "predefined":
                 params = {"colorName": ""}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 colors = []
                 predefinedColors = self.server.config.getValue("userDefinedColors")
                 for color in predefinedColors :
@@ -214,7 +214,7 @@ class MyHandler(CGIHTTPRequestHandler):
                 else:
                     for predefinedColor in predefinedColors:
                         if params["colorName"] == predefinedColor["name"]:
-                            color  = predefinedColor["values"]
+                            color = predefinedColor["values"]
                             print(color)
                             ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
                             self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
@@ -278,23 +278,28 @@ class MyHandler(CGIHTTPRequestHandler):
             progName = jsonBody["name"]
             if progName == "randomPath":
                 params = {"timePerColor": self.server.config.getValue("programs/randomPath/timePerColor")}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
                 self.send_response(200)
                 self.end_headers()
             elif progName == "feed":
                 params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
-                params  = self.getParamsFromJson(jsonBody, params)
+                params = self.getParamsFromJson(jsonBody, params)
                 print(params)
                 self.server.config.setValue("programs/feed/brightness", params["brightness"])
                 self.send_response(200)
                 self.end_headers()
+            elif progName == "wheel":
+                params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
+                params = self.getParamsFromJson(jsonBody, params)
+                self.server.config.setValue("programs/wheel/minBrightness", params["minValue"])
+                self.server.config.setValue("programs/wheel/maxBrightness", params["maxValue"])
+                self.server.config.setValue("programs/wheel/timePerColor", params["timePerColor"])
+                self.send_response(200)
+                self.end_headers()
             elif progName == "freak":
-                print("configureFreak")
                 params = {"secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
-                print(jsonBody)
-                params  = self.getParamsFromJson(jsonBody, params)
-                print(params)
+                params = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
                 self.send_response(200)
                 self.end_headers()
@@ -302,8 +307,8 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
         if self.path == "/configureColor":
-            params = {"oldName": "", "name": "", "red": -1, "green": -1, "blue": -1}
-            params  = self.getParamsFromJson(jsonBody, params)
+            params = {"oldName": "", "name": "", "red":-1, "green":-1, "blue":-1}
+            params = self.getParamsFromJson(jsonBody, params)
             if params["name"] == "":
                 self.send_response(400, "no color name given")             
             elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
@@ -311,17 +316,17 @@ class MyHandler(CGIHTTPRequestHandler):
             else:
                 if not self.server.config.pathExists("userDefinedColors/name=" + params["oldName"]):
                     colorCount = self.server.config.getChildCount("userDefinedColors")
-                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"], "values": {"red": -1.0, "green": -1.0, "blue": -1.0}}, True)
+                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"], "values": {"red":-1.0, "green":-1.0, "blue":-1.0}}, True)
                 else:
                     self.server.config.setValue("userDefinedColors/name=" + params["oldName"] + "/name", params["name"])
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"])/255)
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/green", float(params["green"])/255)
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/blue", float(params["blue"])/255)
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"]) / 255)
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/green", float(params["green"]) / 255)
+                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/blue", float(params["blue"]) / 255)
                 self.send_response(200)
                 self.end_headers()
         if self.path == "/deleteColor":
             params = {"name": ""}
-            params  = self.getParamsFromJson(jsonBody, params)
+            params = self.getParamsFromJson(jsonBody, params)
             if params["name"] == "":
                 self.send_response(400, "no color name given")             
             else:
@@ -337,9 +342,9 @@ class MyHandler(CGIHTTPRequestHandler):
 
                 
 parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
-parser.add_argument('-n','--name', help='the hostname on which pi-led-control is served', default='')
-parser.add_argument('-p','--port', help='the port on which pi-led-control is served', default=9000)
-parser.add_argument('-c','--configPath', help='the path to the config file to be used', default="pi-led-control.config")
+parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
+parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
+parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="pi-led-control.config")
 args = vars(parser.parse_args())
 
 myServer = MyServer((args['name'], args['port']), MyHandler, LEDManager(False), ConfigurationManager(args['configPath']))
