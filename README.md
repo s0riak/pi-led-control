@@ -7,10 +7,17 @@ It provides several programs (scheduled and configurable) to control a single co
 
 ##Usage
 To start pi-led-control execute:
-
-   python3 ledserver.py
    
-The server is started locally and the UI can be accessed on http://localhost:9000.
+   python3 ledserver.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n NAME, --name NAME  the hostname on which pi-led-control is served
+  -p PORT, --port PORT  the port on which pi-led-control is served
+  -c CONFIGPATH, --configPath CONFIGPATH
+                        the path to the config file to be used
+   
+The server is started locally and the UI can be accessed on http://localhost:9000 or the port specified.
 
 Alternatively you can use an interactive CLI:
 
@@ -28,7 +35,7 @@ Several programs are available to control the LED strip:
 0. 'Scheduled Off' to power off the LED strip after a given time in minutes (floats using '.' accepted for seconds are also accepted)
 0. 'Full White' to power on all channel, resulting in maximum brightness
 0. 'Feed' a very dark red light
-0. '4 Color Loop' a looping program showing blue, red, yellow, green
+0. 'Color Loop' a looping program showing blue, red, yellow, green
 0. 'Wheel' a looping program smoothly switching from red to green to blue to red and so on
 0. 'Sunrise' a program smooth illuminating the LED, simulating a sunrise
 0. 'Freak' a program showing a new random color indefinitely
@@ -36,7 +43,7 @@ Several programs are available to control the LED strip:
 0. 'Color' a program with user selected color from a set of predefined colors
 0. 'Free Color' a program with a color the user can freely choose using three sliders for red, green, blue
 
-The list of programs available in the ledui is about the same but naming is different but print in the CLI program
+The list of programs available in the ledui is about the same but naming is different but printed in the CLI program
 
 ##Status of the LED strip
 
