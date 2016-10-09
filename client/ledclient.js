@@ -196,7 +196,17 @@ function updatePredefinedColors(colors){
 	$("#delete-" + name + "-button").on('click', function(){
 	   $.post( "/deleteColor", JSON.stringify({params: {name: name} }));
 	   updateConfiguration();
-	   });
+	});
+	$("#configureColorLoop-body").append(
+       /*jshint multistr: true */
+        "<div class='row' style='padding:2px'>\
+                <div class='col-xs-12 col-md-12 list-btn-col vcenter' style='text-align: center;'>\
+                    <input id='configureColorLoop-" + name + "-toggle' data-toggle='toggle' type='checkbox' data-on='" + name + "' data-off='" + name + "'data-style='" + name +"'>\
+                </div>\
+           <div>");   
+        $("#configureColorLoop-" + name + "-toggle").bootstrapToggle();
+        $("#configureColorLoop-" + name + "-toggle").parent().css('min-width', '50%');
+        $("#configureColorLoop-" + name + "-toggle").next().children(":first").css('color', 'rgb(' + red + ','+ green + ','+ blue + '');
     });
 }
 
@@ -218,6 +228,10 @@ function updateConfiguration(){
 	$("#sunriseBrightnessSlider").val(data.programs.sunrise.brightness);
 	//update predefined colors
 	updatePredefinedColors(data.userDefinedColors);
+	//update colorloop colors
+	$.each(data.programs.colorloop.colors, function(key,value){
+	    $("#configureColorLoop-" + value + "-toggle").bootstrapToggle('on');
+	});
     });
 }
 
@@ -240,7 +254,7 @@ $(document).ready(function() {
 	$.post( startProgramURL, JSON.stringify({name: "feed", params: [] }) );
     });
     $( "#4colorloop-button" ).on('click', function() {
-	$.post( startProgramURL, JSON.stringify({name: "4colorloop", params: [] }) );
+	$.post( startProgramURL, JSON.stringify({name: "colorloop", params: [] }) );
     });
     $( "#wheel-button" ).on('click', function() {
 	$.post( startProgramURL, JSON.stringify({name: "wheel", params: [] }) );
@@ -379,6 +393,21 @@ $(document).ready(function() {
     $("#wheel-openconfig-button").on('click', function(){
     $("#configureWheelModal").modal('show');
     });
+    $("#colorloop-openconfig-button").on('click', function(){
+        $("#configureColorLoopModal").modal('show');
+    });
+    $("#save-configureColorLoop-button").on('click', function(){
+        var checkedCheckboxes = $("#configureColorLoop-body").find("input:checkbox:checked");
+        var newColors = [];
+        $.each(checkedCheckboxes, function(key,value){
+            newColors.push($(value).attr("data-on"));
+        });
+        var jsonBody = JSON.stringify({name: "colorloop", params: {colors: newColors} });
+        $.post( "/configureProgram", jsonBody);
+        updateConfiguration();
+        $("#configureColorLoopModal").modal('hide');
+    });
+    
     $("#configureWheel-button").on('click', function(){
         var wheelSecondsPerColor = $('#wheelSecondsPerColor').val();
         $('#wheelSecondsPerColor').parent().append("<span class='glyphicon glyphicon-remove form-control-feedback'></span>");

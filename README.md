@@ -75,3 +75,4 @@ pi-led-control is licensed under GPL and makes use of the following work:
 0. bootstrap (https://github.com/twbs/bootstrap) licensed under the MIT License
 0. jquery (https://github.com/jquery/jquery) licensed under the given license
 0. IcoMoon-Free fonts (https://github.com/Keyamoon/IcoMoon-Free) licensed under the given CC BY 4.0 and GPL
+0. bootstraptoggle (http://www.bootstraptoggle.com/) licensed under the MIT Licence
