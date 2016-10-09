@@ -188,7 +188,12 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="configureColorLoopModalLabel">Configure color loop</h4>
       </div>
-      <div class="modal-body" id="configureColorLoop-body">       
+      <div class="modal-body">
+      <div class="form-group">
+          <label for="loopSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
+          <input type="text" class="form-control" id="loopSecondsPerColor">
+        </div> 
+      <div id="configureColorLoop-body"></div>
       </div>
       <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>

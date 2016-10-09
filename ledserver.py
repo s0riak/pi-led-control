@@ -245,7 +245,8 @@ class MyHandler(CGIHTTPRequestHandler):
                 colors = []
                 for colorName in self.server.config.getValue("programs/colorloop/colors"):
                     colors.append(self.getPredefinedColor(colorName))
-                self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, colors, 1, 1), 0))
+                secondsPerColor = self.server.config.getValue("programs/colorloop/secondsPerColor")
+                self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, colors, 1, secondsPerColor), 0))
                 self.send_response(200)
                 self.end_headers()
             elif progName == "white":
@@ -293,9 +294,10 @@ class MyHandler(CGIHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             elif progName == "colorloop":
-                params = {"colors": self.server.config.getValue("programs/colorloop/colors")}
+                params = {"colors": self.server.config.getValue("programs/colorloop/colors"), "secondsPerColor": self.server.config.getValue("programs/colorloop/secondsPerColor")}
                 params = self.getParamsFromJson(jsonBody, params)
                 self.server.config.setValue("programs/colorloop/colors", params["colors"])
+                self.server.config.setValue("programs/colorloop/secondsPerColor", params["secondsPerColor"])
                 self.send_response(200)
                 self.end_headers()
             elif progName == "wheel":
