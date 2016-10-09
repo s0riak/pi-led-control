@@ -159,6 +159,7 @@ function initEditPredefinedModal(oldColorName, red, green, blue){
 function updatePredefinedColors(colors){
     $("#predefinedColor-button-group").empty();
     $("#configurePredefinedColor-body").empty();
+    $("#configureColorLoop-body").empty();
     $.each(colors, function(key,value){
 	var name = value.name;
 	var red = Math.round(value.values.red*255);
