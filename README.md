@@ -5,6 +5,15 @@ pi-led-control enables you to control a single color RGB led strip attached to t
 pi-led-control is implemented as python webserver and a webui using jquery and bootstrap.
 It provides several programs (scheduled and configurable) to control a single color LED strip.
 
+##Requirements
+###Hardware and pi-blaster
+If you have a single color LED strip you need to connect it to your raspberry pi and setup pi-blaster.
+You can find a very basic tutorial to connect a LED strip to your pi under https://github.com/s0riak/pi-led-control/blob/master/hardware/hardware.md
+Please follow the instruction in https://github.com/sarfata/pi-blaster to setup pi-blaster.
+
+###Mocking the LED strip
+If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
+
 ##Usage
 To start pi-led-control execute:
    
@@ -23,8 +32,6 @@ Alternatively you can use an interactive CLI:
 
    python3 ledui.py
 
-##Mocking the LED strip
-If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
 ##Available programs
 
