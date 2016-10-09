@@ -48,7 +48,7 @@ class ConfigurationManager():
                     "freak": {"secondsPerColor": 2.0},
                     "wheel": {"minBrightness": 0.0, "maxBrightness": 1.0, "timePerColor": 5.0},
                     "sunrise": {"duration": 300, "timeOfDay": -1, "brightness": 1},
-                    "colorloop": {"colors": ["red", "yellow", "green", "blue"]}
+                    "colorloop": {"colors": ["red", "yellow", "green", "blue"], "secondsPerColor": 2.0}
                 },
             "userDefinedColors":
             [

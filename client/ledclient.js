@@ -233,6 +233,7 @@ function updateConfiguration(){
 	$.each(data.programs.colorloop.colors, function(key,value){
 	    $("#configureColorLoop-" + value + "-toggle").bootstrapToggle('on');
 	});
+	$("#loopSecondsPerColor").val(data.programs.colorloop.secondsPerColor);
     });
 }
 
@@ -403,7 +404,8 @@ $(document).ready(function() {
         $.each(checkedCheckboxes, function(key,value){
             newColors.push($(value).attr("data-on"));
         });
-        var jsonBody = JSON.stringify({name: "colorloop", params: {colors: newColors} });
+        var secondsPerColor =$("#loopSecondsPerColor").val();
+        var jsonBody = JSON.stringify({name: "colorloop", params: {colors: newColors, secondsPerColor: secondsPerColor} });
         $.post( "/configureProgram", jsonBody);
         updateConfiguration();
         $("#configureColorLoopModal").modal('hide');
