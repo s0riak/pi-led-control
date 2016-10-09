@@ -34,6 +34,9 @@
     <!-- bootstrap script -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    
     <!-- pi led control css -->
     <link rel="stylesheet" type="text/css" href="/ledclient.css">
 
@@ -83,10 +86,13 @@
 	  <button type="button" class="btn btn-block btn-default" id="feed-openconfig-button"><span class="icon icon-equalizer"></span></button>
 	</div>
       </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="4colorloop-button">4 Color Loop</button>
-	</div>
+            <div class="row">
+    <div class="col-xs-10 col-md-11 list-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="4colorloop-button">Color Loop</button>
+    </div>
+    <div class="col-xs-2 col-md-1 config-btn-col">
+      <button type="button" class="btn btn-block btn-default" id="colorloop-openconfig-button"><span class="icon icon-equalizer"></span></button>
+    </div>
       </div>
             <div class="row">
     <div class="col-xs-10 col-md-11 list-btn-col">
@@ -173,6 +179,24 @@
 	</div>
 	    </div>
       </div>
+      
+    <!-- Colorloop Configuration Modal -->
+    <div class="modal fade" id="configureColorLoopModal" tabindex="-1" role="dialog" aria-labelledby="configureColorLoopModalLabel">
+      <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="configureColorLoopModalLabel">Configure color loop</h4>
+      </div>
+      <div class="modal-body" id="configureColorLoop-body">       
+      </div>
+      <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            <button type="button" class="btn btn-default" id="save-configureColorLoop-button">Save</button>
+      </div>
+    </div>
+      </div>
+    </div>
     <!-- Configure Wheel Modal -->
     <div class="modal fade" id="configureWheelModal" tabindex="-1" role="dialog" aria-labelledby="configureWheelModalLabel">
       <div class="modal-dialog" role="document">

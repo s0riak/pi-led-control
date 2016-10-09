@@ -72,3 +72,7 @@ h1{
 .icon-equalizer::before {
     content: "\e992";
 }
+
+.toggle.colorloop, .toggle-on.colorloop .toggle-off.colorloop {
+    border-radius: 8px;
+}
