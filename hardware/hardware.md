@@ -1,6 +1,6 @@
 # Hardware for pi-led-control
 ## Introduction
-This tuturial describs how to connect  a single color RGB LED strip with the GPIO pins of a raspberry pi so that it can be controlled by pi-blaster (https://github.com/sarfata/pi-blaster)
+This tuturial describes how to connect a single color RGB LED strip with the GPIO pins of a raspberry pi so that it can be controlled by pi-blaster (https://github.com/sarfata/pi-blaster)
 
 ##Circuit Layout
 Basically the component discribed here replaces the rgb-controller of any available single color RGB strip to make it controllable with the pi.

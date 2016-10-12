@@ -15,9 +15,9 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
-import traceback
 from interruptionexception import InterruptionException
-from colorsetter import ColorSetter
+
+
 class AbstractProgram(ABC):
 
     def __init__(self, printInfo):
