@@ -15,32 +15,29 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import argparse
+from chardet.universaldetector import UniversalDetector
 from http.server import CGIHTTPRequestHandler, HTTPServer
 import json
+import os
 import time
-from chardet.universaldetector import UniversalDetector
 
-from ledmanager import LEDManager
 from configmanager import ConfigurationManager
+from ledmanager import LEDManager
 from ledstate import LEDState
-from programs.offprogram import OffProgram
-from programs.wheelprogram import WheelProgram
-from programs.demoprogram import DemoProgram
-from programs.allcolorprogram import AllColorProgram
-from programs.randomcolorprogram import RandomColorProgram
-from programs.smoothrandomprogram import SmoothRandomProgram
-from programs.smoothrandomwalkprogram import SmoothRandomWalkProgram
-from programs.singlecolorprogram import SingleColorProgram
 from programs.colorpathprogram import ColorPathProgram
-from programs.sunriseprogram import SunriseProgram
-from programs.softoffprogram import SoftOffProgram
-from programs.scheduledprogram import ScheduledProgram
+
 from programs.loopedprogram import LoopedProgram
-from programs.programchainprogram import ProgramChainProgram
+from programs.offprogram import OffProgram
+
+from programs.randomcolorprogram import RandomColorProgram
 from programs.randompathprogram import RandomPathProgram
+from programs.scheduledprogram import ScheduledProgram
+from programs.singlecolorprogram import SingleColorProgram
 from programs.smoothnextcolorprogram import SmoothNextColorProgram
+from programs.softoffprogram import SoftOffProgram
+from programs.sunriseprogram import SunriseProgram
+from programs.wheelprogram import WheelProgram
 
 
 class MyServer(HTTPServer):
