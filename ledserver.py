@@ -104,6 +104,11 @@ class MyHandler(CGIHTTPRequestHandler):
             else:
                 resultDict["brightness"] = None
                 resultDict["color"] = None
+            currentProgram = self.server.ledManager.getCurrentProgram()
+            if currentProgram != None:
+                resultDict["currentProgram"] = type(currentProgram).__name__
+            else:
+                resultDict["currentProgram"] = None
             result = json.dumps(resultDict)
             self.send_response(200)
             self.send_header("Content-type", "text/json")
