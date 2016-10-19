@@ -27,7 +27,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def setLedManager(self, ledManager):
         self.ledManager = ledManager
         
-    def _writeFileToResponseBody(self, requestedPath):
+    def _readFileToBytes(self, requestedPath):
         detector = UniversalDetector()
         with open(requestedPath, 'rb') as f:
             detector.feed(f.read())
@@ -35,22 +35,23 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         encoding = detector.result['encoding']
         if encoding == None:
             f = open(requestedPath, 'rb')
-            self.wfile.write(bytes(f.read()))
+            return bytes(f.read())
         else:
             f = open(requestedPath, 'r')
-            self.wfile.write(bytes(f.read(), encoding))   
+            return bytes(f.read(), encoding)   
          
         
     def _getClientFiles(self, path):        
         resourcePath = os.path.dirname(os.path.realpath(__file__)) + "/client/" + path[1:]
+        result = self._readFileToBytes(resourcePath)
         self.send_response(200)
         self.send_header("Content-type", "text/" + path.rsplit('.', 1)[1])
         self.end_headers()
-        self._writeFileToResponseBody(resourcePath)
+        self.wfile.write(result)
         
         
     def _getConfiguration(self):
-        result = json.dumps(self.server.config.getValue(""))
+        result = bytes(json.dumps(self.server.config.getValue("")), "utf-8")
         self.send_response(200)
         self.send_header("Content-type", "text/json")
         self.end_headers()
@@ -66,11 +67,11 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         else:
             resultDict["brightness"] = None
             resultDict["color"] = None
-        result = json.dumps(resultDict)
+        result = bytes(json.dumps(resultDict), "utf-8")
         self.send_response(200)
         self.send_header("Content-type", "text/json")
         self.end_headers()
-        self.wfile.write(bytes(result, "utf-8"))
+        self.wfile.write(result)
         
     def do_GET(self):
         validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css", "IcoMoon-Free.ttf"]
