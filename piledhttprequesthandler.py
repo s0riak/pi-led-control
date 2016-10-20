@@ -14,15 +14,16 @@ from programs.offprogram import OffProgram
 from programs.colorpathprogram import ColorPathProgram
 from programs.smoothnextcolorprogram import SmoothNextColorProgram
 from programs.randompathprogram import RandomPathProgram
+from exceptions.parameterexception import ParameterExeption
 import traceback
-
-
+    
 class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
         super().__init__(request, client_address, server)
         self.basename = os.path.dirname(os.path.realpath(__file__)) + "/../client/"
         self._charEncDetector = UniversalDetector()
+        self._jsonBody = None
 
     def setLedManager(self, ledManager):
         self.ledManager = ledManager
@@ -55,7 +56,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/json")
         self.end_headers()
-        self.wfile.write(bytes(result, "utf-8")) 
+        self.wfile.write(result) 
 
     def _getStatus(self):
         resultDict = {}
@@ -89,27 +90,23 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes("Error processing request for " + self.path + "\n" + traceback.format_exc(), "utf-8"))   
 
-    def getParamsFromJson(self, json, result):
-        if not "params" in json:
-            print("missing params")
-            # TODO errorhandling        
-        # print(result.values())
+    def getParamsFromJson(self, result):
+        if not "params" in self._jsonBody:
+            raise ValueError("missing params in jsonBody")     
         for key, value in result.items():
-            if key in json["params"]:
+            if key in self._jsonBody["params"]:
                 if type(value) is int:
                     try:
-                        result[key] = int(json["params"][key])
+                        result[key] = int(self._jsonBody["params"][key])
                     except ValueError:
-                        print("int expected for key " + key)
-                        # TODO correct errorhandling
+                        raise ValueError("int expected for key " + key)
                 elif type(value) is float:
                     try:
-                        result[key] = float(json["params"][key])
+                        result[key] = float(self._jsonBody["params"][key])
                     except ValueError:
-                        print("float expected for key " + key)
-                        # TODO correct errorhandling
+                        raise ValueError("float expected for key " + key)
                 else:
-                    result[key] = json["params"][key]
+                    result[key] = self._jsonBody["params"][key]
         return result
     
     def getPredefinedColor(self, name):
@@ -124,204 +121,232 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             result.append(LEDState(color["values"]["red"], color["values"]["green"], color["values"]["blue"]))
         return result
 
-    
-    def do_POST(self):
+    def loadJSONBody(self):
         content_len = int(self.headers.get('content-length', 0))
         requestBody = self.rfile.read(content_len)
         if requestBody != "":
-            try:
-                jsonBody = json.loads(requestBody.decode("utf-8"))
-            except:
-                self.send_response(400, "invalid payload")
-                self.end_headers()
-                return
-        else:
-            jsonBody = None
-        if self.path == "/setBrightness":
-            params = {"brightness": 0.0}
-            params = self.getParamsFromJson(jsonBody, params)
-            print(params["brightness"])
+            self._jsonBody = json.loads(requestBody.decode("utf-8"))
+        
+    def _setBrightness(self):
+        params = {"brightness": 0.0}
+        params = self.getParamsFromJson(params)
+        self.server.ledManager.setBrightness(params["brightness"])
+        self.send_response(200)
+        self.end_headers()
+        
+    def _startWheel(self):
+        params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
+        
+    def _startSunrise(self):
+        params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay":-1, "brightness": 1.0}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/sunrise/duration", params["duration"])                
+        self.server.config.setValue("programs/sunrise/timeOfDay", params["timeOfDay"])
+        self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
+        if params["timeOfDay"] == -1:
             self.server.ledManager.setBrightness(params["brightness"])
-            self.send_response(200)
+            self.server.ledManager.startProgram(SunriseProgram(False, params["duration"]))
+        else:
+            self.server.ledManager.setBrightness(params["brightness"])
+            self.server.ledManager.startProgram(ScheduledProgram(False, SunriseProgram(False, params["duration"]), params["timeOfDay"]))
+            
+    def _startFreak(self):
+        params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.ledManager.startProgram(LoopedProgram(False, RandomColorProgram(False, params["minColor"], params["maxColor"], params["secondsPerColor"])))
+    
+    def _startPredefined(self):
+        params = {"colorName": ""}
+        params = self.getParamsFromJson(params)
+        colors = []
+        predefinedColors = self.server.config.getValue("userDefinedColors")
+        for color in predefinedColors :
+            colors.append(color["name"])
+        if not params["colorName"] in colors:
+            raise ParameterExeption(params["colorName"] + " not in " + str(colors))
+        else:
+            for predefinedColor in predefinedColors:
+                if params["colorName"] == predefinedColor["name"]:
+                    color = predefinedColor["values"]
+                    ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
+                    self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
+                    break
+    
+    def _startSingle(self):
+        params = {"red": 0.0, "green": 0.0, "blue": 0.0}
+        params = self.getParamsFromJson(params)
+        if not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
+            raise ParameterExeption("invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
+        else:
+            red = params["red"] / 255
+            green = params["green"] / 255
+            blue = params["blue"] / 255
+            self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(red, green, blue, self.server.ledManager.getBrightness())))
+    
+    def _startColorLoop(self):
+        colors = []
+        for colorName in self.server.config.getValue("programs/colorloop/colors"):
+            colors.append(self.getPredefinedColor(colorName))
+            secondsPerColor = self.server.config.getValue("programs/colorloop/secondsPerColor")
+            self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, colors, 1, secondsPerColor), 0))
+            
+    def _startScheduledOff(self):
+        params = {"duration": 0}
+        params = self.getParamsFromJson(params)
+        self.server.ledManager.schedulePowerOff(params["duration"])
+                
+    def _startProgram(self):
+        if not "name" in self._jsonBody:
+            self.send_response(400, "no program name in request body")
             self.end_headers()
-        elif self.path == "/startProgram":
-            if not "name" in jsonBody:
-                self.send_response(400)
-                self.end_headers()
-                return
-            progName = jsonBody["name"]
+            return
+        progName = self._jsonBody["name"]
+        try:
             if progName == "wheel":
-                params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
-                self.send_response(200)
-                self.end_headers()
+                self._startWheel()
             elif progName == "sunrise":
-                params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay":-1, "brightness": 1.0}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.config.setValue("programs/sunrise/duration", params["duration"])                
-                self.server.config.setValue("programs/sunrise/timeOfDay", params["timeOfDay"])
-                self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
-                if params["timeOfDay"] == -1:
-                    self.server.ledManager.setBrightness(params["brightness"])
-                    self.server.ledManager.startProgram(SunriseProgram(False, params["duration"]))
-                else:
-                    self.server.ledManager.setBrightness(params["brightness"])
-                    self.server.ledManager.startProgram(ScheduledProgram(False, SunriseProgram(False, params["duration"]), params["timeOfDay"]))
-                self.send_response(200)
-                self.end_headers()
+                self._startSunrise()
             elif progName == "freak":
-                params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.ledManager.startProgram(LoopedProgram(False, RandomColorProgram(False, params["minColor"], params["maxColor"], params["secondsPerColor"])))
-                self.send_response(200)
-                self.end_headers()
+                self._startFreak()
             elif progName == "predefined":
-                params = {"colorName": ""}
-                params = self.getParamsFromJson(jsonBody, params)
-                colors = []
-                predefinedColors = self.server.config.getValue("userDefinedColors")
-                for color in predefinedColors :
-                    colors.append(color["name"])
-                if not params["colorName"] in colors:
-                    print(params["colorName"] + " not in " + str(colors))
-                    self.send_response(400, params["colorName"] + " not in " + str(colors))
-                else:
-                    for predefinedColor in predefinedColors:
-                        if params["colorName"] == predefinedColor["name"]:
-                            color = predefinedColor["values"]
-                            print(color)
-                            ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
-                            self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
-                            self.send_response(200)
-                            self.end_headers()
-                            break
+                self._startPredefined()
             elif progName == "single":
-                params = {"red": 0.0, "green": 0.0, "blue": 0.0}
-                params = self.getParamsFromJson(jsonBody, params)
-                if not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
-                    self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
-                else:
-                    red = params["red"] / 255
-                    green = params["green"] / 255
-                    blue = params["blue"] / 255
-                    self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(red, green, blue, self.server.ledManager.getBrightness())))
-                    self.send_response(200)
-                self.end_headers()
+                self._startSingle()   
             elif progName == "softOff":
                 self.server.ledManager.startProgram(SoftOffProgram(False))
-                self.send_response(200)
-                self.end_headers()
             elif progName == "off":
                 self.server.ledManager.startProgram(OffProgram(False))
-                self.send_response(200)
-                self.end_headers()
             elif progName == "colorloop":
-                colors = []
-                for colorName in self.server.config.getValue("programs/colorloop/colors"):
-                    colors.append(self.getPredefinedColor(colorName))
-                secondsPerColor = self.server.config.getValue("programs/colorloop/secondsPerColor")
-                self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, colors, 1, secondsPerColor), 0))
-                self.send_response(200)
-                self.end_headers()
+                self._startColorLoop()
             elif progName == "white":
                 self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(1.0, 1.0, 1.0, 1.0)))
-                self.send_response(200)
-                self.end_headers()
             elif progName == "feed":
                 self.server.ledManager.startProgram(SmoothNextColorProgram(False, LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 3))
-                self.send_response(200)
-                self.end_headers()
             elif progName == "randomPath":
                 self.server.ledManager.startProgram(RandomPathProgram(False, self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
-                self.send_response(200)
-                self.end_headers()                
             elif progName == "scheduledOff":
-                params = {"duration": 0}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.ledManager.schedulePowerOff(params["duration"])
-                self.send_response(200)
-                self.end_headers()                
+                self._startScheduledOff()
             elif progName == "cancelScheduledOff":
                 self.server.ledManager.cancelPowerOff()
-                self.send_response(200)
-                self.end_headers()                
             else:
-                self.send_response(400)
+                self.send_response(400, "invalid program name " + progName)
                 self.end_headers()
-        elif self.path == "/configureProgram":
-            if not "name" in jsonBody:
-                self.send_response(400)
-                self.end_headers()
-                return
-            progName = jsonBody["name"]
-            if progName == "randomPath":
-                params = {"timePerColor": self.server.config.getValue("programs/randomPath/timePerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
-                self.send_response(200)
-                self.end_headers()
-            elif progName == "feed":
-                params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
-                params = self.getParamsFromJson(jsonBody, params)
-                print(params)
-                self.server.config.setValue("programs/feed/brightness", params["brightness"])
-                self.send_response(200)
-                self.end_headers()
-            elif progName == "colorloop":
-                params = {"colors": self.server.config.getValue("programs/colorloop/colors"), "secondsPerColor": self.server.config.getValue("programs/colorloop/secondsPerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.config.setValue("programs/colorloop/colors", params["colors"])
-                self.server.config.setValue("programs/colorloop/secondsPerColor", params["secondsPerColor"])
-                self.send_response(200)
-                self.end_headers()
-            elif progName == "wheel":
-                params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.config.setValue("programs/wheel/minBrightness", params["minValue"])
-                self.server.config.setValue("programs/wheel/maxBrightness", params["maxValue"])
-                self.server.config.setValue("programs/wheel/timePerColor", params["timePerColor"])
-                self.send_response(200)
-                self.end_headers()
-            elif progName == "freak":
-                params = {"secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
-                params = self.getParamsFromJson(jsonBody, params)
-                self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
-                self.send_response(200)
-                self.end_headers()
-            else:
-                self.send_response(400)
-                self.end_headers()
-        elif self.path == "/configureColor":
-            params = {"oldName": "", "name": "", "red":-1, "green":-1, "blue":-1}
-            params = self.getParamsFromJson(jsonBody, params)
-            if params["name"] == "":
-                self.send_response(400, "no color name given")             
-            elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
-                self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
-            else:
-                if not self.server.config.pathExists("userDefinedColors/name=" + params["oldName"]):
-                    colorCount = self.server.config.getChildCount("userDefinedColors")
-                    self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"], "values": {"red":-1.0, "green":-1.0, "blue":-1.0}}, True)
-                else:
-                    self.server.config.setValue("userDefinedColors/name=" + params["oldName"] + "/name", params["name"])
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"]) / 255)
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/green", float(params["green"]) / 255)
-                self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/blue", float(params["blue"]) / 255)
-                self.send_response(200)
-                self.end_headers()
-        elif self.path == "/deleteColor":
-            params = {"name": ""}
-            params = self.getParamsFromJson(jsonBody, params)
-            if params["name"] == "":
-                self.send_response(400, "no color name given")             
-            else:
-                if not self.server.config.pathExists("userDefinedColors/name=" + params["name"]):
-                    self.send_response(400, "undefined color given")
-                else:
-                    self.server.config.removeChild("userDefinedColors", "name=" + params["name"])
-                    self.send_response(200)
-                    self.end_headers()
-        else:
-            self.send_response(400)
+            self.send_response(200)
             self.end_headers()
+        except ParameterExeption as e:
+            self.send_response(400, e)
+            self.end_headers()
+    
+    def _configureRandomPath(self):
+        params = {"timePerColor": self.server.config.getValue("programs/randomPath/timePerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
+        
+    def _configureFeed(self):
+        params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/feed/brightness", params["brightness"])
+        
+    def _configureColorLoop(self):
+        params = {"colors": self.server.config.getValue("programs/colorloop/colors"), "secondsPerColor": self.server.config.getValue("programs/colorloop/secondsPerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/colorloop/colors", params["colors"])
+        self.server.config.setValue("programs/colorloop/secondsPerColor", params["secondsPerColor"])
+        
+    def _configureWheel(self):
+        params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/wheel/minBrightness", params["minValue"])
+        self.server.config.setValue("programs/wheel/maxBrightness", params["maxValue"])
+        self.server.config.setValue("programs/wheel/timePerColor", params["timePerColor"])
+        
+    def _configureFreak(self):
+        params = {"secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
+        params = self.getParamsFromJson(params)
+        self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
+            
+    def _configureProgram(self):
+        if not "name" in self._jsonBody:
+            self.send_response(400, "no program name in request body")
+            self.end_headers()
+            return
+        progName = self._jsonBody["name"]
+        try:
+            if progName == "randomPath":
+                self._configureRandomPath()
+            elif progName == "feed":
+                self._configureFeed()
+            elif progName == "colorloop":
+                self._configureColorLoop()
+            elif progName == "wheel":
+                self._configureWheel()
+            elif progName == "freak":
+                self._configureFreak()
+            else:
+                self.send_response(400, "invalid program name " + progName)
+                self.end_headers()
+            self.send_response(200)
+            self.end_headers()
+        except ParameterExeption as e:
+            self.send_response(400, e)
+            self.end_headers()
+            
+    def _configureColor(self):
+        params = {"oldName": "", "name": "", "red":-1, "green":-1, "blue":-1}
+        params = self.getParamsFromJson(params)
+        if params["name"] == "":
+            self.send_response(400, "no color name given")             
+        elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
+            self.send_response(400, "invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
+        else:
+            if not self.server.config.pathExists("userDefinedColors/name=" + params["oldName"]):
+                colorCount = self.server.config.getChildCount("userDefinedColors")
+                self.server.config.setValue("userDefinedColors/" + str(colorCount), {"name" : params["name"], "values": {"red":-1.0, "green":-1.0, "blue":-1.0}}, True)
+            else:
+                self.server.config.setValue("userDefinedColors/name=" + params["oldName"] + "/name", params["name"])
+            self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/red", float(params["red"]) / 255)
+            self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/green", float(params["green"]) / 255)
+            self.server.config.setValue("userDefinedColors/name=" + params["name"] + "/values/blue", float(params["blue"]) / 255)
+            self.send_response(200)
+            self.end_headers()
+            
+    def _deleteColor(self):
+        params = {"name": ""}
+        params = self.getParamsFromJson(params)
+        if params["name"] == "":
+            self.send_response(400, "no color name given")             
+        else:
+            if not self.server.config.pathExists("userDefinedColors/name=" + params["name"]):
+                self.send_response(400, "undefined color given")
+            else:
+                self.server.config.removeChild("userDefinedColors", "name=" + params["name"])
+                self.send_response(200)
+                self.end_headers()
+    
+    def do_POST(self):
+        try:
+            self.loadJSONBody()
+        except:
+            self.send_response(400, "invalid payload")
+            self.end_headers()
+            self.wfile.write(bytes("Invalid request body for request " + self.path + "\n" + traceback.format_exc(), "utf-8"))
+        try:
+            if self.path == "/setBrightness":
+                self._setBrightness()
+            elif self.path == "/startProgram":
+                self._startProgram()
+            elif self.path == "/configureProgram":
+                self._configureProgram()
+            elif self.path == "/configureColor":
+                self._configureColor()
+            elif self.path == "/deleteColor":
+                self._deleteColor()
+            else:
+                self.send_response(400, "invalid path")
+                self.end_headers()
+        except:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(bytes("Error processing request for " + self.path + "\n" + traceback.format_exc(), "utf-8"))

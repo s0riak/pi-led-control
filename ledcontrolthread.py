@@ -19,7 +19,7 @@ from threading import Thread
 from threading import Event
 from programs.abstractprogram import AbstractProgram
 
-from interruptionexception import InterruptionException
+from exceptions.interruptionexception import InterruptionException
 class LEDControlThread(Thread):
   
     def __init__(self, program, printInfo=False):
@@ -35,4 +35,4 @@ class LEDControlThread(Thread):
             self.program.run()
         except InterruptionException:
             if self.printInfo:
-                print("killed thread doing " + self.programName)
+                print("killed thread doing " + type(self.program).__name__)
