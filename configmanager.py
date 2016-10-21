@@ -16,9 +16,7 @@
 
 import json
 import os.path
-import traceback
 from pprint import pprint
-from _ast import List
 
 #to work correctly configuration key must not contain '/'s and '='s
 #paths must be given as key1/key2/key3 in case all levels are dictionaries
@@ -131,7 +129,9 @@ class ConfigurationManager():
             config = self.loadConfig()
         try:
             return self._traverseAndExecute(config, path, lambda x: True)
-        except:
+        except IndexError:
+            return False
+        except KeyError:
             return False
     
     def getValue(self, path, config=None):
@@ -192,10 +192,10 @@ class ConfigurationManager():
                         parent[int(key)] = value
         self.storeConfig(config)
         
-    def removeChild(self, path, childrenId=None):
+    def removeChild(self, path, childId=None):
         if not self.pathExists(path):
             raise KeyError("invalid Path " + path)
-        if not path and childrenId == None:
+        if not path and childId == None:
             config = {}
         else:
             config = self.loadConfig()
@@ -203,7 +203,7 @@ class ConfigurationManager():
                 parent = config
             else:
                 parent = self.getValue(path, config)
-            if childrenId == None:
+            if childId == None:
                 if isinstance(parent, dict):
                     parent.clear()
                 elif isinstance(parent, list):
@@ -211,11 +211,11 @@ class ConfigurationManager():
                 else:
                     raise KeyError("invalid Path " + path + "not a list or dict") 
             else:
-                if '=' in childrenId:
+                if '=' in childId:
                     if isinstance(parent, dict):
-                        raise KeyError("invalid key " + childrenId + " for array at path " + path)
-                    attributeName = childrenId.split('=')[0]
-                    attributeValue = childrenId.split('=')[1]
+                        raise KeyError("invalid key " + childId + " for array at path " + path)
+                    attributeName = childId.split('=')[0]
+                    attributeValue = childId.split('=')[1]
                     foundInArray = False
                     for child in parent:
                         if attributeName in child:
@@ -224,21 +224,21 @@ class ConfigurationManager():
                                 foundInArray = True
                                 break
                     if not foundInArray:
-                        raise KeyError("invalid child " + childrenId)
+                        raise KeyError("invalid child " + childId)
                 else:
                     if isinstance(parent, dict):
-                        if childrenId in parent:
-                            parent.pop(childrenId)
+                        if childId in parent:
+                            parent.pop(childId)
                         else:
-                            raise KeyError("invalid child " + childrenId)
+                            raise KeyError("invalid child " + childId)
                     elif isinstance(parent, list):
-                        if self.convertsToInt(childrenId):
-                            if int(childrenId) > len(parent) - 1:
-                                raise KeyError("invalid child " + childrenId)
+                        if self.convertsToInt(childId):
+                            if int(childId) > len(parent) - 1:
+                                raise KeyError("invalid child " + childId)
                             else:
-                                parent.pop(int(childrenId))
+                                parent.pop(int(childId))
                         else:
-                            raise KeyError("invalid child " + childrenId)
+                            raise KeyError("invalid child " + childId)
                     else:
                         raise KeyError("path " + path + " doesn't contain dict or list")                               
         self.storeConfig(config)
