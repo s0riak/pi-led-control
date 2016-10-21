@@ -36,3 +36,4 @@ class LEDControlThread(Thread):
         except InterruptionException:
             if self.printInfo:
                 print("killed thread doing " + type(self.program).__name__)
+                
