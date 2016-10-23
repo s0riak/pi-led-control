@@ -15,8 +15,10 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import logging
 import os.path
 from pprint import pprint
+
 
 #to work correctly configuration key must not contain '/'s and '='s
 #paths must be given as key1/key2/key3 in case all levels are dictionaries
@@ -28,7 +30,7 @@ class ConfigurationManager():
         
     def loadConfig(self):
         if not os.path.isfile(self._configPath):
-            print("no configuration found, writing default to " + self._configPath)
+            logging.warning("no configuration found, writing default to " + self._configPath)
             self.storeConfig(self._getDefaultConfiguration())
         with open(self._configPath) as configFile:    
             return json.load(configFile)

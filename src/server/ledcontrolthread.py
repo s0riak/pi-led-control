@@ -15,6 +15,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
 from threading import Event
 from threading import Thread
 
@@ -37,5 +38,5 @@ class LEDControlThread(Thread):
             self.program.run()
         except InterruptionException:
             if self.printInfo:
-                print("killed thread doing " + type(self.program).__name__)
+                logging.info("killed thread doing " + type(self.program).__name__)
                 

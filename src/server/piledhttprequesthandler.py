@@ -329,9 +329,8 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         try:
             self.loadJSONBody()
         except:
-            self.send_response(400, "invalid payload")
-            self.end_headers()
-            self.wfile.write(bytes("Invalid request body for request " + self.path + "\n" + traceback.format_exc(), "utf-8"))
+            self.send_error(400, "Invalid payload for request " + self.path, traceback.format_exc())
+            return
         try:
             if self.path == "/setBrightness":
                 self._setBrightness()
@@ -344,9 +343,6 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             elif self.path == "/deleteColor":
                 self._deleteColor()
             else:
-                self.send_response(400, "invalid path")
-                self.end_headers()
+                self.send_error(400, "invalid path")
         except:
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(bytes("Error processing request for " + self.path + "\n" + traceback.format_exc(), "utf-8"))
+            self.send_error(500, "Error processing request for " + self.path, traceback.format_exc())

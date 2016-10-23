@@ -18,6 +18,7 @@ import copy
 
 from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
+import logging
 
 class ColorPathProgram(AbstractProgram):
 
@@ -74,7 +75,7 @@ class ColorPathProgram(AbstractProgram):
                 if not self._colorPath[0].colorsEqual(self._lastValue):
                     self._colorPath.insert(0, copy.deepcopy(self._lastValue))
             else:
-                print("warning last color not available")
+                logging.warning("last color not available")
         self.initColorIterator(self._colorPath)
         currentPoint = None
         for color in self._colorIterator:

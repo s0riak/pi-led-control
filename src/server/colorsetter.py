@@ -14,18 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 from server.ledstate import LEDState
+import logging
 
 class ColorSetter():
 
-    def __init__(self, printInfo, brightness):
-        self._printInfo = printInfo
+    def __init__(self, brightness):
         self._ledState = LEDState()
         self._ledState.brightness = brightness
+        self._colorRounding = 5
 
     def setBrightness(self, brightness):
         self._ledState.brightness = brightness
         if self._ledState.isComplete():
-            print("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
+            logging.info("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -34,17 +35,17 @@ class ColorSetter():
     def _writePiBlasterValue(self, channel, channelName, value):
         with open("/dev/pi-blaster", "w") as piblaster:
             print("{}={}".format(channel, value), file=piblaster)
-            if self._printInfo:
-                print("{}: {} ".format(channelName, value) ,end="",flush=True)
 
     def setValue(self, ledState):
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
-            self._writePiBlasterValue(17, "red" , self._ledState.red*self._ledState.brightness)
-            self._writePiBlasterValue(22, "green" , self._ledState.green*self._ledState.brightness)
-            self._writePiBlasterValue(24, "blue" , self._ledState.blue*self._ledState.brightness)
-        if self._printInfo:
-            print("")
+            redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)
+            greenValue = round(self._ledState.green*self._ledState.brightness, self._colorRounding)
+            blueValue = round(self._ledState.blue*self._ledState.brightness, self._colorRounding)
+            self._writePiBlasterValue(17, "red" , redValue)
+            self._writePiBlasterValue(22, "green" , greenValue)
+            self._writePiBlasterValue(24, "blue" , blueValue)
+            logging.debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
             
     def getCurrentValue(self):
         return self._ledState

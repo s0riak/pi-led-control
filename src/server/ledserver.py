@@ -16,6 +16,9 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from http.server import HTTPServer
+import logging
+import os
+
 from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 
 
@@ -26,4 +29,10 @@ class LEDServer(HTTPServer):
         self.ledManager = ledManager
         self.config = configManager
                 
-
+    def serve_forever(self, poll_interval=0.5):
+        logging.info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)
+        HTTPServer.serve_forever(self, poll_interval=poll_interval)
+        
+    def server_close(self):
+        HTTPServer.server_close(self)
+        logging.info("%s stopped, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)

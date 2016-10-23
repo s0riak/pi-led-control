@@ -21,19 +21,19 @@ from threading import Thread
 from server.colorsetter import ColorSetter
 from server.ledcontrolthread import LEDControlThread
 from server.programs.softoffprogram import SoftOffProgram
+import logging
 
 
 
 class LEDManager():
     
 
-    def __init__(self, printInfo):
-        self.printInfo = printInfo
+    def __init__(self):
         self.threadStopEvent = Event()
         self.sem = Semaphore()
         self.controlThread = None
         self._cancelPowerOffEvent = None
-        self._colorSetter = ColorSetter(printInfo, 1.0)
+        self._colorSetter = ColorSetter(1.0)
 
     def setBrightness(self, brightness):
         self._colorSetter.setBrightness(brightness)
@@ -47,7 +47,6 @@ class LEDManager():
         if self.controlThread != None:
             self.controlThread.threadStopEvent.set()
             lastValue = self.controlThread.program.getCurrentValue()
-            print(str(lastValue))
             program.setLastValue(lastValue)
         self.controlThread = LEDControlThread(program)
         self.controlThread.start()
@@ -68,11 +67,9 @@ class LEDManager():
     def powerOffWaiter(self,duration, cancelEvent):
         cancelEvent.wait(duration)
         if cancelEvent.is_set():
-            if self.printInfo:
-                print("canceled power off")
+            logging.info("canceled power off")
             return
-        if self.printInfo:
-            print("wait finished starting SoftOffProgram")
+        logging.info("wait finished starting SoftOffProgram")
         self.startProgram(SoftOffProgram(False))
         self._cancelPowerOffEvent = None
         
