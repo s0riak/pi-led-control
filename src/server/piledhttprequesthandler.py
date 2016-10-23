@@ -2,19 +2,19 @@ from chardet.universaldetector import UniversalDetector
 from http.server import CGIHTTPRequestHandler
 import os
 import json
-from ledstate import LEDState
-from programs.wheelprogram import WheelProgram
-from programs.sunriseprogram import SunriseProgram
-from programs.scheduledprogram import ScheduledProgram
-from programs.loopedprogram import LoopedProgram
-from programs.randomcolorprogram import RandomColorProgram
-from programs.singlecolorprogram import SingleColorProgram
-from programs.softoffprogram import SoftOffProgram
-from programs.offprogram import OffProgram
-from programs.colorpathprogram import ColorPathProgram
-from programs.smoothnextcolorprogram import SmoothNextColorProgram
-from programs.randompathprogram import RandomPathProgram
-from exceptions.parameterexception import ParameterExeption
+from server.ledstate import LEDState
+from server.programs.wheelprogram import WheelProgram
+from server.programs.sunriseprogram import SunriseProgram
+from server.programs.scheduledprogram import ScheduledProgram
+from server.programs.loopedprogram import LoopedProgram
+from server.programs.randomcolorprogram import RandomColorProgram
+from server.programs.singlecolorprogram import SingleColorProgram
+from server.programs.softoffprogram import SoftOffProgram
+from server.programs.offprogram import OffProgram
+from server.programs.colorpathprogram import ColorPathProgram
+from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
+from server.programs.randompathprogram import RandomPathProgram
+from server.exceptions.parameterexception import ParameterExeption
 import traceback
     
 class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
@@ -42,8 +42,8 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             return bytes(f.read(), encoding)   
          
         
-    def _getClientFiles(self, path):        
-        resourcePath = os.path.dirname(os.path.realpath(__file__)) + "/client/" + path[1:]
+    def _getClientFiles(self, path):
+        resourcePath = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/client/" + path[1:]
         result = self._readFileToBytes(resourcePath)
         self.send_response(200)
         self.send_header("Content-type", "text/" + path.rsplit('.', 1)[1])

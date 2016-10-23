@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.abstractprogram import AbstractProgram
+from server.programs.abstractprogram import AbstractProgram
 class ProgramChainProgram(AbstractProgram):
 
     def __init__(self, printInfo, programs):

@@ -15,7 +15,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
-from programs.colorpathprogram import ColorPathProgram
+from server.programs.colorpathprogram import ColorPathProgram
 class RandomPathProgram(ColorPathProgram):
 
     class RandomIterator:

@@ -16,11 +16,10 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import shutil
 import time
 import unittest
+from server.configmanager import ConfigurationManager
 
-from configmanager import ConfigurationManager
 
 testData = {
             "dictOfDicts":
@@ -237,11 +236,11 @@ class ConfigurationManagerTest(unittest.TestCase):
         self.assertEqual(self.config.getChildCount("arrayOfDicts/pivotAttribute1=pivotValue4/otherAttribute3"), 3)
         
     def test_removeChildrenRoot(self):
-        self.config.removeChildren("")
+        self.config.removeChild("")
         self.assertEqual(self.config.getValue(""), {})
         
     def test_removeDictFirstLevel(self):
-        self.config.removeChildren("", "dictOfDicts")
+        self.config.removeChild("", "dictOfDicts")
         self.assertEqual(self.config.getValue(""), {"arrayOfDicts":
             [
                 {"pivotAttribute1": "pivotValue1",  "otherAttribute": 21},
@@ -252,7 +251,7 @@ class ConfigurationManagerTest(unittest.TestCase):
             ]})
     
     def test_removeArrayFirstLevel(self):
-        self.config.removeChildren("", "arrayOfDicts")
+        self.config.removeChild("", "arrayOfDicts")
         self.assertEqual(self.config.getValue(""), {"dictOfDicts":
                 {
                     "name1": {"intAttribute": 42},
@@ -262,7 +261,7 @@ class ConfigurationManagerTest(unittest.TestCase):
                 }})
     
     def test_removeDictSecondLevel(self):
-        self.config.removeChildren("dictOfDicts")
+        self.config.removeChild("dictOfDicts")
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":{},
             "arrayOfDicts":
@@ -276,7 +275,7 @@ class ConfigurationManagerTest(unittest.TestCase):
         })
     
     def test_removeDictFromArrayIndex(self):
-        self.config.removeChildren("arrayOfDicts", "3");
+        self.config.removeChild("arrayOfDicts", "3")
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
                 {
@@ -295,7 +294,7 @@ class ConfigurationManagerTest(unittest.TestCase):
         })
         
     def test_removeDictFromArrayAttribute(self):
-        self.config.removeChildren("arrayOfDicts", "pivotAttribute1=pivotValue3");
+        self.config.removeChild("arrayOfDicts", "pivotAttribute1=pivotValue3")
         self.maxDiff = 1500
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
@@ -315,7 +314,7 @@ class ConfigurationManagerTest(unittest.TestCase):
         })
         
     def test_removeDictThirdLevelIndex(self):
-        self.config.removeChildren("arrayOfDicts/2", "otherAttribute3");
+        self.config.removeChild("arrayOfDicts/2", "otherAttribute3")
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
                 {
@@ -335,7 +334,7 @@ class ConfigurationManagerTest(unittest.TestCase):
         })
         
     def test_removeDictThirdLevelAttribute(self):
-        self.config.removeChildren("arrayOfDicts/pivotAttribute1=pivotValue3", "otherAttribute3");
+        self.config.removeChild("arrayOfDicts/pivotAttribute1=pivotValue3", "otherAttribute3")
         self.assertEqual(self.config.getValue(""), {
             "dictOfDicts":
                 {

@@ -15,7 +15,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
-from exceptions.interruptionexception import InterruptionException
+from server.exceptions.interruptionexception import InterruptionException
 
 
 class AbstractProgram(ABC):

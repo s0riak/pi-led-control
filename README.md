@@ -17,7 +17,7 @@ If you don't have a single color LED strip, you can use https://github.com/s0ria
 ##Usage
 To start pi-led-control execute:
    
-   python3 ledserver.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH]
+   python3 src/main.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -27,10 +27,6 @@ optional arguments:
                         the path to the config file to be used
    
 The server is started locally and the UI can be accessed on http://localhost:9000 or the port specified.
-
-Alternatively you can use an interactive CLI:
-
-   python3 ledui.py
 
 
 ##Available programs
@@ -70,7 +66,7 @@ Add the following to your root crontab to autostart pi-blaster at start up of yo
 
 Add the following to your user crontab to autostart pi-led-control at start up of your system
 
-   @reboot python3 /home/pi/pi-led-control/ledserver.py
+   @reboot python3 /home/pi/pi-led-control/src/main.py
 
 ##Flic Button integration
 Flic Buttons (https://flic.io/) can be easily integrated, to do so follow the steps at https://github.com/50ButtonsEach/fliclib-linux-hci to setup the server for the buttons and pair them.

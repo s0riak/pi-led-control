@@ -15,11 +15,13 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from threading import Thread
 from threading import Event
-from programs.abstractprogram import AbstractProgram
+from threading import Thread
 
-from exceptions.interruptionexception import InterruptionException
+from server.exceptions.interruptionexception import InterruptionException
+from server.programs.abstractprogram import AbstractProgram
+
+
 class LEDControlThread(Thread):
   
     def __init__(self, program, printInfo=False):
@@ -36,3 +38,4 @@ class LEDControlThread(Thread):
         except InterruptionException:
             if self.printInfo:
                 print("killed thread doing " + type(self.program).__name__)
+                

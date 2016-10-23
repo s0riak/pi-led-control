@@ -13,9 +13,11 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-from ledstate import LEDState
-from programs.loopedprogram import LoopedProgram
-from programs.colorpathprogram import ColorPathProgram
+
+from server.ledstate import LEDState
+from server.programs.colorpathprogram import ColorPathProgram
+from server.programs.loopedprogram import LoopedProgram
+
 class WheelProgram(LoopedProgram):
 
     #iterations number of wheel loops

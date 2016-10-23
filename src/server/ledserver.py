@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Copyright (c) 2016 Sebastian Kanis
 # This file is part of pi-led-control.
 
@@ -14,12 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.abstractprogram import AbstractProgram
-class SingleColorProgram(AbstractProgram):
+from http.server import HTTPServer
+from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 
-    def __init__(self, printInfo, value):
-        super().__init__(printInfo)
-        self.__value = value
-        
-    def run(self):
-        self._setValue(self.__value)
+
+class LEDServer(HTTPServer):
+
+    def __init__(self, connection, ledManager, configManager):
+        super().__init__(connection, PiLEDHTTPRequestHandler)
+        self.ledManager = ledManager
+        self.config = configManager
+                
+
