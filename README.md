@@ -66,7 +66,7 @@ Add the following to your root crontab to autostart pi-blaster at start up of yo
 
 Add the following to your user crontab to autostart pi-led-control at start up of your system
 
-   @reboot python3 /home/pi/pi-led-control/ledserver.py
+   @reboot python3 /home/pi/pi-led-control/src/main.py
 
 ##Screenshots
 
