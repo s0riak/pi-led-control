@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.abstractprogram import AbstractProgram
+import logging
+
+from server.programs.abstractprogram import AbstractProgram
+
+
 class AllColorProgram(AbstractProgram):
 
     def __init__(self, printInfo, stepsPerColor, secondsPerColor):
@@ -30,8 +34,7 @@ class AllColorProgram(AbstractProgram):
                     r = i/(self.stepsPerColor-1)
                     g = j/(self.stepsPerColor-1)
                     b = k/(self.stepsPerColor-1)
-                    if self.printInfo:
-                        print("r: {}, g: {}, b: {}".format(r,g,b))
+                    logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
                     self._setColor(r, g, b)
                     self._waitIfNotStopped(self.secondsPerColor)
         self._setColor(0,0,0)

@@ -15,6 +15,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from server.programs.abstractprogram import AbstractProgram
+import logging
 class LoopedProgram(AbstractProgram):
 
     def __init__(self, printInfo, program, iterations=0):
@@ -26,16 +27,14 @@ class LoopedProgram(AbstractProgram):
         if self._iterations == 0:
             curIter = 0
             while True:
-                if self.printInfo:
-                    print("current iteration: " + str(curIter))
+                logging.debug("current iteration: " + str(curIter))
                 if curIter > 0:
                     self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()
                 curIter = curIter + 1
         else:
             for i in range(0, self._iterations):
-                if self.printInfo:
-                    print("current iteration: " + str(i))
+                logging.debug("current iteration: " + str(i))
                 if i > 0:
                     self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()

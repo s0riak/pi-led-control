@@ -15,24 +15,47 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import logging
 import time
-import os
+
 from server.configmanager import ConfigurationManager
-from server.ledserver import LEDServer
 from server.ledmanager import LEDManager
+from server.ledserver import LEDServer
+import os
 
-parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
-parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
-parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
-parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
-args = vars(parser.parse_args())
+def initLogger(logPath, fileLogLevel, consoleLogLevel):
+    logging.getLogger().addHandler(logging.StreamHandler())
+    rootLogger = logging.getLogger()
+    rootLoggerLevel = min(fileLogLevel, consoleLogLevel)
+    rootLogger.setLevel(rootLoggerLevel)
+    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+    fileHandler = logging.FileHandler(logPath)
+    fileHandler.setFormatter(logFormatter)
+    fileHandler.setLevel(fileLogLevel)
+    rootLogger.addHandler(fileHandler)
 
-ledServer = LEDServer((args['name'], args['port']), LEDManager(False), ConfigurationManager(args['configPath']))
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    consoleHandler.setLevel(consoleLogLevel)
+    rootLogger.addHandler(consoleHandler)
+    
+def main():
+    parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
+    parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
+    parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
+    parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
+    parser.add_argument('-l', '--logPath', help='the path to the log file to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/piledcontrol.log")
+    parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', default=logging.INFO)
+    parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', default=logging.ERROR)
+    args = vars(parser.parse_args())
 
-try:
-    print("running server from {} at {} started on {}:{}".format(os.path.dirname(os.path.realpath(__file__)), time.asctime(), args['name'], args['port']))
-    ledServer.serve_forever()
-except KeyboardInterrupt:
-    pass
-ledServer.server_close()
-print("server stopped at {} started on {}:{}".format(time.asctime(), args['name'], args['port']))
+    initLogger(args['logPath'], args['fileLogLevel'], args['consoleLogLevel'])
+    ledServer = LEDServer((args['name'], args['port']), LEDManager(), ConfigurationManager(args['configPath']))
+
+    try:
+        ledServer.serve_forever()
+    except KeyboardInterrupt:
+        ledServer.server_close()
+
+if __name__ == '__main__':
+    main()

@@ -15,19 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 from unittest import mock
 import unittest
 from unittest.mock import patch, MagicMock, call
 
 from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
-import traceback
 
 
 class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
-    
-    def mock_init(self):
-        print("mock_init called")
     
     def setUp(self):
         unittest.TestCase.setUp(self)

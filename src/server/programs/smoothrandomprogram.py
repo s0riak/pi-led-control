@@ -14,10 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-import random
 from random import randint
+import random
 
-from programs.abstractprogram import AbstractProgram
+from server.programs.abstractprogram import AbstractProgram
+import logging
+
+
 class SmoothRandomProgram(AbstractProgram):
 
     def __init__(self, printInfo, maxDiff, secondsPerColor):
@@ -33,8 +36,7 @@ class SmoothRandomProgram(AbstractProgram):
         g = round(random.uniform(0.0, 0.5), 3)
         b = round(random.uniform(0.0, 0.5), 3)
         while True:
-            if self.printInfo:
-                print("r: {}, g: {}, b: {}".format(r,g,b))
+            logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
             self._setColor(r, g, b)
             self._waitIfNotStopped(0.05)
             colorRand = randint(0,2)
