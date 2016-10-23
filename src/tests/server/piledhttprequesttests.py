@@ -31,9 +31,9 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
     
     def setUp(self):
         unittest.TestCase.setUp(self)
-        patcher = patch.object(PiLEDHTTPRequestHandler, '__bases__', (mock.Mock,))  # @UndefinedVariable
-        with patcher:
-            patcher.is_local = True
+        self.patcher = patch.object(PiLEDHTTPRequestHandler, '__bases__', (mock.MagicMock,))  # @UndefinedVariable
+        with self.patcher:
+            self.patcher.is_local = True
             self.handler = PiLEDHTTPRequestHandler(None, None, None)
     
     def test_do_GET_IndexCalled(self):
@@ -110,6 +110,29 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
         self.assertEqual(_send_errorMock.call_args[0][0], 500)
         self.assertEqual(_send_errorMock.call_args[0][1], "Error processing request for " + self.handler.path)
         self.assertNotEqual(_send_errorMock.call_args[0][2], "")
-    
+        
+    def test_loadJSONBodyExceptionRaisedOnEmptyBody(self):
+        _contentLengthMock = MagicMock()
+        _contentLengthMock.return_value = 0
+        self.handler.headers = MagicMock()
+        self.handler.headers.get = _contentLengthMock
+        _rFileReadMock = MagicMock()
+        _rFileReadMock.return_value = ""
+        self.handler.rfile = MagicMock()
+        self.handler.rfile.read = _rFileReadMock
+        self.assertRaises(Exception,self.handler.loadJSONBody())
+        
+    def test_do_POST_return400OnInvalidPayload(self):
+        self.handler.path = "/"
+        _loadJSONBodyMock = MagicMock(side_effect=Exception)
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _send_errorMock = MagicMock()
+        self.handler.send_error = _send_errorMock
+        self.handler.do_POST()
+        assert _send_errorMock.called
+        self.assertEqual(_send_errorMock.call_args[0][0], 400)
+        self.assertEqual(_send_errorMock.call_args[0][1], "Invalid payload for request " + self.handler.path)
+        self.assertNotEqual(_send_errorMock.call_args[0][2], "")
+        
 if __name__ == '__main__':
     unittest.main()
