@@ -14,14 +14,12 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
+import requests
 import unittest
 from unittest.mock import MagicMock
 
-from eventhelper import EventHelper
-import requests
+from flicintegration.eventhelper import EventHelper
 
-
-#not a unittest, is an integration test requires the ledserver.py to run on localhost and mutual access to it
 class EventHelperTest(unittest.TestCase):
     
     def setUp(self):
@@ -175,7 +173,7 @@ class EventHelperTest(unittest.TestCase):
                 postMock = MagicMock()
                 requests.post = postMock
                 self.eventHelper.handleEvent(EventHelper.eventTypes["togglePrograms"])
-                postMock.assert_called_once_with(EventHelper.piLedHost + "/startProgram", '{"params": [], "name": "' + self.eventHelper._programs[i%len(self._eventHelper._programs)] + '"}')
+                postMock.assert_called_once_with(EventHelper.piLedHost + "/startProgram", '{"params": [], "name": "' + self.eventHelper._programs[i%len(self.eventHelper._programs)] + '"}')
         
 if __name__ == '__main__':
     unittest.main()

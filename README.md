@@ -81,7 +81,7 @@ To start both at startup, add the following to your root crontab:
 
 and the follwing to your user crontab:
 
-   @reboot /bin/sleep 6 ; python3 /home/pi/pi-led-control/flic-integrator.py
+   @reboot /bin/sleep 6 ; python3 /home/pi/pi-led-control/src/flicintegration/flicintegrator.py
 
 The sleep is needed to wait for the HCI to come up after system boot.
 To avoid interference with the standard bluetooth service, disable it:

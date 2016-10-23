@@ -17,13 +17,10 @@
 
 #!/usr/bin/env python3
 # This caller relies on https://github.com/50ButtonsEach/fliclib-linux-hci
+import json
+import requests
 import traceback
 
-
-
-import sys
-import requests
-import json
 
 class EventHelper():
     
