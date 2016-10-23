@@ -18,8 +18,7 @@
 import os
 import time
 import unittest
-
-from configmanager import ConfigurationManager
+from server.configmanager import ConfigurationManager
 
 
 testData = {

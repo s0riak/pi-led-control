@@ -16,8 +16,8 @@
 
 import copy
 
-from ledstate import LEDState
-from programs.abstractprogram import AbstractProgram
+from server.ledstate import LEDState
+from server.programs.abstractprogram import AbstractProgram
 
 class ColorPathProgram(AbstractProgram):
 

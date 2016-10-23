@@ -14,42 +14,37 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.abstractprogram import AbstractProgram
-class LoopedProgram(AbstractProgram):
+import datetime
+from server.programs.abstractprogram import AbstractProgram
+class ScheduledProgram(AbstractProgram):
 
-    def __init__(self, printInfo, program, iterations=0):
+    def __init__(self, printInfo, program, timeOfDay):
         super().__init__(printInfo)
         self._program = program
-        self._iterations = iterations
+        self._timeOfDay = timeOfDay
 
     def run(self):
-        if self._iterations == 0:
-            curIter = 0
-            while True:
-                if self.printInfo:
-                    print("current iteration: " + str(curIter))
-                if curIter > 0:
-                    self._program.setLastValue(self._program.getCurrentValue())
-                self._program.run()
-                curIter = curIter + 1
+        now = datetime.datetime.now()
+        secondsInCurrentDay = now.hour * 3600 + now.minute * 60 + now.second
+        if secondsInCurrentDay < self._timeOfDay:
+            sleepDuration = self._timeOfDay - secondsInCurrentDay
         else:
-            for i in range(0, self._iterations):
-                if self.printInfo:
-                    print("current iteration: " + str(i))
-                if i > 0:
-                    self._program.setLastValue(self._program.getCurrentValue())
-                self._program.run()
+            sleepDuration = self._timeOfDay + 3600 * 24 - secondsInCurrentDay
+        if self.printInfo:
+            print("sleeping for " + str(sleepDuration) + " seconds")
+        self._waitIfNotStopped(sleepDuration)
+        self._program.run()
 
     def setThreadStopEvent(self, threadStopEvent):
+        self.threadStopEvent = threadStopEvent
         self._program.setThreadStopEvent(threadStopEvent)
     
-    def getCurrentValue(self):
-        return self._program.getCurrentValue()
-
-    def setLastValue(self, lastValue):
-        self._program.setLastValue(lastValue)
-
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
         self._program.setColorSetter(colorSetter)
 
+    def getCurrentColor(self):
+        return self._program.getCurrentColor()
+
+    def setLastColor(self, lastColor):
+        self._program.setLastColor(lastColor)

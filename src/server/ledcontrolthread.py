@@ -14,12 +14,28 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.abstractprogram import AbstractProgram
-class SingleColorProgram(AbstractProgram):
 
-    def __init__(self, printInfo, value):
-        super().__init__(printInfo)
-        self.__value = value
+from threading import Event
+from threading import Thread
+
+from server.exceptions.interruptionexception import InterruptionException
+from server.programs.abstractprogram import AbstractProgram
+
+
+class LEDControlThread(Thread):
+  
+    def __init__(self, program, printInfo=False):
+        Thread.__init__(self)
+        self.program = program
+        self.printInfo = printInfo
+        self.threadStopEvent = Event()
         
     def run(self):
-        self._setValue(self.__value)
+        assert isinstance(self.program, AbstractProgram)
+        try:
+            self.program.setThreadStopEvent(self.threadStopEvent)
+            self.program.run()
+        except InterruptionException:
+            if self.printInfo:
+                print("killed thread doing " + type(self.program).__name__)
+                

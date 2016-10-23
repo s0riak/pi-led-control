@@ -18,10 +18,10 @@
 from threading import Event
 from threading import Semaphore
 from threading import Thread
+from server.colorsetter import ColorSetter
+from server.ledcontrolthread import LEDControlThread
+from server.programs.softoffprogram import SoftOffProgram
 
-from colorsetter import ColorSetter
-from ledcontrolthread import LEDControlThread
-from programs.softoffprogram import SoftOffProgram
 
 
 class LEDManager():

@@ -13,17 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-from ledstate import LEDState
-from programs.colorpathprogram import ColorPathProgram
-class SunriseProgram(ColorPathProgram):
-
-    def __init__(self, printInfo, duration):
-        colorPath = [
-            LEDState(0.0,0.0,0.0),
-            LEDState(0.0,0.0,0.2),
-            LEDState(0.5,0.5,0.2),
-            LEDState(1.0,0.9,0.2),
-        ]
-        interpolationPoints = 60
-        timePerColor = duration/((len(colorPath)-1)*interpolationPoints)
-        super().__init__(printInfo, colorPath, interpolationPoints, timePerColor)
+from server.ledstate import LEDState
+from server.programs.abstractprogram import AbstractProgram
+class OffProgram(AbstractProgram):
+    def run(self):
+        self._setValue(LEDState(0.0, 0.0, 0.0, 1.0))
