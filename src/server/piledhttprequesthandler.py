@@ -85,10 +85,10 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 self._getConfiguration()
             elif self.path == "/getStatus":
                 self._getStatus()
+            else:
+                self.send_error(404, "invalid path " + self.path)
         except:
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(bytes("Error processing request for " + self.path + "\n" + traceback.format_exc(), "utf-8"))   
+            self.send_error(500, "Error processing request for " + self.path, traceback.format_exc())
 
     def getParamsFromJson(self, result):
         if not "params" in self._jsonBody:
