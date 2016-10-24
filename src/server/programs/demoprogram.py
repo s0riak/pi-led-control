@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from programs.programchainprogram import ProgramChainProgram
-from programs.singlecolorprogram import SingleColorProgram
-from programs.waitprogram import WaitProgram
+from server.programs.programchainprogram import ProgramChainProgram
+from server.programs.singlecolorprogram import SingleColorProgram
+from server.programs.waitprogram import WaitProgram
+
+
 class DemoProgram(ProgramChainProgram):
 
     def __init__(self, printInfo, timePerColor=3):

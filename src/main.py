@@ -15,13 +15,14 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+from logging import handlers
 import logging
-import time
+import os
 
 from server.configmanager import ConfigurationManager
 from server.ledmanager import LEDManager
 from server.ledserver import LEDServer
-import os
+
 
 def initLogger(logPath, fileLogLevel, consoleLogLevel):
     logging.getLogger().addHandler(logging.StreamHandler())
@@ -29,7 +30,7 @@ def initLogger(logPath, fileLogLevel, consoleLogLevel):
     rootLoggerLevel = min(fileLogLevel, consoleLogLevel)
     rootLogger.setLevel(rootLoggerLevel)
     logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-    fileHandler = logging.FileHandler(logPath)
+    fileHandler = handlers.TimedRotatingFileHandler(logPath, when='D', backupCount=7)
     fileHandler.setFormatter(logFormatter)
     fileHandler.setLevel(fileLogLevel)
     rootLogger.addHandler(fileHandler)

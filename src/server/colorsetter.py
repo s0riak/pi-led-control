@@ -37,6 +37,8 @@ class ColorSetter():
             print("{}={}".format(channel, value), file=piblaster)
 
     def setValue(self, ledState):
+        if ledState.brightness != None and ledState.brightness != self._ledState.brightness:
+            logging.warn("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
             redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)
