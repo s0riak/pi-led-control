@@ -17,8 +17,8 @@
 from server.programs.abstractprogram import AbstractProgram
 class SingleColorProgram(AbstractProgram):
 
-    def __init__(self, printInfo, value):
-        super().__init__(printInfo)
+    def __init__(self, value):
+        super().__init__()
         self.__value = value
         
     def run(self):

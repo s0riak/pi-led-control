@@ -21,7 +21,7 @@ from server.programs.waitprogram import WaitProgram
 
 class DemoProgram(ProgramChainProgram):
 
-    def __init__(self, printInfo, timePerColor=3):
+    def __init__(self, timePerColor=3):
         programs = []
         programs.append(SingleColorProgram(False, 255, 0, 0))
         programs.append(WaitProgram(False, timePerColor))
@@ -30,4 +30,4 @@ class DemoProgram(ProgramChainProgram):
         programs.append(SingleColorProgram(False, 0, 0, 255))
         programs.append(WaitProgram(False, timePerColor))
         programs.append(SingleColorProgram(False, 0, 0, 0))
-        super().__init__(printInfo, programs)
+        super().__init__(programs)

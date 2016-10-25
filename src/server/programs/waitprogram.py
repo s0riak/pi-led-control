@@ -17,8 +17,8 @@
 from server.programs.abstractprogram import AbstractProgram
 class WaitProgram(AbstractProgram):
 
-    def __init__(self, printInfo, waitTime):
-        super().__init__(printInfo)
+    def __init__(self, waitTime):
+        super().__init__()
         self._waitTime = waitTime
         
     def run(self):

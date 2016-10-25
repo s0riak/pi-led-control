@@ -19,8 +19,8 @@ from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 class RandomColorProgram(AbstractProgram):
 
-    def __init__(self, printInfo, minColor, maxColor, secondsPerColor):
-        super().__init__(printInfo)
+    def __init__(self, minColor, maxColor, secondsPerColor):
+        super().__init__()
         self._minColor = minColor
         self._maxColor = maxColor
         self._secondsPerColor = secondsPerColor

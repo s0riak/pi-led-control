@@ -64,7 +64,7 @@ class LEDManager():
             logging.info("canceled power off")
             return
         logging.info("wait finished starting SoftOffProgram")
-        self.startProgram(SoftOffProgram(False))
+        self.startProgram(SoftOffProgram())
         self._cancelPowerOffEvent = None
         
     def schedulePowerOff(self, duration):

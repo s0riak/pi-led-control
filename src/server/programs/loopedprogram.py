@@ -18,8 +18,7 @@ from server.programs.abstractprogram import AbstractProgram
 import logging
 class LoopedProgram(AbstractProgram):
 
-    def __init__(self, printInfo, program, iterations=0):
-        super().__init__(printInfo)
+    def __init__(self, program, iterations=0):
         self._program = program
         self._iterations = iterations
 

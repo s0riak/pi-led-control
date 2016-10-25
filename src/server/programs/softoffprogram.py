@@ -20,13 +20,13 @@ from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
 class SoftOffProgram(ProgramChainProgram):
 
-    def __init__(self, printInfo):
+    def __init__(self):
         offState = LEDState(0.0,0.0,0.0,0.0)
         colorPath = [offState]
         interpolationPoints = 50
         timePerColor = 3/interpolationPoints
-        self._colorPathProgram = ColorPathProgram(printInfo, colorPath, interpolationPoints, timePerColor, True)
-        super().__init__(printInfo, [self._colorPathProgram, SingleColorProgram(printInfo, offState)])
+        self._colorPathProgram = ColorPathProgram(colorPath, interpolationPoints, timePerColor, True)
+        super().__init__([self._colorPathProgram, SingleColorProgram(offState)])
 
     #overridding setLastColor to change duration of softoff based on hue of last Color
     def setLastValue(self, lastValue):

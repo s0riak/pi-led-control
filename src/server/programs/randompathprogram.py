@@ -36,10 +36,10 @@ class RandomPathProgram(ColorPathProgram):
             self._iteration = self._iteration + 1
             return self._nextItem
 
-    def __init__(self, printInfo, colorSet, durationPerPoint):
+    def __init__(self, colorSet, durationPerPoint):
         interpolationPoints = 60
         durationPerInterpolationPoint = durationPerPoint / interpolationPoints
-        super().__init__(printInfo, colorSet, interpolationPoints, durationPerInterpolationPoint)
+        super().__init__(colorSet, interpolationPoints, durationPerInterpolationPoint)
 
     def initColorIterator(self, colorPath):
         self._colorIterator = RandomPathProgram.RandomIterator(colorPath)

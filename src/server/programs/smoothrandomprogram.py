@@ -23,8 +23,8 @@ import logging
 
 class SmoothRandomProgram(AbstractProgram):
 
-    def __init__(self, printInfo, maxDiff, secondsPerColor):
-        super().__init__(printInfo)
+    def __init__(self, maxDiff, secondsPerColor):
+        super().__init__()
         self._maxDiff = maxDiff
         self._secondsPerColor = secondsPerColor
 

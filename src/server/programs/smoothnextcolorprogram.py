@@ -19,12 +19,12 @@ from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
 class SmoothNextColorProgram(ProgramChainProgram):
 
-    def __init__(self, printInfo, ledValue, switchTime):
+    def __init__(self, ledValue, switchTime):
         colorPath = [ledValue]
         interpolationPoints = 50
         timePerColor =  switchTime/interpolationPoints
-        self._colorPathProgram = ColorPathProgram(printInfo, colorPath, interpolationPoints, timePerColor, True)
-        super().__init__(printInfo, [self._colorPathProgram, SingleColorProgram(printInfo, ledValue)])
+        self._colorPathProgram = ColorPathProgram(colorPath, interpolationPoints, timePerColor, True)
+        super().__init__([self._colorPathProgram, SingleColorProgram(ledValue)])
 
     #overridding setLastColor to change duration of softoff based on hue of last Color
     def setLastColor(self, lastColor):

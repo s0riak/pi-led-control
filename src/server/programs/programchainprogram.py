@@ -17,8 +17,7 @@
 from server.programs.abstractprogram import AbstractProgram
 class ProgramChainProgram(AbstractProgram):
 
-    def __init__(self, printInfo, programs):
-        super().__init__(printInfo)
+    def __init__(self, programs):
         assert len(programs) >= 1
         self._programs = programs
         self._currentProgram = None

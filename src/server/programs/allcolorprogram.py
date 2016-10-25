@@ -21,8 +21,7 @@ from server.programs.abstractprogram import AbstractProgram
 
 class AllColorProgram(AbstractProgram):
 
-    def __init__(self, printInfo, stepsPerColor, secondsPerColor):
-        super().__init__(printInfo)
+    def __init__(self, stepsPerColor, secondsPerColor):
         self.stepsPerColor = stepsPerColor
         self.secondsPerColor = secondsPerColor
 
