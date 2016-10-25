@@ -151,7 +151,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
         params = self.getParamsFromJson(params)
         self.logMethodAndParams(params)
-        self.server.ledManager.startProgram(WheelProgram(False, params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
+        self.server.ledManager.startProgram(WheelProgram(params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
         
     def _startSunrise(self):
         params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay":-1, "brightness": 1.0}
@@ -162,16 +162,16 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
         if params["timeOfDay"] == -1:
             self.server.ledManager.setBrightness(params["brightness"])
-            self.server.ledManager.startProgram(SunriseProgram(False, params["duration"]))
+            self.server.ledManager.startProgram(SunriseProgram(params["duration"]))
         else:
             self.server.ledManager.setBrightness(params["brightness"])
-            self.server.ledManager.startProgram(ScheduledProgram(False, SunriseProgram(False, params["duration"]), params["timeOfDay"]))
+            self.server.ledManager.startProgram(ScheduledProgram(SunriseProgram(params["duration"]), params["timeOfDay"]))
             
     def _startFreak(self):
         params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
         params = self.getParamsFromJson(params)
         self.logMethodAndParams(params)
-        self.server.ledManager.startProgram(LoopedProgram(False, RandomColorProgram(False, params["minColor"], params["maxColor"], params["secondsPerColor"])))
+        self.server.ledManager.startProgram(LoopedProgram(RandomColorProgram(params["minColor"], params["maxColor"], params["secondsPerColor"])))
     
     def _startPredefined(self):
         params = {"colorName": ""}
@@ -188,7 +188,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 if params["colorName"] == predefinedColor["name"]:
                     color = predefinedColor["values"]
                     ledState = LEDState(color["red"], color["green"], color["blue"], self.server.ledManager.getBrightness())
-                    self.server.ledManager.startProgram(SingleColorProgram(False, ledState))
+                    self.server.ledManager.startProgram(SingleColorProgram(ledState))
                     break
     
     def _startSingle(self):
@@ -201,7 +201,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             red = params["red"] / 255
             green = params["green"] / 255
             blue = params["blue"] / 255
-            self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(red, green, blue, self.server.ledManager.getBrightness())))
+            self.server.ledManager.startProgram(SingleColorProgram(LEDState(red, green, blue, self.server.ledManager.getBrightness())))
     
     def _startColorLoop(self):
         self.logMethodAndParams("")
@@ -209,7 +209,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         for colorName in self.server.config.getValue("programs/colorloop/colors"):
             colors.append(self.getPredefinedColor(colorName))
             secondsPerColor = self.server.config.getValue("programs/colorloop/secondsPerColor")
-            self.server.ledManager.startProgram(LoopedProgram(False, ColorPathProgram(False, colors, 1, secondsPerColor), 0))
+            self.server.ledManager.startProgram(LoopedProgram(ColorPathProgram(colors, 1, secondsPerColor), 0))
             
     def _startScheduledOff(self):
         params = {"duration": 0}
@@ -236,21 +236,21 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 self._startSingle()   
             elif progName == "softOff":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SoftOffProgram(False))
+                self.server.ledManager.startProgram(SoftOffProgram())
             elif progName == "off":
                 logging.info(progName)
-                self.server.ledManager.startProgram(OffProgram(False))
+                self.server.ledManager.startProgram(OffProgram())
             elif progName == "colorloop":
                 self._startColorLoop()
             elif progName == "white":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SingleColorProgram(False, LEDState(1.0, 1.0, 1.0, 1.0)))
+                self.server.ledManager.startProgram(SingleColorProgram(LEDState(1.0, 1.0, 1.0, 1.0)))
             elif progName == "feed":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SmoothNextColorProgram(False, LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 3))
+                self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 3))
             elif progName == "randomPath":
                 logging.info(progName)
-                self.server.ledManager.startProgram(RandomPathProgram(False, self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
+                self.server.ledManager.startProgram(RandomPathProgram(self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
             elif progName == "scheduledOff":
                 self._startScheduledOff()
             elif progName == "cancelScheduledOff":

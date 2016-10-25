@@ -40,8 +40,7 @@ class ColorPathProgram(AbstractProgram):
             return result
             
     #timePerColor is the time the color is shown at each interpolationPoint not for one point on the colorpath
-    def __init__(self, printInfo, colorPath, interpolationPoints, timePerColor, startFromCurrent=False):
-        super().__init__(printInfo)
+    def __init__(self, colorPath, interpolationPoints, timePerColor, startFromCurrent=False):
         self._colorPath = colorPath
         self._interpolationPoints = interpolationPoints
         self._timePerColor = timePerColor

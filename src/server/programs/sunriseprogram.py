@@ -17,7 +17,7 @@ from server.ledstate import LEDState
 from server.programs.colorpathprogram import ColorPathProgram
 class SunriseProgram(ColorPathProgram):
 
-    def __init__(self, printInfo, duration):
+    def __init__(self, duration):
         colorPath = [
             LEDState(0.0,0.0,0.0),
             LEDState(0.0,0.0,0.2),
@@ -26,4 +26,4 @@ class SunriseProgram(ColorPathProgram):
         ]
         interpolationPoints = 60
         timePerColor = duration/((len(colorPath)-1)*interpolationPoints)
-        super().__init__(printInfo, colorPath, interpolationPoints, timePerColor)
+        super().__init__(colorPath, interpolationPoints, timePerColor)

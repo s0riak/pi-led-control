@@ -24,14 +24,14 @@ class WheelProgram(LoopedProgram):
     #minValue the minimum brightness
     #maxValue the maximum brightness
     #timePerColor the time per main color (not interpolation points)
-    def __init__(self, printInfo, iterations, minValue, maxValue, timePerColor):
+    def __init__(self, iterations, minValue, maxValue, timePerColor):
         self._minValue = min(1.0, max(0.0, minValue))
         self._maxValue = min(1.0, max(0.0, maxValue))
         colorPath = [LEDState(maxValue,minValue,minValue),LEDState(minValue,maxValue,minValue),LEDState(minValue, minValue, maxValue)]
         interpolationsPoints = 30
-        program = ColorPathProgram(printInfo, colorPath, interpolationsPoints, float(timePerColor)/float(interpolationsPoints), True)
+        program = ColorPathProgram(colorPath, interpolationsPoints, float(timePerColor)/float(interpolationsPoints), True)
         
-        super().__init__(printInfo, program, iterations)
+        super().__init__(program, iterations)
 
     def run(self):
         self.setLastValue(LEDState(self._maxValue,self._minValue,self._minValue, 1.0))
