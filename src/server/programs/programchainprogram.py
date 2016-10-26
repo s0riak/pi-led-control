@@ -15,6 +15,8 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from server.programs.abstractprogram import AbstractProgram
+
+
 class ProgramChainProgram(AbstractProgram):
 
     def __init__(self, programs):

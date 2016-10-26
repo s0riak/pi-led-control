@@ -15,10 +15,11 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import logging
 
 from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
-import logging
+
 
 class ColorPathProgram(AbstractProgram):
 

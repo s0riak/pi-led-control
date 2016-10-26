@@ -17,6 +17,8 @@
 from server.programs.colorpathprogram import ColorPathProgram
 from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
+
+
 class SmoothNextColorProgram(ProgramChainProgram):
 
     def __init__(self, ledValue, minSwitchTime, maxSwitchTime):
