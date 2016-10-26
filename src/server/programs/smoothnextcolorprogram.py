@@ -19,10 +19,12 @@ from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
 class SmoothNextColorProgram(ProgramChainProgram):
 
-    def __init__(self, ledValue, switchTime):
+    def __init__(self, ledValue, minSwitchTime, maxSwitchTime):
         colorPath = [ledValue]
+        self._minSwitchTime = minSwitchTime
+        self._maxSwitchTime = maxSwitchTime
         interpolationPoints = 50
-        timePerColor =  switchTime/interpolationPoints
+        timePerColor =  maxSwitchTime/interpolationPoints
         self._colorPathProgram = ColorPathProgram(colorPath, interpolationPoints, timePerColor, True)
         super().__init__([self._colorPathProgram, SingleColorProgram(ledValue)])
 
@@ -30,7 +32,7 @@ class SmoothNextColorProgram(ProgramChainProgram):
     def setLastColor(self, lastColor):
         if lastColor != None:
             lastHue = lastColor[0] + lastColor[1] + lastColor[2]
-            totalTime = min(8, max(2, 8 * lastHue / (255*3)))
+            totalTime = min(self._maxSwitchTime, max(self._minSwitchTime, self._maxSwitchTime * lastHue / (255*3)))
         else:
             totalTime= 1
         self._colorPathProgram.setTimePerColor(totalTime/50)
