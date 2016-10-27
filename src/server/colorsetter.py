@@ -13,8 +13,10 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-from server.ledstate import LEDState
 import logging
+
+from server.ledstate import LEDState
+
 
 class ColorSetter():
 

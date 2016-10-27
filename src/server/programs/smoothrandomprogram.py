@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from random import randint
 import random
 
 from server.programs.abstractprogram import AbstractProgram
-import logging
 
 
 class SmoothRandomProgram(AbstractProgram):

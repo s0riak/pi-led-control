@@ -18,6 +18,7 @@ from server.ledstate import LEDState
 from server.programs.colorpathprogram import ColorPathProgram
 from server.programs.loopedprogram import LoopedProgram
 
+
 class WheelProgram(LoopedProgram):
 
     #iterations number of wheel loops

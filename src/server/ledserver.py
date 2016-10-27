@@ -34,5 +34,7 @@ class LEDServer(HTTPServer):
         HTTPServer.serve_forever(self, poll_interval=poll_interval)
         
     def server_close(self):
+        logging.info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)
         HTTPServer.server_close(self)
-        logging.info("%s stopped, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)
+        logging("shutdown complete")
+        

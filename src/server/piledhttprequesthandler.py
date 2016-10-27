@@ -1,24 +1,25 @@
 from chardet.universaldetector import UniversalDetector
 from http.server import CGIHTTPRequestHandler
-import os
-import json
-from server.ledstate import LEDState
-from server.programs.wheelprogram import WheelProgram
-from server.programs.sunriseprogram import SunriseProgram
-from server.programs.scheduledprogram import ScheduledProgram
-from server.programs.loopedprogram import LoopedProgram
-from server.programs.randomcolorprogram import RandomColorProgram
-from server.programs.singlecolorprogram import SingleColorProgram
-from server.programs.softoffprogram import SoftOffProgram
-from server.programs.offprogram import OffProgram
-from server.programs.colorpathprogram import ColorPathProgram
-from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
-from server.programs.randompathprogram import RandomPathProgram
-from server.exceptions.parameterexception import ParameterExeption
-import traceback
-import logging
 import inspect
-    
+import json
+import logging
+import os
+import traceback
+
+from server.exceptions.parameterexception import ParameterExeption
+from server.ledstate import LEDState
+from server.programs.colorpathprogram import ColorPathProgram
+from server.programs.loopedprogram import LoopedProgram
+from server.programs.offprogram import OffProgram
+from server.programs.randomcolorprogram import RandomColorProgram
+from server.programs.randompathprogram import RandomPathProgram
+from server.programs.scheduledprogram import ScheduledProgram
+from server.programs.singlecolorprogram import SingleColorProgram
+from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
+from server.programs.sunriseprogram import SunriseProgram
+from server.programs.wheelprogram import WheelProgram
+
+
 class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
@@ -236,7 +237,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 self._startSingle()   
             elif progName == "softOff":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SoftOffProgram())
+                self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(0.0, 0.0, 0.0, 1.0), 1, 3))
             elif progName == "off":
                 logging.info(progName)
                 self.server.ledManager.startProgram(OffProgram())
@@ -247,7 +248,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 self.server.ledManager.startProgram(SingleColorProgram(LEDState(1.0, 1.0, 1.0, 1.0)))
             elif progName == "feed":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 3))
+                self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 0.5, 3))
             elif progName == "randomPath":
                 logging.info(progName)
                 self.server.ledManager.startProgram(RandomPathProgram(self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
