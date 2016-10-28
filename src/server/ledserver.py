@@ -25,16 +25,22 @@ from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 class LEDServer(HTTPServer):
 
     def __init__(self, connection, ledManager, configManager):
-        super().__init__(connection, PiLEDHTTPRequestHandler)
+        self._connection = connection
         self.ledManager = ledManager
         self.config = configManager
+        self._serverStarted = False
+        super().__init__(connection, PiLEDHTTPRequestHandler)
+
                 
     def serve_forever(self, poll_interval=0.5):
-        logging.info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)
+        logging.info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
+        self._serverStarted = True
         HTTPServer.serve_forever(self, poll_interval=poll_interval)
         
     def server_close(self):
-        logging.info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self.server_name, self.server_port)
+        if self._serverStarted:
+            logging.info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
         HTTPServer.server_close(self)
-        logging.info("shutdown complete")
+        if self._serverStarted:
+            logging.info("teardown complete")
         

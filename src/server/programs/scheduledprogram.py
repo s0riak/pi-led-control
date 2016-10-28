@@ -20,6 +20,7 @@ import logging
 class ScheduledProgram(AbstractProgram):
 
     def __init__(self, program, timeOfDay):
+        super().__init__()
         self._program = program
         self._timeOfDay = timeOfDay
 

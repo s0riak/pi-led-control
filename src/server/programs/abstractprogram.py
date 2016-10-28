@@ -22,6 +22,7 @@ from server.exceptions.interruptionexception import InterruptionException
 class AbstractProgram(ABC):
 
     def __init__(self):
+        super().__init__()
         self.threadStopEvent = None
         self._lastValue = None
         self._colorSetter = None
