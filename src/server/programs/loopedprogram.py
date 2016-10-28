@@ -19,6 +19,7 @@ import logging
 class LoopedProgram(AbstractProgram):
 
     def __init__(self, program, iterations=0):
+        super().__init__()
         self._program = program
         self._iterations = iterations
 

@@ -31,7 +31,6 @@ class WheelProgram(LoopedProgram):
         colorPath = [LEDState(maxValue,minValue,minValue),LEDState(minValue,maxValue,minValue),LEDState(minValue, minValue, maxValue)]
         interpolationsPoints = 30
         program = ColorPathProgram(colorPath, interpolationsPoints, float(timePerColor)/float(interpolationsPoints), True)
-        
         super().__init__(program, iterations)
 
     def run(self):

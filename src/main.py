@@ -42,7 +42,7 @@ def initLogger(logPath, fileLogLevel, consoleLogLevel):
     
 def main():
     parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
-    parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
+    parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='localhost')
     parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
     parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
     parser.add_argument('-l', '--logPath', help='the path to the log file to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/piledcontrol.log")
@@ -51,12 +51,19 @@ def main():
     args = vars(parser.parse_args())
 
     initLogger(args['logPath'], args['fileLogLevel'], args['consoleLogLevel'])
-    ledServer = LEDServer((args['name'], args['port']), LEDManager(), ConfigurationManager(args['configPath']))
-
+    
     try:
-        ledServer.serve_forever()
-    except KeyboardInterrupt:
-        ledServer.server_close()
+        ledServer = LEDServer((args['name'], args['port']), LEDManager(), ConfigurationManager(args['configPath']))
+    except OSError as e:
+        if str(e) == "[Errno 98] Address already in use":
+            logging.error("can't init server, port is already in use")
+        else:
+            raise e
+    else:
+        try:
+            ledServer.serve_forever()
+        except KeyboardInterrupt:
+            ledServer.server_close()
 
 if __name__ == '__main__':
     main()
