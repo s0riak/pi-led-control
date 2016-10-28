@@ -16,6 +16,9 @@
 import logging
 
 from server.ledstate import LEDState
+import traceback
+
+from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 
 
 class ColorSetter():
@@ -35,8 +38,22 @@ class ColorSetter():
         return self._ledState.brightness
 
     def _writePiBlasterValue(self, channel, channelName, value):
-        with open("/dev/pi-blaster", "w") as piblaster:
-            print("{}={}".format(channel, value), file=piblaster)
+        piBlasterPath = "/dev/pi-blaster"
+        try:
+            piblaster = open(piBlasterPath, "w")
+        except:
+            self._ledState = LEDState()
+            errorMessage = "error opening " + piBlasterPath + " " + traceback.format_exc()
+            raise PiBlasterUnavailableException(errorMessage)
+        else:
+            try:
+                print("{}={}".format(channel, value), file=piblaster)
+                piblaster.close()
+            except:
+                self._ledState = LEDState()
+                errorMessage = "error writing {}={} to {}".format(channel, value, piBlasterPath)
+                piblaster.close()
+                raise PiBlasterUnavailableException(errorMessage)      
 
     def setValue(self, ledState):
         if ledState.brightness != None and ledState.brightness != self._ledState.brightness:
