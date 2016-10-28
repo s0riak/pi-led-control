@@ -42,7 +42,7 @@ def initLogger(logPath, fileLogLevel, consoleLogLevel):
     
 def main():
     parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
-    parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='localhost')
+    parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
     parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
     parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
     parser.add_argument('-l', '--logPath', help='the path to the log file to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/piledcontrol.log")
