@@ -15,14 +15,15 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
 from threading import Event
 from threading import Semaphore
 from threading import Thread
+
 from server.colorsetter import ColorSetter
 from server.ledcontrolthread import LEDControlThread
-from server.programs.softoffprogram import SoftOffProgram
-import logging
-
+from server.ledstate import LEDState
+from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
 
 
 class LEDManager():
@@ -64,7 +65,7 @@ class LEDManager():
             logging.info("canceled power off")
             return
         logging.info("wait finished starting SoftOffProgram")
-        self.startProgram(SoftOffProgram())
+        self.startProgram(SmoothNextColorProgram(LEDState(0.0, 0.0, 0.0, 1.0), 1, 3))
         self._cancelPowerOffEvent = None
         
     def schedulePowerOff(self, duration):

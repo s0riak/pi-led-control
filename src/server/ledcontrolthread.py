@@ -20,15 +20,15 @@ from threading import Event
 from threading import Thread
 
 from server.exceptions.interruptionexception import InterruptionException
+from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.programs.abstractprogram import AbstractProgram
 
 
 class LEDControlThread(Thread):
   
-    def __init__(self, program, printInfo=False):
+    def __init__(self, program):
         Thread.__init__(self)
         self.program = program
-        self.printInfo = printInfo
         self.threadStopEvent = Event()
         
     def run(self):
@@ -37,6 +37,7 @@ class LEDControlThread(Thread):
             self.program.setThreadStopEvent(self.threadStopEvent)
             self.program.run()
         except InterruptionException:
-            if self.printInfo:
-                logging.info("killed thread doing " + type(self.program).__name__)
+            logging.info("killed thread doing " + type(self.program).__name__)
+        except PiBlasterUnavailableException as e:
+            logging.error("thread failed doing " + type(self.program).__name__ + ", message: " + str(e))
                 
