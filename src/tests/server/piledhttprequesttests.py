@@ -129,5 +129,121 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
         self.assertEqual(_send_errorMock.call_args[0][1], "Invalid payload for request " + self.handler.path)
         self.assertNotEqual(_send_errorMock.call_args[0][2], "")
         
+    def test_do_POST_return400OnInvalidPath(self):
+        self.handler.path = "/blub"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _send_errorMock = MagicMock()
+        self.handler.send_error = _send_errorMock
+        self.handler.do_POST()
+        assert _send_errorMock.called
+        self.assertEqual(_send_errorMock.call_args[0][0], 400)
+        self.assertEqual(_send_errorMock.call_args[0][1], "invalid path " + self.handler.path)
+        
+    def test_do_POST_onlySetBrightnessCalledOnBrightness(self):
+        self.handler.path = "/setBrightness"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _setBrightnessMock = MagicMock()
+        self.handler._setBrightness = _setBrightnessMock
+        _startProgramMock = MagicMock()
+        self.handler._startProgram = _startProgramMock
+        _configureProgramMock = MagicMock()
+        self.handler._configureProgram = _configureProgramMock
+        _configureColorMock = MagicMock()
+        self.handler._configureColor = _configureColorMock
+        _deleteColorMock = MagicMock()
+        self.handler._deleteColor = _deleteColorMock
+        self.handler.do_POST()
+        assert _setBrightnessMock.called
+        assert not _startProgramMock.called
+        assert not _configureProgramMock.called
+        assert not _configureColorMock.called
+        assert not _deleteColorMock.called
+        
+    def test_do_POST_onlyStartProgramCalledOnStartProgram(self):
+        self.handler.path = "/startProgram"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _setBrightnessMock = MagicMock()
+        self.handler._setBrightness = _setBrightnessMock
+        _startProgramMock = MagicMock()
+        self.handler._startProgram = _startProgramMock
+        _configureProgramMock = MagicMock()
+        self.handler._configureProgram = _configureProgramMock
+        _configureColorMock = MagicMock()
+        self.handler._configureColor = _configureColorMock
+        _deleteColorMock = MagicMock()
+        self.handler._deleteColor = _deleteColorMock
+        self.handler.do_POST()
+        assert not _setBrightnessMock.called
+        assert _startProgramMock.called
+        assert not _configureProgramMock.called
+        assert not _configureColorMock.called
+        assert not _deleteColorMock.called
+        
+    def test_do_POST_onlyConfigureProgramCalledOnConfigureProgram(self):
+        self.handler.path = "/configureProgram"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _setBrightnessMock = MagicMock()
+        self.handler._setBrightness = _setBrightnessMock
+        _startProgramMock = MagicMock()
+        self.handler._startProgram = _startProgramMock
+        _configureProgramMock = MagicMock()
+        self.handler._configureProgram = _configureProgramMock
+        _configureColorMock = MagicMock()
+        self.handler._configureColor = _configureColorMock
+        _deleteColorMock = MagicMock()
+        self.handler._deleteColor = _deleteColorMock
+        self.handler.do_POST()
+        assert not _setBrightnessMock.called
+        assert not _startProgramMock.called
+        assert _configureProgramMock.called
+        assert not _configureColorMock.called
+        assert not _deleteColorMock.called
+        
+    def test_do_POST_onlyConfigureColorCalledOnConfigureColor(self):
+        self.handler.path = "/configureColor"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _setBrightnessMock = MagicMock()
+        self.handler._setBrightness = _setBrightnessMock
+        _startProgramMock = MagicMock()
+        self.handler._startProgram = _startProgramMock
+        _configureProgramMock = MagicMock()
+        self.handler._configureProgram = _configureProgramMock
+        _configureColorMock = MagicMock()
+        self.handler._configureColor = _configureColorMock
+        _deleteColorMock = MagicMock()
+        self.handler._deleteColor = _deleteColorMock
+        self.handler.do_POST()
+        assert not _setBrightnessMock.called
+        assert not _startProgramMock.called
+        assert not _configureProgramMock.called
+        assert _configureColorMock.called
+        assert not _deleteColorMock.called
+
+    def test_do_POST_onlyDeleteColorCalledOnDeleteColor(self):
+        self.handler.path = "/deleteColor"
+        _loadJSONBodyMock = MagicMock()
+        self.handler.loadJSONBody = _loadJSONBodyMock
+        _setBrightnessMock = MagicMock()
+        self.handler._setBrightness = _setBrightnessMock
+        _startProgramMock = MagicMock()
+        self.handler._startProgram = _startProgramMock
+        _configureProgramMock = MagicMock()
+        self.handler._configureProgram = _configureProgramMock
+        _configureColorMock = MagicMock()
+        self.handler._configureColor = _configureColorMock
+        _deleteColorMock = MagicMock()
+        self.handler._deleteColor = _deleteColorMock
+        self.handler.do_POST()
+        assert not _setBrightnessMock.called
+        assert not _startProgramMock.called
+        assert not _configureProgramMock.called
+        assert not _configureColorMock.called
+        assert _deleteColorMock.called
+        
 if __name__ == '__main__':
     unittest.main()

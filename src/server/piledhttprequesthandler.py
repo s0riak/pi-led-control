@@ -377,6 +377,6 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             elif self.path == "/deleteColor":
                 self._deleteColor()
             else:
-                self.send_error(400, "invalid path")
+                self.send_error(400, "invalid path " + self.path)
         except:
             self.send_error(500, "Error processing request for " + self.path, traceback.format_exc())
