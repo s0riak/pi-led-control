@@ -245,7 +245,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                 self._startColorLoop()
             elif progName == "white":
                 logging.info(progName)
-                self.server.ledManager.startProgram(SingleColorProgram(LEDState(1.0, 1.0, 1.0, 1.0)))
+                self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(1.0, 1.0, 1.0, 1.0), 0.5, 0.5))
             elif progName == "feed":
                 logging.info(progName)
                 self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 0.5, 3))
