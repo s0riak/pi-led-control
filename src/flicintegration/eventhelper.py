@@ -30,6 +30,19 @@ class EventHelper():
     def __init__(self):
         self._programs = ['randomPath', '4colorloop', 'wheel', 'freak', 'softoff']
         self._programIndex = 0
+        
+    def isColorValid(self, color):
+        if not type(color) == dict:
+            return False
+        requiredKeys = ["red", "green", "blue"]
+        for requiredKey in requiredKeys:
+            if not requiredKey in color:
+                return False
+            elif type(color[requiredKey]) != float:
+                return False
+            elif float(color[requiredKey]) > 1.0 or float(color[requiredKey]) < 0.0:
+                return False
+        return True
 
     def getCurrentColor(self):
         statusRequestResult = requests.get(EventHelper.piLedHost + "/getStatus")
@@ -42,6 +55,8 @@ class EventHelper():
     
     def isFeedProgramActive(self):
         statusColor = self.getCurrentColor()
+        if not self.isColorValid(statusColor):
+            return False
         configurationRed = self.getFeedRed()
         if float(statusColor["blue"]) != 0.0:
             return False
@@ -53,6 +68,8 @@ class EventHelper():
 
     def isFullWhiteProgramActive(self):
         statusColor = self.getCurrentColor()
+        if not self.isColorValid(statusColor):
+            return False
         if float(statusColor["blue"]) != 1.0:
             return False
         if float(statusColor["green"]) != 1.0:

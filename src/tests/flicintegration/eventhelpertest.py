@@ -26,6 +26,24 @@ class EventHelperTest(unittest.TestCase):
         self.eventHelper = EventHelper()
         unittest.TestCase.setUp(self)
         
+    def test_isColorInValidIfNone(self):
+        self.assertFalse(self.eventHelper.isColorValid(None))
+        
+    def test_isColorInValidIfEmptyDict(self):
+        self.assertFalse(self.eventHelper.isColorValid({}))
+        
+    def test_isColorInvalidIfDictWithMissingRed(self):
+        self.assertFalse(self.eventHelper.isColorValid({"amber": 1.0, "green": 1.0, "blue": 1.0}))
+    
+    def test_isColorInvalidIfGreenIsString(self):
+        self.assertFalse(self.eventHelper.isColorValid({"red": 1.0, "green": "full", "blue": 1.0}))
+        
+    def test_isColorInvalidIfBlueValueIsOutOfRange(self):
+        self.assertFalse(self.eventHelper.isColorValid({"red": 1.0, "green": 1.0, "blue": 2.5}))
+        
+    def test_isColorValidIfCorrectColor(self):
+        self.assertTrue(self.eventHelper.isColorValid({"red": 1.0, "green": 0.5, "blue": 1.0}))
+        
     def test_isFullWhiteProgramActiveIfWhite(self):
         getCurrentColorMock = MagicMock()
         getCurrentColorMock.return_value = {"red": 1.0, "green": 1.0, "blue": 1.0}
@@ -42,6 +60,15 @@ class EventHelperTest(unittest.TestCase):
         getCurrentColorMock = MagicMock()
         getCurrentColorMock.return_value = {"red": 0.0, "green": 0.0, "blue": 1.0}
         self.eventHelper.getCurrentColor = getCurrentColorMock
+        self.assertFalse(self.eventHelper.isFullWhiteProgramActive())
+        
+    def test_isFullWhiteProgramInActiveIfColorNone(self):
+        getCurrentColorMock = MagicMock()
+        getCurrentColorMock.return_value = None
+        self.eventHelper.getCurrentColor = getCurrentColorMock
+        isColorValidMock = MagicMock()
+        isColorValidMock.return_value = False
+        self.eventHelper.isColorValid = isColorValidMock
         self.assertFalse(self.eventHelper.isFullWhiteProgramActive())
         
     def test_isFeedProgramActiveIfRedCorrectValue(self):
@@ -70,6 +97,18 @@ class EventHelperTest(unittest.TestCase):
         getFeedMock.return_value = 0.5
         self.eventHelper.getFeedRed = getFeedMock
         self.assertFalse(self.eventHelper.isFeedProgramActive())
+        
+    def test_isFeedProgramInActiveIfColorNone(self):
+        getCurrentColorMock = MagicMock()
+        getCurrentColorMock.return_value = None
+        self.eventHelper.getCurrentColor = getCurrentColorMock
+        isColorValidMock = MagicMock()
+        isColorValidMock.return_value = False
+        self.eventHelper.isColorValid = isColorValidMock
+        getFeedMock = MagicMock()
+        getFeedMock.return_value = 0.5
+        self.eventHelper.getFeedRed = getFeedMock
+        self.assertFalse(self.eventHelper.isFullWhiteProgramActive())
         
     def test_isFeedProgramActiveIfWhite(self):
         getCurrentColorMock = MagicMock()
