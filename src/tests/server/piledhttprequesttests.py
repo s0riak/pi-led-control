@@ -30,11 +30,106 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
         with self.patcher:
             self.patcher.is_local = True
             self.handler = PiLEDHTTPRequestHandler(None, None, None)
+            
+    def test_getClientFilesValidBinaryFilesReturn200OctetStreamAndContent(self):
+        testPath = "/blub"
+        testFileContent = bytes("testdata", "UTF-8")
+        self.handler._clientResourceBaseDir = "/testBaseDir/"
+        _getFileEncodingMock = MagicMock()
+        _getFileEncodingMock.return_value = None
+        self.handler._getFileEncoding = _getFileEncodingMock
+        _readFileToBytesMock = MagicMock()
+        _readFileToBytesMock.return_value = testFileContent
+        self.handler._readFileToBytes = _readFileToBytesMock
+        _sendResponseMock = MagicMock()
+        self.handler.send_response = _sendResponseMock
+        _sendHeaderMock = MagicMock()
+        self.handler.send_header = _sendHeaderMock
+        _endHeadersMock = MagicMock()
+        self.handler.end_headers = _endHeadersMock
+        self.handler.wfile = MagicMock()
+        _wFileWriteMock = MagicMock()
+        self.handler.wfile.write = _wFileWriteMock
+        self.handler._getClientFile(testPath)
+        _getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
+        _readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], None)
+        _sendResponseMock.assert_called_once_with(200)
+        _sendHeaderMock.assert_called_once_with("Content-type", "application/octet-stream")
+        assert _endHeadersMock.called
+        _wFileWriteMock.assert_called_with(testFileContent)
+        
+    def test_getClientFilesValidTextFilesReturn200ContentTypeBasedOnFileNameAndContent(self):
+        testPath = "/blub.css"
+        testFileContent = bytes("testdata", "UTF-8")
+        self.handler._clientResourceBaseDir = "/testBaseDir/"
+        _getFileEncodingMock = MagicMock()
+        _getFileEncodingMock.return_value = "UTF-8"
+        self.handler._getFileEncoding = _getFileEncodingMock
+        _readFileToBytesMock = MagicMock()
+        _readFileToBytesMock.return_value = testFileContent
+        self.handler._readFileToBytes = _readFileToBytesMock
+        _sendResponseMock = MagicMock()
+        self.handler.send_response = _sendResponseMock
+        _sendHeaderMock = MagicMock()
+        self.handler.send_header = _sendHeaderMock
+        _endHeadersMock = MagicMock()
+        self.handler.end_headers = _endHeadersMock
+        self.handler.wfile = MagicMock()
+        _wFileWriteMock = MagicMock()
+        self.handler.wfile.write = _wFileWriteMock
+        self.handler._getClientFile(testPath)
+        _getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
+        _readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], "UTF-8")
+        _sendResponseMock.assert_called_once_with(200)
+        _sendHeaderMock.assert_called_once_with("Content-type", "text/css")
+        assert _endHeadersMock.called
+        _wFileWriteMock.assert_called_with(testFileContent)
+        
+    def test_getClientFilesPassesExceptionFromGetFileEncoding(self):
+        testPath = "/blub.css"
+        testFileContent = bytes("testdata", "UTF-8")
+        self.handler._clientResourceBaseDir = "/testBaseDir/"
+        _getFileEncodingMock = MagicMock(side_effect=IOError)
+        self.handler._getFileEncoding = _getFileEncodingMock
+        _readFileToBytesMock = MagicMock()
+        _readFileToBytesMock.return_value = testFileContent
+        self.handler._readFileToBytes = _readFileToBytesMock
+        _sendResponseMock = MagicMock()
+        self.handler.send_response = _sendResponseMock
+        _sendHeaderMock = MagicMock()
+        self.handler.send_header = _sendHeaderMock
+        _endHeadersMock = MagicMock()
+        self.handler.end_headers = _endHeadersMock
+        self.handler.wfile = MagicMock()
+        _wFileWriteMock = MagicMock()
+        self.handler.wfile.write = _wFileWriteMock
+        self.assertRaises(IOError, lambda:self.handler._getClientFile(testPath))
+        
+    def test_getClientFilesPassesExceptionFromReadFileToBytes(self):
+        testPath = "/blub.css"
+        testFileContent = bytes("testdata", "UTF-8")
+        self.handler._clientResourceBaseDir = "/testBaseDir/"
+        _getFileEncodingMock = MagicMock()
+        _getFileEncodingMock.return_value = "UTF-8"
+        self.handler._getFileEncoding = _getFileEncodingMock
+        _readFileToBytesMock = MagicMock(side_effect=IOError)
+        _readFileToBytesMock.return_value = testFileContent
+        self.handler._readFileToBytes = _readFileToBytesMock
+        _sendResponseMock = MagicMock()
+        self.handler.send_response = _sendResponseMock
+        _sendHeaderMock = MagicMock()
+        self.handler.send_header = _sendHeaderMock
+        _endHeadersMock = MagicMock()
+        self.handler.end_headers = _endHeadersMock
+        self.handler.wfile = MagicMock()
+        _wFileWriteMock = MagicMock()
+        self.handler.wfile.write = _wFileWriteMock
+        self.assertRaises(IOError, lambda:self.handler._getClientFile(testPath))
     
     def test_do_GET_IndexCalled(self):
         self.handler.path = "/"
         _getClientFilesMock = MagicMock()
-        self.handler._getClientFiles = _getClientFilesMock
+        self.handler._getClientFile = _getClientFilesMock
         _getConfigurationMock = MagicMock()
         self.handler._getConfiguration = _getConfigurationMock
         _getStatusMock = MagicMock()
@@ -50,7 +145,7 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
             with self.subTest(i=i):
                 self.handler.path = "/" + validClientFiles[i]
                 _getClientFilesMock = MagicMock()
-                self.handler._getClientFiles = _getClientFilesMock
+                self.handler._getClientFile = _getClientFilesMock
                 _getConfigurationMock = MagicMock()
                 self.handler._getConfiguration = _getConfigurationMock
                 _getStatusMock = MagicMock()
@@ -63,7 +158,7 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
     def test_do_GET_getConfigurationCalled(self):
         self.handler.path = "/getConfiguration"
         _getClientFilesMock = MagicMock()
-        self.handler._getClientFiles = _getClientFilesMock
+        self.handler._getClientFile = _getClientFilesMock
         _getConfigurationMock = MagicMock()
         self.handler._getConfiguration = _getConfigurationMock
         _getStatusMock = MagicMock()
@@ -76,7 +171,7 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
     def test_do_GET_getStatusCalled(self):
         self.handler.path = "/getStatus"
         _getClientFilesMock = MagicMock()
-        self.handler._getClientFiles = _getClientFilesMock
+        self.handler._getClientFile = _getClientFilesMock
         _getConfigurationMock = MagicMock()
         self.handler._getConfiguration = _getConfigurationMock
         _getStatusMock = MagicMock()
@@ -97,7 +192,7 @@ class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
     def test_do_GET_return500OnExceptionRaised(self):
         self.handler.path = "/"
         _getClientFilesMock = MagicMock(side_effect=Exception)
-        self.handler._getClientFiles = _getClientFilesMock
+        self.handler._getClientFile = _getClientFilesMock
         _send_errorMock = MagicMock()
         self.handler.send_error = _send_errorMock
         self.handler.do_GET()

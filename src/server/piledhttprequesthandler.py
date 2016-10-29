@@ -23,20 +23,21 @@ from server.programs.wheelprogram import WheelProgram
 class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
-        super().__init__(request, client_address, server)
-        self.basename = os.path.dirname(os.path.realpath(__file__)) + "/../client/"
-        self._charEncDetector = UniversalDetector()
+        self._clientResourceBaseDir = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/client/"
         self._jsonBody = None
-
+        super().__init__(request, client_address, server)
+        
     def setLedManager(self, ledManager):
         self.ledManager = ledManager
         
-    def _readFileToBytes(self, requestedPath):
+    def _getFileEncoding(self, filePath):
         detector = UniversalDetector()
-        with open(requestedPath, 'rb') as f:
-            detector.feed(f.read())
-            detector.close()
-        encoding = detector.result['encoding']
+        f = open(filePath, 'rb')
+        detector.feed(f.read())
+        detector.close()
+        return detector.result['encoding']
+        
+    def _readFileToBytes(self, requestedPath, encoding):
         if encoding == None:
             f = open(requestedPath, 'rb')
             return bytes(f.read())
@@ -45,11 +46,15 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             return bytes(f.read(), encoding)   
          
         
-    def _getClientFiles(self, path):
-        resourcePath = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/client/" + path[1:]
-        result = self._readFileToBytes(resourcePath)
+    def _getClientFile(self, path):
+        resourcePath = self._clientResourceBaseDir + path[1:]
+        fileEncoding = self._getFileEncoding(resourcePath)
+        result = self._readFileToBytes(resourcePath, fileEncoding)
         self.send_response(200)
-        self.send_header("Content-type", "text/" + path.rsplit('.', 1)[1])
+        if fileEncoding == None:
+            self.send_header("Content-type", "application/octet-stream")
+        else:
+            self.send_header("Content-type", "text/" + path.rsplit('.', 1)[1])
         self.end_headers()
         self.wfile.write(result)
         
@@ -83,10 +88,10 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         try:
             if self.path == "" or self.path == "/" or self.path == "/index.html":
                 logging.info("do_GET for index.html")
-                self._getClientFiles("/index.html")
+                self._getClientFile("/index.html")
             elif self.path[1:] in validClientFiles:
                 logging.info("do_GET for " + self.path[1:1])
-                self._getClientFiles(self.path)
+                self._getClientFile(self.path)
             elif self.path == "/getConfiguration":
                 logging.info("do_GET for getConfiguration")
                 self._getConfiguration()
