@@ -33,14 +33,14 @@ class LEDServer(HTTPServer):
 
                 
     def serve_forever(self, poll_interval=0.5):
-        logging.info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
+        logging.getLogger("main").info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
         self._serverStarted = True
         HTTPServer.serve_forever(self, poll_interval=poll_interval)
         
     def server_close(self):
         if self._serverStarted:
-            logging.info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
+            logging.getLogger("main").info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
         HTTPServer.server_close(self)
         if self._serverStarted:
-            logging.info("teardown complete")
+            logging.getLogger("main").info("teardown complete")
         

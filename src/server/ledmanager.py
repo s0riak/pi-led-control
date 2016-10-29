@@ -62,9 +62,9 @@ class LEDManager():
     def powerOffWaiter(self,duration, cancelEvent):
         cancelEvent.wait(duration)
         if cancelEvent.is_set():
-            logging.info("canceled power off")
+            logging.getLogger("main").info("canceled power off")
             return
-        logging.info("wait finished starting SoftOffProgram")
+        logging.getLogger("main").info("wait finished starting SoftOffProgram")
         self.startProgram(SmoothNextColorProgram(LEDState(0.0, 0.0, 0.0, 1.0), 1, 3))
         self._cancelPowerOffEvent = None
         

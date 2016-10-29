@@ -76,7 +76,7 @@ class ColorPathProgram(AbstractProgram):
                 if not self._colorPath[0].colorsEqual(self._lastValue):
                     self._colorPath.insert(0, copy.deepcopy(self._lastValue))
             else:
-                logging.warning("last color not available")
+                logging.getLogger("main").warning("last color not available")
         self.initColorIterator(self._colorPath)
         currentPoint = None
         for color in self._colorIterator:

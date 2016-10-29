@@ -1,4 +1,5 @@
 from chardet.universaldetector import UniversalDetector
+from http import HTTPStatus
 from http.server import CGIHTTPRequestHandler
 import inspect
 import json
@@ -26,6 +27,18 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self._clientResourceBaseDir = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/client/"
         self._jsonBody = None
         super().__init__(request, client_address, server)
+        
+    def log_error(self, format, *args):
+        logging.getLogger("access").error("%s - - [%s] %s\n" % 
+                         (self.address_string(),
+                          self.log_date_time_string(),
+                          format % args))
+    
+    def log_request(self, code='-', size='-'):
+        if isinstance(code, HTTPStatus):
+            code = code.value
+        logging.getLogger("access").info('"%s" %s %s',
+                         self.requestline, str(code), str(size))
         
     def setLedManager(self, ledManager):
         self.ledManager = ledManager
@@ -77,7 +90,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             resultDict["brightness"] = None
             resultDict["color"] = None
         result = bytes(json.dumps(resultDict), "utf-8")
-        logging.debug("_getStatus, result: " + json.dumps(resultDict))
+        logging.getLogger("main").debug("_getStatus, result: " + json.dumps(resultDict))
         self.send_response(200)
         self.send_header("Content-type", "text/json")
         self.end_headers()
@@ -87,22 +100,22 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css", "IcoMoon-Free.ttf"]
         try:
             if self.path == "" or self.path == "/" or self.path == "/index.html":
-                logging.info("do_GET for index.html")
+                logging.getLogger("main").info("do_GET for index.html")
                 self._getClientFile("/index.html")
             elif self.path[1:] in validClientFiles:
-                logging.info("do_GET for " + self.path[1:1])
+                logging.getLogger("main").info("do_GET for " + self.path[1:1])
                 self._getClientFile(self.path)
             elif self.path == "/getConfiguration":
-                logging.info("do_GET for getConfiguration")
+                logging.getLogger("main").info("do_GET for getConfiguration")
                 self._getConfiguration()
             elif self.path == "/getStatus":
-                logging.debug("do_GET for getStatus")
+                logging.getLogger("main").debug("do_GET for getStatus")
                 self._getStatus()
             else:
-                logging.warning("do_GET called with invalid path " + self.path)
+                logging.getLogger("main").warning("do_GET called with invalid path " + self.path)
                 self.send_error(404, "invalid path " + self.path)
         except:
-            logging.error("Error processing request for " + self.path + "\ntrace: " +  traceback.format_exc())
+            logging.getLogger("main").error("Error processing request for " + self.path + "\ntrace: " + traceback.format_exc())
             self.send_error(500, "Error processing request for " + self.path, traceback.format_exc())
 
     def getParamsFromJson(self, result):
@@ -151,7 +164,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.end_headers()
         
     def logMethodAndParams(self, params, logLevel=logging.INFO):
-        logging.log(logLevel, inspect.stack()[1][3] + " with params " + str(params))
+        logging.getLogger("main").log(logLevel, inspect.stack()[1][3] + " with params " + str(params))
         
     def _startWheel(self):
         params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
@@ -241,21 +254,21 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             elif progName == "single":
                 self._startSingle()   
             elif progName == "softOff":
-                logging.info(progName)
+                logging.getLogger("main").info(progName)
                 self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(0.0, 0.0, 0.0, 1.0), 1, 3))
             elif progName == "off":
-                logging.info(progName)
+                logging.getLogger("main").info(progName)
                 self.server.ledManager.startProgram(OffProgram())
             elif progName == "colorloop":
                 self._startColorLoop()
             elif progName == "white":
-                logging.info(progName)
+                logging.getLogger("main").info(progName)
                 self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(1.0, 1.0, 1.0, 1.0), 0.5, 2))
             elif progName == "feed":
-                logging.info(progName)
+                logging.getLogger("main").info(progName)
                 self.server.ledManager.startProgram(SmoothNextColorProgram(LEDState(self.server.config.getValue("programs/feed/brightness"), 0.0, 0.0, 1.0), 0.5, 3))
             elif progName == "randomPath":
-                logging.info(progName)
+                logging.getLogger("main").info(progName)
                 self.server.ledManager.startProgram(RandomPathProgram(self.getPredefinedColors(), self.server.config.getValue("programs/randomPath/timePerColor")))
             elif progName == "scheduledOff":
                 self._startScheduledOff()
@@ -367,7 +380,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         try:
             self.loadJSONBody()
         except:
-            logging.warning("Invalid payload for request " + self.path + "\n trace: " + traceback.format_exc())
+            logging.getLogger("main").warning("Invalid payload for request " + self.path + "\n trace: " + traceback.format_exc())
             self.send_error(400, "Invalid payload for request " + self.path, traceback.format_exc())
             return
         try:

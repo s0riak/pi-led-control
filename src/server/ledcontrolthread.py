@@ -37,7 +37,7 @@ class LEDControlThread(Thread):
             self.program.setThreadStopEvent(self.threadStopEvent)
             self.program.run()
         except InterruptionException:
-            logging.info("killed thread doing " + type(self.program).__name__)
+            logging.getLogger("main").info("killed thread doing " + type(self.program).__name__)
         except PiBlasterUnavailableException as e:
-            logging.error("thread failed doing " + type(self.program).__name__ + ", message: " + str(e))
+            logging.getLogger("main").error("thread failed doing " + type(self.program).__name__ + ", message: " + str(e))
                 

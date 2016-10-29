@@ -31,7 +31,7 @@ class ScheduledProgram(AbstractProgram):
             sleepDuration = self._timeOfDay - secondsInCurrentDay
         else:
             sleepDuration = self._timeOfDay + 3600 * 24 - secondsInCurrentDay
-        logging.info("sleeping for " + str(sleepDuration) + " seconds")
+        logging.getLogger("main").info("sleeping for " + str(sleepDuration) + " seconds")
         self._waitIfNotStopped(sleepDuration)
         self._program.run()
 
