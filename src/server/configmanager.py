@@ -30,7 +30,7 @@ class ConfigurationManager():
         
     def loadConfig(self):
         if not os.path.isfile(self._configPath):
-            logging.warning("no configuration found, writing default to " + self._configPath)
+            logging.getLogger("main").warning("no configuration found, writing default to " + self._configPath)
             self.storeConfig(self._getDefaultConfiguration())
         with open(self._configPath) as configFile:    
             return json.load(configFile)

@@ -30,7 +30,7 @@ class ColorSetter():
     def setBrightness(self, brightness):
         self._ledState.brightness = brightness
         if self._ledState.isComplete():
-            logging.info("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
+            logging.getLogger("main").info("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -56,7 +56,7 @@ class ColorSetter():
 
     def setValue(self, ledState):
         if ledState.brightness != None and ledState.brightness != self._ledState.brightness:
-            logging.warn("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
+            logging.getLogger("main").warn("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
             redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)
@@ -65,7 +65,7 @@ class ColorSetter():
             self._writePiBlasterValue(17, "red" , redValue)
             self._writePiBlasterValue(22, "green" , greenValue)
             self._writePiBlasterValue(24, "blue" , blueValue)
-            logging.debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
+            logging.getLogger("main").debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
             
     def getCurrentValue(self):
         return self._ledState

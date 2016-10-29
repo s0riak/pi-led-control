@@ -36,7 +36,7 @@ class SmoothRandomProgram(AbstractProgram):
         g = round(random.uniform(0.0, 0.5), 3)
         b = round(random.uniform(0.0, 0.5), 3)
         while True:
-            logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+            logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
             self._setColor(r, g, b)
             self._waitIfNotStopped(0.05)
             colorRand = randint(0,2)

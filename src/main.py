@@ -24,39 +24,45 @@ from server.ledmanager import LEDManager
 from server.ledserver import LEDServer
 
 
-def initLogger(logPath, fileLogLevel, consoleLogLevel):
-    logging.getLogger().addHandler(logging.StreamHandler())
-    rootLogger = logging.getLogger()
-    rootLoggerLevel = min(fileLogLevel, consoleLogLevel)
-    rootLogger.setLevel(rootLoggerLevel)
+def initLogger(loggerName, logPath, fileLogLevel, consoleLogLevel):
+    logger = logging.getLogger(loggerName)
+    loggerLevel = min(fileLogLevel, consoleLogLevel)
+    logger.setLevel(loggerLevel)
     logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
     fileHandler = handlers.TimedRotatingFileHandler(logPath, when='D', backupCount=7)
     fileHandler.setFormatter(logFormatter)
     fileHandler.setLevel(fileLogLevel)
-    rootLogger.addHandler(fileHandler)
+    logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     consoleHandler.setLevel(consoleLogLevel)
-    rootLogger.addHandler(consoleHandler)
+    logger.addHandler(consoleHandler)
     
 def main():
     parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
     parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
     parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
     parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
-    parser.add_argument('-l', '--logPath', help='the path to the log file to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/piledcontrol.log")
+    parser.add_argument('-l', '--logPath', help='the path to the log folder to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', default=logging.INFO)
     parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', default=logging.ERROR)
+    parser.add_argument('-atc', '--accessLogToConsole', help='set to True to print access log entries to console', default=False)
     args = vars(parser.parse_args())
 
-    initLogger(args['logPath'], args['fileLogLevel'], args['consoleLogLevel'])
+    initLogger("main", args['logPath'] + "/piledcontrol.log", args['fileLogLevel'], args['consoleLogLevel'])
+    if args['accessLogToConsole']:
+        accessConsoleLogLevel = args['consoleLogLevel']
+    else:
+        accessConsoleLogLevel = logging.CRITICAL 
+    initLogger("access", args['logPath'] + "/piledcontrol_access.log", args['fileLogLevel'], accessConsoleLogLevel)
+    logging.getLogger().setLevel(100)
     
     try:
         ledServer = LEDServer((args['name'], args['port']), LEDManager(), ConfigurationManager(args['configPath']))
     except OSError as e:
         if str(e) == "[Errno 98] Address already in use":
-            logging.error("can't init server, port is already in use")
+            logging.getLogger("main").critical("can't init server, port is already in use")
         else:
             raise e
     else:

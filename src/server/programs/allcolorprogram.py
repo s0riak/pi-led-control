@@ -34,7 +34,7 @@ class AllColorProgram(AbstractProgram):
                     r = i/(self.stepsPerColor-1)
                     g = j/(self.stepsPerColor-1)
                     b = k/(self.stepsPerColor-1)
-                    logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                    logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                     self._setColor(r, g, b)
                     self._waitIfNotStopped(self.secondsPerColor)
         self._setColor(0,0,0)

@@ -40,7 +40,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 if upDownRand:
                     for i in range(0,stepsInOneDirection):
                         r = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
@@ -48,7 +48,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 else:
                     for i in range(0,stepsInOneDirection):
                         r = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
@@ -57,7 +57,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 if upDownRand:
                     for i in range(0,stepsInOneDirection):
                         g = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
@@ -65,7 +65,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 if upDownRand:
                     for i in range(0,stepsInOneDirection):
                         g = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
@@ -74,7 +74,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 if upDownRand:
                     for i in range(0,stepsInOneDirection):
                         b = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
@@ -82,7 +82,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                 if upDownRand:
                     for i in range(0,stepsInOneDirection):
                         b = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.debug("r: {}, g: {}, b: {}".format(r,g,b))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
                         self._setColor(r, g, b)
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
