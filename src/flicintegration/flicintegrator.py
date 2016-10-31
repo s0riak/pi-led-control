@@ -7,7 +7,7 @@ import traceback
 import logging
 from logging import handlers
 import os
-from flicintegration.eventhelper import EventHelper
+from eventhelper import EventHelper  # @UnresolvedImport
 
 FLIC_LIB_PATH = "/home/pi/fliclib-linux-hci/clientlib/python/"
 sys.path.append(FLIC_LIB_PATH)
