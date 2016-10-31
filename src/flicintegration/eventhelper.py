@@ -110,7 +110,6 @@ class EventHelper():
                     self.startProgram("softOff")
                 else:
                     self.startProgram("white")
-                    self.startWhiteProgram()
             elif eventType == EventHelper.eventTypes["togglePrograms"]:
                 self.startProgram(self._programs[self._programIndex])
                 self._programIndex = (self._programIndex + 1) % len(self._programs)
