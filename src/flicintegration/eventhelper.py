@@ -20,6 +20,8 @@
 import json
 import requests
 import traceback
+import logging
+from requests.exceptions import HTTPError
 
 
 class EventHelper():
@@ -45,11 +47,19 @@ class EventHelper():
         return True
 
     def getCurrentColor(self):
-        statusRequestResult = requests.get(EventHelper.piLedHost + "/getStatus")
+        try:
+            statusRequestResult = requests.get(EventHelper.piLedHost + "/getStatus")
+        except (ConnectionError, HTTPError) as e:
+            logging.error("getStatus failed with error " + str(e))
+            raise e
         return json.loads(statusRequestResult.text)["color"]
 
     def getFeedRed(self):
-        configurationRequestResult = requests.get(EventHelper.piLedHost + "/getConfiguration")
+        try:
+            configurationRequestResult = requests.get(EventHelper.piLedHost + "/getConfiguration")
+        except (ConnectionError, HTTPError) as e:
+            logging.error("getConfiguration failed with error " + str(e))
+            raise e
         configurationJsonBody = json.loads(configurationRequestResult.text)
         return configurationJsonBody["programs"]["feed"]["brightness"]
     
@@ -77,36 +87,34 @@ class EventHelper():
         if float(statusColor["red"]) != 1.0:
             return False
         return True
-
-    def startSoftOffProgram(self):
-        requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': 'softOff', 'params': []}))
     
-    def startFeedProgram(self):
-        requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': 'feed', 'params': []}))
-    
-    def startWhiteProgram(self):
-        requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': 'white', 'params': []}))
-    
-    def startNextProgram(self):
-        requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': self._programs[self._programIndex], 'params': []}))
+    def startProgram(self, programName):
+        try:
+            requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': programName, 'params': []}))
+            logging.info("startProgram for " + programName + "called")
+        except (ConnectionError, HTTPError) as e:
+            logging.error("startProgram " + programName + " failed with error " + str(e))
+            raise e
     
     def handleEvent(self, eventType):
         try:
-            print(str(eventType))
             if eventType == EventHelper.eventTypes["toggleFeed"]:
                 self._programIndex = 0
                 if self.isFeedProgramActive():
-                    self.startSoftOffProgram()
+                    self.startProgram("softOff")
                 else:
-                    self.startFeedProgram()
-            if eventType == EventHelper.eventTypes["toggleWhite"]:
+                    self.startProgram("feed")
+            elif eventType == EventHelper.eventTypes["toggleWhite"]:
                 self._programIndex = 0
                 if self.isFullWhiteProgramActive():
-                    self.startSoftOffProgram()
+                    self.startProgram("softOff")
                 else:
+                    self.startProgram("white")
                     self.startWhiteProgram()
-            if eventType == EventHelper.eventTypes["togglePrograms"]:
-                self.startNextProgram()
+            elif eventType == EventHelper.eventTypes["togglePrograms"]:
+                self.startProgram(self._programs[self._programIndex])
                 self._programIndex = (self._programIndex + 1) % len(self._programs)
+            else:
+                logging.error("Unsupported eventType " + str(eventType))
         except:
-                print("toggleFeed failed" + traceback.format_exc())
+            logging.error("handleEvent failed" + traceback.format_exc())

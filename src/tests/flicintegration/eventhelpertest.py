@@ -123,88 +123,44 @@ class EventHelperTest(unittest.TestCase):
         isFeedProgramActiveMock = MagicMock()
         isFeedProgramActiveMock.return_value = False
         self.eventHelper.isFeedProgramActive = isFeedProgramActiveMock
-        startFeedProgramMock = MagicMock()
-        self.eventHelper.startFeedProgram = startFeedProgramMock
-        startSoftOffProgramMock = MagicMock()
-        self.eventHelper.startSoftOffProgram = startSoftOffProgramMock
-        startWhiteProgramMock = MagicMock()
-        self.eventHelper.startWhiteProgram = startWhiteProgramMock
-        startNextProgram = MagicMock()
-        self.eventHelper.startNextProgram = startNextProgram
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
         self.eventHelper.handleEvent(EventHelper.eventTypes["toggleFeed"])
-        assert not startSoftOffProgramMock.called
-        assert startFeedProgramMock.called
-        assert not startWhiteProgramMock.called
-        assert not startNextProgram.called
+        startProgramMock.assert_called_once_with("feed")
     
     def test_onlyStartSoftOffOnToggleFeedFromFeed(self):
         isFeedProgramActiveMock = MagicMock()
         isFeedProgramActiveMock.return_value = True
         self.eventHelper.isFeedProgramActive = isFeedProgramActiveMock
-        startFeedProgramMock = MagicMock()
-        self.eventHelper.startFeedProgram = startFeedProgramMock
-        startSoftOffProgramMock = MagicMock()
-        self.eventHelper.startSoftOffProgram = startSoftOffProgramMock
-        startWhiteProgramMock = MagicMock()
-        self.eventHelper.startWhiteProgram = startWhiteProgramMock
-        startNextProgram = MagicMock()
-        self.eventHelper.startNextProgram = startNextProgram
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
         self.eventHelper.handleEvent(EventHelper.eventTypes["toggleFeed"])
-        assert startSoftOffProgramMock.called
-        assert not startFeedProgramMock.called
-        assert not startWhiteProgramMock.called
-        assert not startNextProgram.called
+        startProgramMock.assert_called_once_with("softOff")
         
     def test_onlyStartSoftOffOnToggleWhiteFromWhite(self):
         isWhiteProgramActiveMock = MagicMock()
         isWhiteProgramActiveMock.return_value = True
         self.eventHelper.isFullWhiteProgramActive = isWhiteProgramActiveMock
-        startFeedProgramMock = MagicMock()
-        self.eventHelper.startFeedProgram = startFeedProgramMock
-        startSoftOffProgramMock = MagicMock()
-        self.eventHelper.startSoftOffProgram = startSoftOffProgramMock
-        startWhiteProgramMock = MagicMock()
-        self.eventHelper.startWhiteProgram = startWhiteProgramMock
-        startNextProgram = MagicMock()
-        self.eventHelper.startNextProgram = startNextProgram
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
         self.eventHelper.handleEvent(EventHelper.eventTypes["toggleWhite"])
-        assert startSoftOffProgramMock.called
-        assert not startFeedProgramMock.called
-        assert not startWhiteProgramMock.called
-        assert not startNextProgram.called
+        startProgramMock.assert_called_once_with("softOff")
         
     def test_onlyStartWhiteProgramOnToggleWhiteFromNonWhite(self):
         isWhiteProgramActiveMock = MagicMock()
         isWhiteProgramActiveMock.return_value = False
         self.eventHelper.isFullWhiteProgramActive = isWhiteProgramActiveMock
-        startFeedProgramMock = MagicMock()
-        self.eventHelper.startFeedProgram = startFeedProgramMock
-        startSoftOffProgramMock = MagicMock()
-        self.eventHelper.startSoftOffProgram = startSoftOffProgramMock
-        startWhiteProgramMock = MagicMock()
-        self.eventHelper.startWhiteProgram = startWhiteProgramMock
-        startNextProgramMock = MagicMock()
-        self.eventHelper.startNextProgram = startNextProgramMock
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
         self.eventHelper.handleEvent(EventHelper.eventTypes["toggleWhite"])
-        assert not startSoftOffProgramMock.called
-        assert not startFeedProgramMock.called
-        assert startWhiteProgramMock.called
-        assert not startNextProgramMock.called
+        startProgramMock.assert_called_once_with("white")
         
     def test_onlyStartNextProgramOnToggleNextProgram(self):
-        startFeedProgramMock = MagicMock()
-        self.eventHelper.startFeedProgram = startFeedProgramMock
-        startSoftOffProgramMock = MagicMock()
-        self.eventHelper.startSoftOffProgram = startSoftOffProgramMock
-        startWhiteProgramMock = MagicMock()
-        self.eventHelper.startWhiteProgram = startWhiteProgramMock
-        startNextProgramMock = MagicMock()
-        self.eventHelper.startNextProgram = startNextProgramMock
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
+        self.eventHelper._programIndex = 0
         self.eventHelper.handleEvent(EventHelper.eventTypes["togglePrograms"])
-        assert not startSoftOffProgramMock.called
-        assert not startFeedProgramMock.called
-        assert not startWhiteProgramMock.called
-        assert startNextProgramMock.called
+        startProgramMock.assert_called_once_with(self.eventHelper._programs[0])
         
     def test_startNextProgramOnToggleNextProgramIteratesThroughPrograms(self):
         for i in range(0, len(self.eventHelper._programs) + 1):
