@@ -1,5 +1,4 @@
 from chardet.universaldetector import UniversalDetector
-from http import HTTPStatus
 from http.server import CGIHTTPRequestHandler
 import inspect
 import json
@@ -35,8 +34,11 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
                           format % args))
     
     def log_request(self, code='-', size='-'):
-        if isinstance(code, HTTPStatus):
+        #TODO use is_instance instead of try/except
+        try:
             code = code.value
+        except:
+            pass
         logging.getLogger("access").info('"%s" %s %s',
                          self.requestline, str(code), str(size))
         
