@@ -13,7 +13,7 @@ FLIC_LIB_PATH = "/home/pi/fliclib-linux-hci/clientlib/python/"
 sys.path.append(FLIC_LIB_PATH)
 import fliclib  # @UnresolvedImport
 FLIC_HOST = "localhost"
-LOGPATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+LOGPATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 FILELOGLEVEL = logging.INFO
 CONSOLELOGLEVEL = logging.WARN
 
