@@ -42,20 +42,22 @@ def initLogger(loggerName, logPath, fileLogLevel, consoleLogLevel):
 def main():
     parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
     parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
-    parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', default=9000)
+    parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', type=int, default=9000)
     parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
+    logLevelsRange = [logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARN, logging.ERROR, logging.CRITICAL]
     parser.add_argument('-l', '--logPath', help='the path to the log folder to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-    parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', default=logging.INFO)
-    parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', default=logging.ERROR)
-    parser.add_argument('-atc', '--accessLogToConsole', help='set to True to print access log entries to console', default=False)
+    parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', type=int, choices=logLevelsRange, default=logging.INFO)
+    parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', type=int, choices=logLevelsRange, default=logging.ERROR)
+    parser.add_argument('-atc', '--accessLogToConsole', help='set to True to print access log entries to console', type=bool, default=False)
     args = vars(parser.parse_args())
 
     initLogger("main", args['logPath'] + "/piledcontrol.log", args['fileLogLevel'], args['consoleLogLevel'])
     if args['accessLogToConsole']:
-        accessConsoleLogLevel = args['consoleLogLevel']
+        consoleLogLevel = args['consoleLogLevel']
     else:
-        accessConsoleLogLevel = logging.CRITICAL 
-    initLogger("access", args['logPath'] + "/piledcontrol_access.log", args['fileLogLevel'], accessConsoleLogLevel)
+        consoleLogLevel = logging.CRITICAL
+    fileLogLevel = args['fileLogLevel']
+    initLogger("access", args['logPath'] + "/piledcontrol_access.log", fileLogLevel, consoleLogLevel)
     logging.getLogger().setLevel(100)
     
     try:
