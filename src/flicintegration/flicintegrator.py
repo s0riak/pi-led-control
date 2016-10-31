@@ -46,7 +46,7 @@ def handleButton(channel, click_type, was_queued, time_diff=None):
             if click_type == fliclib.ClickType.ButtonHold:
                 eventhelper.handleEvent(EventHelper.eventTypes["togglePrograms"])        
         except:
-            logging.error("handleButton failed" + traceback.format_exc())
+            logging.getLogger("flicintegration").error("handleButton failed" + traceback.format_exc())
                         
                         
 def got_button(bd_addr):

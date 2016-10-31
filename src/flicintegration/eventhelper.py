@@ -50,7 +50,7 @@ class EventHelper():
         try:
             statusRequestResult = requests.get(EventHelper.piLedHost + "/getStatus")
         except (ConnectionError, HTTPError) as e:
-            logging.error("getStatus failed with error " + str(e))
+            logging.getLogger("flicintegration").error("getStatus failed with error " + str(e))
             raise e
         return json.loads(statusRequestResult.text)["color"]
 
@@ -58,7 +58,7 @@ class EventHelper():
         try:
             configurationRequestResult = requests.get(EventHelper.piLedHost + "/getConfiguration")
         except (ConnectionError, HTTPError) as e:
-            logging.error("getConfiguration failed with error " + str(e))
+            logging.getLogger("flicintegration").error("getConfiguration failed with error " + str(e))
             raise e
         configurationJsonBody = json.loads(configurationRequestResult.text)
         return configurationJsonBody["programs"]["feed"]["brightness"]
@@ -91,9 +91,9 @@ class EventHelper():
     def startProgram(self, programName):
         try:
             requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': programName, 'params': []}))
-            logging.info("startProgram for " + programName + "called")
+            logging.getLogger("flicintegration").info("startProgram for " + programName + "called")
         except (ConnectionError, HTTPError) as e:
-            logging.error("startProgram " + programName + " failed with error " + str(e))
+            logging.getLogger("flicintegration").error("startProgram " + programName + " failed with error " + str(e))
             raise e
     
     def handleEvent(self, eventType):
@@ -115,6 +115,6 @@ class EventHelper():
                 self.startProgram(self._programs[self._programIndex])
                 self._programIndex = (self._programIndex + 1) % len(self._programs)
             else:
-                logging.error("Unsupported eventType " + str(eventType))
+                logging.getLogger("flicintegration").error("Unsupported eventType " + str(eventType))
         except:
-            logging.error("handleEvent failed" + traceback.format_exc())
+            logging.getLogger("flicintegration").error("handleEvent for event of type " + str(eventType) + " failed " + traceback.format_exc())
