@@ -60,6 +60,8 @@ def got_info(items):
         got_button(bd_addr)
         
 initLogger("flicintegration", LOGPATH + "/piledcontrol_flicintegration.log", FILELOGLEVEL, CONSOLELOGLEVEL)
+logging.getLogger("flicintegration").info("starting flicintegrator")
+
 
 flicClient.get_info(got_info)
 
