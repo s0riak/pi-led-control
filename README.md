@@ -16,8 +16,10 @@ If you don't have a single color LED strip, you can use https://github.com/s0ria
 
 ##Usage
 To start pi-led-control execute:
-   
-   python3 src/main.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH]
+
+main.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH] [-l LOGPATH]
+    [-fl {0,10,20,30,40,50}] [-cl {0,10,20,30,40,50}]
+    [-atc ACCESSLOGTOCONSOLE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -25,9 +27,21 @@ optional arguments:
   -p PORT, --port PORT  the port on which pi-led-control is served
   -c CONFIGPATH, --configPath CONFIGPATH
                         the path to the config file to be used
+  -l LOGPATH, --logPath LOGPATH
+                        the path to the log folder to be used
+  -fl {0,10,20,30,40,50}, --fileLogLevel {0,10,20,30,40,50}
+                        the log level for the logfile
+  -cl {0,10,20,30,40,50}, --consoleLogLevel {0,10,20,30,40,50}
+                        the log level for the console
+  -atc ACCESSLOGTOCONSOLE, --accessLogToConsole ACCESSLOGTOCONSOLE
+                        set to True to print access log entries to console
+   
    
 The server is started locally and the UI can be accessed on http://localhost:9000 or the port specified.
-
+### Logging
+pi-led-control creates two log files:
+piledcontrol.log - logging all relevant information on state changes and errors to a rotating logfile (1 per day, keeping those of last week) and stdout
+piledcontrol_access - logging all requests and http error handled by pi-led-control to a rotating logfile (same rotation as for main log) and to stdout if ACCESSLOGTOCONSOLE is true
 
 ##Available programs
 
@@ -37,13 +51,13 @@ Several programs are available to control the LED strip:
 0. 'Off' to power off the LED strip immediately
 0. 'Scheduled Off' to power off the LED strip after a given time in minutes (floats using '.' accepted for seconds are also accepted)
 0. 'Full White' to power on all channel, resulting in maximum brightness
-0. 'Feed' a very dark red light
-0. 'Color Loop' a looping program showing blue, red, yellow, green
+0. 'Feed' a configurable red light
+0. 'Color Loop' a looping program rotating through the user defined colors
 0. 'Wheel' a looping program smoothly switching from red to green to blue to red and so on
 0. 'Sunrise' a program smooth illuminating the LED, simulating a sunrise
-0. 'Freak' a program showing a new random color indefinitely
-0. 'Random Path' a program smoothly switching between 'the' predefined colors indefinitely
-0. 'Color' a program with user selected color from a set of predefined colors
+0. 'Freak' a program showing a new random color indefinitely at a userdefined pace
+0. 'Random Path' a program smoothly switching between 'the' userdefined colors (from 'Color'-program) indefinitely at a userdefined pace
+0. 'Color' a program with user selected color from a set of userdefined colors
 0. 'Free Color' a program with a color the user can freely choose using three sliders for red, green, blue
 
 The list of programs available in the ledui is about the same but naming is different but printed in the CLI program
