@@ -91,7 +91,7 @@ class EventHelper():
     def startProgram(self, programName):
         try:
             requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': programName, 'params': []}))
-            logging.getLogger("flicintegration").info("startProgram for " + programName + "called")
+            logging.getLogger("flicintegration").info("startProgram for " + programName + " called")
         except (ConnectionError, HTTPError) as e:
             logging.getLogger("flicintegration").error("startProgram " + programName + " failed with error " + str(e))
             raise e
