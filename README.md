@@ -22,17 +22,25 @@ main.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH] [-l LOGPATH]
     [-atc ACCESSLOGTOCONSOLE]
 
 optional arguments:
+
   -h, --help            show this help message and exit
+  
   -n NAME, --name NAME  the hostname on which pi-led-control is served
+  
   -p PORT, --port PORT  the port on which pi-led-control is served
+  
   -c CONFIGPATH, --configPath CONFIGPATH
                         the path to the config file to be used
+			
   -l LOGPATH, --logPath LOGPATH
                         the path to the log folder to be used
+			
   -fl {0,10,20,30,40,50}, --fileLogLevel {0,10,20,30,40,50}
                         the log level for the logfile
+			
   -cl {0,10,20,30,40,50}, --consoleLogLevel {0,10,20,30,40,50}
                         the log level for the console
+			
   -atc ACCESSLOGTOCONSOLE, --accessLogToConsole ACCESSLOGTOCONSOLE
                         set to True to print access log entries to console
    
@@ -40,8 +48,9 @@ optional arguments:
 The server is started locally and the UI can be accessed on http://localhost:9000 or the port specified.
 ### Logging
 pi-led-control creates two log files:
-piledcontrol.log - logging all relevant information on state changes and errors to a rotating logfile (1 per day, keeping those of last week) and stdout
-piledcontrol_access - logging all requests and http error handled by pi-led-control to a rotating logfile (same rotation as for main log) and to stdout if ACCESSLOGTOCONSOLE is true
+
+0. piledcontrol.log - logging all relevant information on state changes and errors to a rotating logfile (1 per day, keeping those of last week) and stdout
+0. piledcontrol_access.log - logging all requests and http error handled by pi-led-control to a rotating logfile (same rotation as for main log) and to stdout if ACCESSLOGTOCONSOLE is true
 
 ##Available programs
 
