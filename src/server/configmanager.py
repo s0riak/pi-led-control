@@ -61,6 +61,10 @@ class ConfigurationManager():
                 {"name": "darkorange", "values": {"red": 1.0, "green": 0.56, "blue": 0.06}},
                 {"name": "pink", "values": {"red": 0.99, "green": 0.0, "blue": 0.59}},
                 {"name": "turquoise", "values": {"red": 0.0, "green": 0.88, "blue": 0.78}}
+            ],
+            "colorFilters":
+            [
+                {"module": "server.colorfilters.polynomialbrightnessfilter", "name": "PolynomialBrightnessFilter", "params": [{"type": "float", "value": 2.0}]}
             ]
         }
 
