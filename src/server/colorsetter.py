@@ -18,6 +18,8 @@ import traceback
 
 from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.ledstate import LEDState
+from server.colorfilters.polynomialbrightnessfilter import PolynomialBrightnessFilter
+from html5lib.treebuilders._base import ActiveFormattingElements
 
 
 class ColorSetter():
@@ -30,7 +32,9 @@ class ColorSetter():
     def setBrightness(self, brightness):
         self._ledState.brightness = brightness
         if self._ledState.isComplete():
-            logging.getLogger("main").info("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
+            logging.getLogger("main").info(
+                "resetting color after brightness change {}, {}".format(
+                    self._ledState.brightness, self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -52,20 +56,34 @@ class ColorSetter():
                 self._ledState = LEDState()
                 errorMessage = "error writing {}={} to {}".format(channel, value, piBlasterPath)
                 piblaster.close()
-                raise PiBlasterUnavailableException(errorMessage)      
+                raise PiBlasterUnavailableException(errorMessage)
+            
+    def getValueForPiBlaster(self):
+        myFilter = PolynomialBrightnessFilter(2.0)
+        filteredState = myFilter.filter(self._ledState)
+        return {"red": round(filteredState.red * filteredState.brightness,
+                self._colorRounding),
+                "green": round(filteredState.green * filteredState.brightness,
+                self._colorRounding),
+                "blue": round(filteredState.blue * filteredState.brightness,
+                self._colorRounding)}
 
     def setValue(self, ledState):
-        if ledState.brightness != None and ledState.brightness != self._ledState.brightness:
-            logging.getLogger("main").warn("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
+        if (ledState.brightness != None and
+            ledState.brightness != self._ledState.brightness):
+            logging.getLogger("main").warning(
+                "updating brightness in setValue from "
+                + str(self._ledState.brightness)
+                + " to " + str(ledState.brightness))
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
-            redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)
-            greenValue = round(self._ledState.green*self._ledState.brightness, self._colorRounding)
-            blueValue = round(self._ledState.blue*self._ledState.brightness, self._colorRounding)
-            self._writePiBlasterValue(17, "red" , redValue)
-            self._writePiBlasterValue(22, "green" , greenValue)
-            self._writePiBlasterValue(24, "blue" , blueValue)
-            logging.getLogger("main").debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
+            piValue = self.getValueForPiBlaster()
+            self._writePiBlasterValue(17, "red", piValue["red"])
+            self._writePiBlasterValue(22, "green", piValue["green"])
+            self._writePiBlasterValue(24, "blue", piValue["blue"])
+            logging.getLogger("main").debug(
+                "updated pi-blaster: red={}, green={}, blue={}".format(
+                    piValue["red"], piValue["green"], piValue["blue"]))
             
     def getCurrentValue(self):
         return self._ledState
