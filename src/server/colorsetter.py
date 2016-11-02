@@ -18,6 +18,7 @@ import traceback
 
 from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.ledstate import LEDState
+from server.crossbarintegration import statuspublisher
 
 
 class ColorSetter():
@@ -66,6 +67,7 @@ class ColorSetter():
             self._writePiBlasterValue(22, "green" , greenValue)
             self._writePiBlasterValue(24, "blue" , blueValue)
             logging.getLogger("main").debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
+            statuspublisher.getStatusPublisher().publishStatus()
             
     def getCurrentValue(self):
         return self._ledState

@@ -73,34 +73,65 @@ function updatePredefinedColorDemo(){
     $("#editPredefinedColorDemo").text("red: " + red + " green: " + green + " blue: " + blue + " brightness: " + brightness * 100 + "%");
 }   
 
+function updateStatusUI(data){
+    var colors = data.color;
+    if(colors !== null){
+        var red = Math.round(colors.red*255.0*data.brightness);
+        var green = Math.round(colors.green*255.0*data.brightness);
+        var blue = Math.round(colors.blue*255.0*data.brightness);
+        
+        $("#currentColor").css('background-color', 'rgb('+ red +','+ green + ','+ blue + ')');
+        $("#currentColor").val("");
+    }else{
+        $("#currentColor").css('background-color', '#FFFFFF');
+        $("#currentColor").val("NA");
+    }
+    if(data.powerOffScheduled){
+        $( "#cancelscheduledOff-button" ).show();
+        $( "#scheduleOff-button" ).hide();
+    }else{
+        $( "#cancelscheduledOff-button" ).hide();
+        $( "#scheduleOff-button" ).show();
+    }
+    $("#currentBrightness").text(Math.round(data.brightness*100) + "%");
+}
 /*frequently update the status from the server
   the status currently contains the current color and if a (power) off is scheduled
 */
 function updateStatus(){
     $.getJSON( "/getStatus", function( data ) {
-	var colors = data.color;
-	if(colors !== null){
-	    var red = Math.round(colors.red*255.0*data.brightness);
-	    var green = Math.round(colors.green*255.0*data.brightness);
-	    var blue = Math.round(colors.blue*255.0*data.brightness);
-	    
-	    $("#currentColor").css('background-color', 'rgb('+ red +','+ green + ','+ blue + ')');
-	    $("#currentColor").val("");
-	}else{
-	    $("#currentColor").css('background-color', '#FFFFFF');
-	    $("#currentColor").val("NA");
-	}
-	if(data.powerOffScheduled){
-	    $( "#cancelscheduledOff-button" ).show();
-	    $( "#scheduleOff-button" ).hide();
-	}else{
-	    $( "#cancelscheduledOff-button" ).hide();
-	    $( "#scheduleOff-button" ).show();
-	}
-	$("#currentBrightness").text(Math.round(data.brightness*100) + "%");
+	    updateStatusUI(data);
     }).error(function() {
     });
     setTimeout(updateStatus, 500);
+}
+
+var eventCount = 0;
+
+function initAsyncUpdates(){
+    var connection = new autobahn.Connection({
+        url: "ws://" + window.location.hostname +":9001",
+        realm: "realm1"
+    });
+
+    connection.onopen = function (session) {
+
+        console.log("Connected");
+
+        function onevent (args, kwargs) {
+            console.log("Got event " + eventCount + ":", args, kwargs);
+            eventCount++;
+            updateStatusUI(kwargs)
+        }
+
+        session.subscribe('ledcontrol.status', onevent);
+    };
+
+    connection.onclose = function () {
+        console.log("Connection lost", arguments);
+    }
+
+    connection.open();
 }
 
 //converts a time of day to seconds in current day
@@ -361,7 +392,7 @@ $(document).ready(function() {
     });
 
     //start update of status
-    updateStatus();
+    //updateStatus();
     //initialize the slides in free color modal from the last status when the modal is opened
     $("#freeButton").on('click', function(){
 	$("#freeColorModal").modal('show');
@@ -457,5 +488,7 @@ $(document).ready(function() {
     	    $("#brightnessSlider").val(data.brightness);
 	});
     });
+    
+    initAsyncUpdates();
 
 });
