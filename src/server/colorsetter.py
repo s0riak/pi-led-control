@@ -67,7 +67,11 @@ class ColorSetter():
             self._writePiBlasterValue(22, "green" , greenValue)
             self._writePiBlasterValue(24, "blue" , blueValue)
             logging.getLogger("main").debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
-            statuspublisher.getStatusPublisher().publishStatus()
+            try:
+                statuspublisher.getStatusPublisher().publishStatus()
+            except Exception as e:
+                logging.getLogger("main").warning("Error during publishStatus " + str(e))
+                
             
     def getCurrentValue(self):
         return self._ledState

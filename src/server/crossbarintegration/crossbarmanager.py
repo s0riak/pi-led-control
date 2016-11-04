@@ -7,6 +7,7 @@ import os
 import subprocess
 import signal
 import sys
+import time
 
 class CrossbarManager(object):
 
@@ -37,7 +38,7 @@ def main():
     manager.start()
     signal.signal(signal.SIGINT, cleanUpAndExit)
     while True:
-        pass
+        time.sleep(60)
 
 if __name__ == '__main__':
     main()

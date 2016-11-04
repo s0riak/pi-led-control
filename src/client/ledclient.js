@@ -95,18 +95,20 @@ function updateStatusUI(data){
     }
     $("#currentBrightness").text(Math.round(data.brightness*100) + "%");
 }
+
+var asyncConnectionEstablished = false;
 /*frequently update the status from the server
   the status currently contains the current color and if a (power) off is scheduled
 */
 function updateStatus(){
-    $.getJSON( "/getStatus", function( data ) {
-	    updateStatusUI(data);
-    }).error(function() {
-    });
-    setTimeout(updateStatus, 500);
+    if(!asyncConnectionEstablished){
+        $.getJSON( "/getStatus", function( data ) {
+	       updateStatusUI(data);
+        }).error(function() {
+        });
+        setTimeout(updateStatus, 500);
+    }
 }
-
-var eventCount = 0;
 
 function initAsyncUpdates(){
     var connection = new autobahn.Connection({
@@ -116,11 +118,10 @@ function initAsyncUpdates(){
 
     connection.onopen = function (session) {
 
-        console.log("Connected");
+        console.log("Connected, stopping fallback polling");
+        asyncConnectionEstablished = true;
 
         function onevent (args, kwargs) {
-            console.log("Got event " + eventCount + ":", args, kwargs);
-            eventCount++;
             updateStatusUI(kwargs)
         }
 
@@ -128,7 +129,9 @@ function initAsyncUpdates(){
     };
 
     connection.onclose = function () {
-        console.log("Connection lost", arguments);
+        console.log("Connection lost, falling back to polling", arguments);
+        asyncConnectionEstablished = false;
+        updateStatus();      
     }
 
     connection.open();

@@ -17,10 +17,7 @@ class StatusPublisher():
             resultDict["brightness"] = None
             resultDict["color"] = None
         requestBody = json.dumps({"topic": "ledcontrol.status", "kwargs" : resultDict})
-        print(self._crossbarHost)
-        print(requestBody)
-        result = requests.post(self._crossbarHost, requestBody)
-        print(result.status_code)
+        requests.post(self._crossbarHost, requestBody)
 
 statusPublisherInstance = None
 
