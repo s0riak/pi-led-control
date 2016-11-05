@@ -20,7 +20,7 @@ from server.exceptions.piblasterunavailableexception import PiBlasterUnavailable
 from server.ledstate import LEDState
 from server.colorfilters.polynomialbrightnessfilter import PolynomialBrightnessFilter
 from html5lib.treebuilders._base import ActiveFormattingElements
-
+from server.crossbarintegration import statuspublisher
 
 class ColorSetter():
 
@@ -84,6 +84,10 @@ class ColorSetter():
             logging.getLogger("main").debug(
                 "updated pi-blaster: red={}, green={}, blue={}".format(
                     piValue["red"], piValue["green"], piValue["blue"]))
+            try:
+                statuspublisher.getStatusPublisher().publishStatus()
+            except Exception as e:
+                logging.getLogger("main").warning("Error during publishStatus " + str(e))
             
     def getCurrentValue(self):
         return self._ledState

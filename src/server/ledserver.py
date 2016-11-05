@@ -20,6 +20,7 @@ import logging
 import os
 
 from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
+from server.crossbarintegration import statuspublisher
 
 
 class LEDServer(HTTPServer):
@@ -29,6 +30,7 @@ class LEDServer(HTTPServer):
         self.ledManager = ledManager
         self.config = configManager
         self._serverStarted = False
+        statuspublisher.initStatusPublisher(self)
         super().__init__(connection, PiLEDHTTPRequestHandler)
 
                 
