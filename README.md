@@ -11,6 +11,8 @@ If you have a single color LED strip you need to connect it to your raspberry pi
 You can find a very basic tutorial to connect a LED strip to your pi under https://github.com/s0riak/pi-led-control/blob/master/hardware/hardware.md
 Please follow the instruction in https://github.com/sarfata/pi-blaster to setup pi-blaster.
 
+In case imports fail, all can installed with pip3.
+
 ###Mocking the LED strip
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
@@ -74,6 +76,16 @@ The list of programs available in the ledui is about the same but naming is diff
 ##Status of the LED strip
 
 The current color of the LED strip (as far as known to pi-led-control) is shown in the top right corner.
+
+###Asynchronous Updates
+If crossbar (http://crossbar.io) is available it is utilized to push status updates from the server to the client via websockets. If crossbar is not installed the client falls back to polling.
+
+To install crossbar use:
+
+    
+    sudo pip3 install crossbar
+
+This might fail on the pi due to libffi-dev and libssl-dev not being installed. In this case install them via apt-get
 
 ##Time initialization
 
