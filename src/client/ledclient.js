@@ -119,6 +119,8 @@ function initAsyncUpdates(){
     connection.onopen = function (session) {
 
         console.log("Connected, stopping fallback polling");
+        //Get initial status
+        updateStatus();
         asyncConnectionEstablished = true;
 
         function onevent (args, kwargs) {
