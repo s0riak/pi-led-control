@@ -99,7 +99,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.wfile.write(result)
         
     def do_GET(self):
-        validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css", "IcoMoon-Free.ttf"]
+        validClientFiles = ["ledclient.css", "ledclient.js", "bootstrap.min.css", "IcoMoon-Free.ttf", "statusWSTest.html"]
         try:
             if self.path == "" or self.path == "/" or self.path == "/index.html":
                 logging.getLogger("main").info("do_GET for index.html")

@@ -1,0 +1,58 @@
+{
+    "version": 2,
+    "workers": [
+        {
+            "type": "router",
+            "realms": [
+                {
+                    "name": "realm1",
+                    "roles": [
+                        {
+                            "name": "anonymous",
+                            "permissions": [
+                                {
+                                    "uri": "",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": true,
+                                        "publish": true,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+         "transports": [
+            {
+               "type": "websocket",
+               "endpoint": {
+                  "type": "tcp",
+                  "port": 9001
+               }
+            },
+            {
+               "type": "web",
+               "endpoint": {
+                  "type": "tcp",
+                  "port": 9002
+               },
+               "paths": {
+                  "/": {
+                     "type": "publisher",
+                     "realm": "realm1",
+                     "role": "anonymous"
+                  }
+               }
+            }
+         ]
+      }
+   ]
+}
