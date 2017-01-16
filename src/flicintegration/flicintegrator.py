@@ -44,7 +44,7 @@ def handleButton(channel, click_type, was_queued, time_diff=None):
             if click_type == fliclib.ClickType.ButtonDoubleClick:
                 eventhelper.handleEvent(EventHelper.eventTypes["toggleWhite"])
             if click_type == fliclib.ClickType.ButtonHold:
-                eventhelper.handleEvent(EventHelper.eventTypes["togglePrograms"])        
+                eventhelper.handleEvent(EventHelper.eventTypes["toggleTimer"])        
         except:
             logging.getLogger("flicintegration").error("handleButton failed" + traceback.format_exc())
                         

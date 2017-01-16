@@ -16,7 +16,7 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 import requests
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 from flicintegration.eventhelper import EventHelper
 
@@ -169,6 +169,13 @@ class EventHelperTest(unittest.TestCase):
                 requests.post = postMock
                 self.eventHelper.handleEvent(EventHelper.eventTypes["togglePrograms"])
                 postMock.assert_called_once_with(EventHelper.piLedHost + "/startProgram", '{"params": [], "name": "' + self.eventHelper._programs[i%len(self.eventHelper._programs)] + '"}')
-        
+
+    def test_startFeedProgramAndScheduledOffProgramOnToggleTimer(self):
+        startProgramMock = MagicMock()
+        self.eventHelper.startProgram = startProgramMock
+        self.eventHelper._programIndex = 0
+        self.eventHelper.handleEvent(EventHelper.eventTypes["toggleTimer"])
+        startProgramMock.assert_has_calls([call("feed"), call("scheduledOff", {"duration": 600})], False)
+                
 if __name__ == '__main__':
     unittest.main()

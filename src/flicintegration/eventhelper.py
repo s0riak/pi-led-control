@@ -26,7 +26,7 @@ from requests.exceptions import HTTPError
 
 class EventHelper():
     
-    eventTypes = {"toggleFeed": 0, "toggleWhite": 1, "togglePrograms": 2}
+    eventTypes = {"toggleFeed": 0, "toggleWhite": 1, "togglePrograms": 2, "toggleTimer": 3}
     piLedHost = "http://localhost:9000"   
     
     def __init__(self):
@@ -88,9 +88,9 @@ class EventHelper():
             return False
         return True
     
-    def startProgram(self, programName):
+    def startProgram(self, programName, params=[]):
         try:
-            requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': programName, 'params': []}))
+            requests.post(EventHelper.piLedHost + "/startProgram", json.dumps({'name': programName, 'params': params}))
             logging.getLogger("flicintegration").info("startProgram for " + programName + " called")
         except (ConnectionError, HTTPError) as e:
             logging.getLogger("flicintegration").error("startProgram " + programName + " failed with error " + str(e))
@@ -113,6 +113,9 @@ class EventHelper():
             elif eventType == EventHelper.eventTypes["togglePrograms"]:
                 self.startProgram(self._programs[self._programIndex])
                 self._programIndex = (self._programIndex + 1) % len(self._programs)
+            elif eventType == EventHelper.eventTypes["toggleTimer"]:
+                self.startProgram("feed")
+                self.startProgram("scheduledOff", {"duration": 600})
             else:
                 logging.getLogger("flicintegration").error("Unsupported eventType " + str(eventType))
         except:
