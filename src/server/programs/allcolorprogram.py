@@ -16,6 +16,7 @@
 
 import logging
 
+from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 
 
@@ -35,6 +36,6 @@ class AllColorProgram(AbstractProgram):
                     g = j/(self.stepsPerColor-1)
                     b = k/(self.stepsPerColor-1)
                     logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                    self._setColor(r, g, b)
+                    self._setValue(LEDState(r, g, b, 1.0))
                     self._waitIfNotStopped(self.secondsPerColor)
-        self._setColor(0,0,0)
+        self._setValue(LEDState(0.0, 0.0, 0.0, 1.0))

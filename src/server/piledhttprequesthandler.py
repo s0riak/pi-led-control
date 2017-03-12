@@ -20,6 +20,27 @@ from server.programs.sunriseprogram import SunriseProgram
 from server.programs.wheelprogram import WheelProgram
 
 
+def logMethodAndParams(params, logLevel=logging.INFO):
+    logging.getLogger("main").log(logLevel, inspect.stack()[1][3] + " with params " + str(params))
+
+
+def readFileToBytes(requestedPath, encoding):
+    if encoding is None:
+        f = open(requestedPath, 'rb')
+        return bytes(f.read())
+    else:
+        f = open(requestedPath, 'r')
+        return bytes(f.read(), encoding)
+
+
+def getFileEncoding(filePath):
+    detector = UniversalDetector()
+    f = open(filePath, 'rb')
+    detector.feed(f.read())
+    detector.close()
+    return detector.result['encoding']
+
+
 class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
@@ -27,15 +48,16 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self._jsonBody = None
         super().__init__(request, client_address, server)
         
-    def log_error(self, format, *args):
-        logging.getLogger("access").error("%s - - [%s] %s\n" % 
-                         (self.address_string(),
-                          self.log_date_time_string(),
-                          format % args))
+    def log_error(self, logformat, *args):
+        logging.getLogger("access").error("%s - - [%s] %s\n" %
+                                          (self.address_string(),
+                                           self.log_date_time_string(),
+                                           logformat % args))
     
     def log_request(self, code='-', size='-'):
         #TODO use is_instance instead of try/except
         try:
+            # noinspection PyUnresolvedReferences
             code = code.value
         except:
             pass
@@ -44,29 +66,13 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         
     def setLedManager(self, ledManager):
         self.ledManager = ledManager
-        
-    def _getFileEncoding(self, filePath):
-        detector = UniversalDetector()
-        f = open(filePath, 'rb')
-        detector.feed(f.read())
-        detector.close()
-        return detector.result['encoding']
-        
-    def _readFileToBytes(self, requestedPath, encoding):
-        if encoding == None:
-            f = open(requestedPath, 'rb')
-            return bytes(f.read())
-        else:
-            f = open(requestedPath, 'r')
-            return bytes(f.read(), encoding)   
-         
-        
+
     def _getClientFile(self, path):
         resourcePath = self._clientResourceBaseDir + path[1:]
-        fileEncoding = self._getFileEncoding(resourcePath)
-        result = self._readFileToBytes(resourcePath, fileEncoding)
+        fileEncoding = getFileEncoding(resourcePath)
+        result = readFileToBytes(resourcePath, fileEncoding)
         self.send_response(200)
-        if fileEncoding == None:
+        if fileEncoding is None:
             self.send_header("Content-type", "application/octet-stream")
         else:
             self.send_header("Content-type", "text/" + path.rsplit('.', 1)[1])
@@ -82,10 +88,9 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.wfile.write(result) 
 
     def _getStatus(self):
-        resultDict = {}
-        resultDict["powerOffScheduled"] = self.server.ledManager.isPowerOffScheduled()
+        resultDict = {"powerOffScheduled": self.server.ledManager.isPowerOffScheduled()}
         value = self.server.ledManager.getCurrentValue()
-        if not value == None and value.isComplete():
+        if not value is None and value.isComplete():
             resultDict["color"] = {"red": value.red, "green": value.green, "blue": value.blue}
             resultDict["brightness"] = value.brightness
         else:
@@ -160,24 +165,21 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _setBrightness(self):
         params = {"brightness": 0.0}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.ledManager.setBrightness(params["brightness"])
         self.send_response(200)
         self.end_headers()
-        
-    def logMethodAndParams(self, params, logLevel=logging.INFO):
-        logging.getLogger("main").log(logLevel, inspect.stack()[1][3] + " with params " + str(params))
-        
+
     def _startWheel(self):
         params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.ledManager.startProgram(WheelProgram(params["iterations"], params["minValue"], params["maxValue"], params["timePerColor"]))
         
     def _startSunrise(self):
         params = {"duration": self.server.config.getValue("programs/sunrise/duration"), "timeOfDay":-1, "brightness": 1.0}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/sunrise/duration", params["duration"])                
         self.server.config.setValue("programs/sunrise/timeOfDay", params["timeOfDay"])
         self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
@@ -191,13 +193,13 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _startFreak(self):
         params = {"minColor": 0, "maxColor": 1, "secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.ledManager.startProgram(LoopedProgram(RandomColorProgram(params["minColor"], params["maxColor"], params["secondsPerColor"])))
     
     def _startPredefined(self):
         params = {"colorName": ""}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         colors = []
         predefinedColors = self.server.config.getValue("userDefinedColors")
         for color in predefinedColors :
@@ -215,7 +217,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _startSingle(self):
         params = {"red": 0.0, "green": 0.0, "blue": 0.0}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         if not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
             raise ParameterExeption("invalid values red: {}, green: {}, blue: {}".format(params["red"], params["green"], params["blue"]))
         else:
@@ -225,7 +227,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             self.server.ledManager.startProgram(SingleColorProgram(LEDState(red, green, blue, self.server.ledManager.getBrightness())))
     
     def _startColorLoop(self):
-        self.logMethodAndParams("")
+        logMethodAndParams("")
         colors = []
         for colorName in self.server.config.getValue("programs/colorloop/colors"):
             colors.append(self.getPredefinedColor(colorName))
@@ -235,7 +237,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _startScheduledOff(self):
         params = {"duration": 0}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.ledManager.schedulePowerOff(params["duration"])
                 
     def _startProgram(self):
@@ -288,26 +290,26 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _configureRandomPath(self):
         params = {"timePerColor": self.server.config.getValue("programs/randomPath/timePerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/randomPath/timePerColor", params["timePerColor"])
         
     def _configureFeed(self):
         params = {"brightness": self.server.config.getValue("programs/feed/brightness")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/feed/brightness", params["brightness"])
         
     def _configureColorLoop(self):
         params = {"colors": self.server.config.getValue("programs/colorloop/colors"), "secondsPerColor": self.server.config.getValue("programs/colorloop/secondsPerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/colorloop/colors", params["colors"])
         self.server.config.setValue("programs/colorloop/secondsPerColor", params["secondsPerColor"])
         
     def _configureWheel(self):
         params = {"iterations": 0, "minValue": self.server.config.getValue("programs/wheel/minBrightness"), "maxValue": self.server.config.getValue("programs/wheel/maxBrightness"), "timePerColor": self.server.config.getValue("programs/wheel/timePerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/wheel/minBrightness", params["minValue"])
         self.server.config.setValue("programs/wheel/maxBrightness", params["maxValue"])
         self.server.config.setValue("programs/wheel/timePerColor", params["timePerColor"])
@@ -315,7 +317,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _configureFreak(self):
         params = {"secondsPerColor": self.server.config.getValue("programs/freak/secondsPerColor")}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
             
     def _configureProgram(self):
@@ -347,7 +349,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _configureColor(self):
         params = {"oldName": "", "name": "", "red":-1, "green":-1, "blue":-1}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         if params["name"] == "":
             self.send_response(400, "no color name given")             
         elif not 0 <= params["red"] <= 255 or not 0 <= params["green"] <= 255 or not 0 <= params["blue"] <= 255:
@@ -367,7 +369,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _deleteColor(self):
         params = {"name": ""}
         params = self.getParamsFromJson(params)
-        self.logMethodAndParams(params)
+        logMethodAndParams(params)
         if params["name"] == "":
             self.send_response(400, "no color name given")             
         else:

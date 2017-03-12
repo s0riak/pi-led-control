@@ -45,7 +45,7 @@ class LEDManager():
     def startProgram(self, program):
         self.sem.acquire()
         program.setColorSetter(self._colorSetter)
-        if self.controlThread != None:
+        if self.controlThread is not None:
             self.controlThread.threadStopEvent.set()
             lastValue = self.controlThread.program.getCurrentValue()
             program.setLastValue(lastValue)
@@ -54,8 +54,8 @@ class LEDManager():
         self.sem.release()
 
     def getCurrentValue(self):
-        if self.controlThread != None:
-            if self.controlThread.program != None:
+        if self.controlThread is not None:
+            if self.controlThread.program is not None:
                 return self.controlThread.program.getCurrentValue()
         return None
 
@@ -69,16 +69,16 @@ class LEDManager():
         self._cancelPowerOffEvent = None
         
     def schedulePowerOff(self, duration):
-        if self._cancelPowerOffEvent != None:
+        if self._cancelPowerOffEvent is not None:
             self._cancelPowerOffEvent.set()
         self._cancelPowerOffEvent = Event()
         t = Thread(target=self.powerOffWaiter, args=(duration, self._cancelPowerOffEvent))
         t.start()
 
     def cancelPowerOff(self):
-        if self._cancelPowerOffEvent != None:
+        if self._cancelPowerOffEvent is not None:
             self._cancelPowerOffEvent.set()
             self._cancelPowerOffEvent = None
 
     def isPowerOffScheduled(self):
-        return self._cancelPowerOffEvent != None
+        return self._cancelPowerOffEvent is not None

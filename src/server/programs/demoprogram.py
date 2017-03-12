@@ -17,17 +17,14 @@
 from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
 from server.programs.waitprogram import WaitProgram
+from server.ledstate import LEDState
 
 
 class DemoProgram(ProgramChainProgram):
 
     def __init__(self, timePerColor=3):
-        programs = []
-        programs.append(SingleColorProgram(False, 255, 0, 0))
-        programs.append(WaitProgram(False, timePerColor))
-        programs.append(SingleColorProgram(False, 0, 255, 0))
-        programs.append(WaitProgram(False, timePerColor))
-        programs.append(SingleColorProgram(False, 0, 0, 255))
-        programs.append(WaitProgram(False, timePerColor))
-        programs.append(SingleColorProgram(False, 0, 0, 0))
+        programs = [SingleColorProgram(LEDState(1.0, 0.0, 0.0, 0.0)), WaitProgram(timePerColor),
+                    SingleColorProgram(LEDState(0.0, 1.0, 0.0, 0.0)), WaitProgram(timePerColor),
+                    SingleColorProgram(LEDState(0.0, 0.0, 1.0, 0.0)), WaitProgram(timePerColor),
+                    SingleColorProgram(LEDState(0.0, 0.0, 0.0, 0.0))]
         super().__init__(programs)

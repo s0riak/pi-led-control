@@ -33,7 +33,7 @@ class RandomPathProgram(ColorPathProgram):
                 while(self._nextItem == newItem):
                     newItem = random.choice(self._colorSet)
                 self._nextItem = newItem
-            self._iteration = self._iteration + 1
+            self._iteration += 1
             return self._nextItem
 
     def __init__(self, colorSet, durationPerPoint):

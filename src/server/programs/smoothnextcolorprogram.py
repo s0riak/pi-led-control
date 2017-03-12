@@ -31,12 +31,12 @@ class SmoothNextColorProgram(ProgramChainProgram):
         super().__init__([self._colorPathProgram, SingleColorProgram(ledValue)])
 
     #overridding setLastColor to change duration of softoff based on hue of last Color
-    def setLastColor(self, lastColor):
-        if lastColor != None:
-            lastHue = lastColor[0] + lastColor[1] + lastColor[2]
+    def setLastValue(self, lastColor):
+        if lastColor is not None:
+            lastHue = lastColor.red + lastColor.green + lastColor.blue
             totalTime = min(self._maxSwitchTime, max(self._minSwitchTime, self._maxSwitchTime * lastHue / (255*3)))
         else:
             totalTime= 1
         self._colorPathProgram.setTimePerColor(totalTime/50)
-        super().setLastColor(lastColor)
+        super().setLastValue(lastColor)
 

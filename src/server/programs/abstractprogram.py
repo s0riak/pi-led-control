@@ -35,7 +35,7 @@ class AbstractProgram(ABC):
         self._colorSetter.setValue(value)
 
     def getCurrentValue(self):
-        if self._colorSetter != None:
+        if self._colorSetter is not None:
             return self._colorSetter.getCurrentValue()
         else:
             return None
@@ -51,7 +51,7 @@ class AbstractProgram(ABC):
         self.threadStopEvent = threadStopEvent
         
     def _waitIfNotStopped(self, time):
-        assert self.threadStopEvent != None            
+        assert self.threadStopEvent is not None
         if self.threadStopEvent.is_set():
             raise InterruptionException
         self.threadStopEvent.wait(time)

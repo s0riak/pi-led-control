@@ -18,6 +18,7 @@ import logging
 from random import randint
 import random
 
+from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 
 
@@ -37,7 +38,7 @@ class SmoothRandomProgram(AbstractProgram):
         b = round(random.uniform(0.0, 0.5), 3)
         while True:
             logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-            self._setColor(r, g, b)
+            self._setValue(LEDState(r, g, b, 1.0))
             self._waitIfNotStopped(0.05)
             colorRand = randint(0,2)
             if colorRand == 0:

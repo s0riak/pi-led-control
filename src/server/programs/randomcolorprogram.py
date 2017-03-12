@@ -30,7 +30,7 @@ class RandomColorProgram(AbstractProgram):
         ledValue.red = round(random.uniform(self._minColor, self._maxColor), 3)
         ledValue.green = round(random.uniform(self._minColor, self._maxColor), 3)
         ledValue.blue = round(random.uniform(self._minColor, self._maxColor), 3)
-        if not self._lastValue == None and not self._lastValue.brightness == None:
+        if not self._lastValue is None and not self._lastValue.brightness is None:
             ledValue.brightness = self._lastValue.brightness
         else:
             ledValue.brightness = 1.0

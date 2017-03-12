@@ -20,7 +20,7 @@ from server.exceptions.piblasterunavailableexception import PiBlasterUnavailable
 from server.ledstate import LEDState
 
 
-class ColorSetter():
+class ColorSetter:
 
     def __init__(self, brightness):
         self._ledState = LEDState()
@@ -55,8 +55,8 @@ class ColorSetter():
                 raise PiBlasterUnavailableException(errorMessage)      
 
     def setValue(self, ledState):
-        if ledState.brightness != None and ledState.brightness != self._ledState.brightness:
-            logging.getLogger("main").warn("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
+        if ledState.brightness is not None and ledState.brightness != self._ledState.brightness:
+            logging.getLogger("main").warning("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
             redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)

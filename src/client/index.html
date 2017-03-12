@@ -17,7 +17,7 @@
  along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
  -->
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,420 +32,467 @@
     <!-- bootstrap theme -->
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
     <!-- bootstrap script -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
 
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-    
+
     <!-- pi led control css -->
     <link rel="stylesheet" type="text/css" href="/ledclient.css">
 
     <!-- pi led control js -->
     <script src="/ledclient.js"></script>
 
-  </head>
-  <body>
+</head>
+<body>
 
+<div class="container">
+    <h1>pi-led-control</h1><span id="status"><span id="currentBrightness"></span><input id="currentColor"
+                                                                                        type="textarea" readonly="true"></span>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="soft-off-button">Soft Off</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="off-button">Off</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="scheduleOff-button" data-toggle="modal"
+                    data-target="#scheduledOffModal">Schedule Off
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="cancelscheduledOff-button">Cancel scheduled
+                Off
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="setBrightness-button" data-toggle="modal"
+                    data-target="#brightnessModal">Set Brightness
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="white-button">Full White</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="feed-button">Feed</button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="feed-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="4colorloop-button">Color Loop</button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="colorloop-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="wheel-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="sunrise-button" data-toggle="modal"
+                    data-target="#sunriseModal">Sunrise
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="freak-button">Freak</button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="freak-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="randompath-button">Random Path</button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="randompath-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-md-11 list-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal"
+                    data-target="#predefinedColorModal">Color
+            </button>
+        </div>
+        <div class="col-xs-2 col-md-1 config-btn-col">
+            <button type="button" class="btn btn-block btn-default" id="predefined-openconfig-button"><span
+                    class="icon icon-equalizer"></span></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-block btn-default" id="freeButton">Free Color</button>
+        </div>
+    </div>
+</div>
+
+<!-- Brightness Modal -->
+<div class="modal fade" id="brightnessModal" tabindex="-1" role="dialog" aria-labelledby="brightnessModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="brightnessModalLabel">Set brightness</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="brightnessSlider">Brightness:</label>
+                    <input id="brightnessSlider" class="brightnessSlider" type="range" min="0" max="1" step="0.01">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Feed Modal -->
+<div class="modal fade" id="configureFeedModal" tabindex="-1" role="dialog" aria-labelledby="feedModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="feedModalLabel">Set brightness for Feed Program</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="feedBrightnessSlider">Brightness:</label>
+                    <input id="feedBrightnessSlider" class="brightnessSlider" type="range" min="0.02" max="1.0"
+                           step="0.005">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="configureFeed-button" class="btn btn-default">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Colorloop Configuration Modal -->
+<div class="modal fade" id="configureColorLoopModal" tabindex="-1" role="dialog"
+     aria-labelledby="configureColorLoopModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="configureColorLoopModalLabel">Configure color loop</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="loopSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond
+                        precision):</label>
+                    <input type="text" class="form-control" id="loopSecondsPerColor">
+                </div>
+                <div id="configureColorLoop-body"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" class="btn btn-default" id="save-configureColorLoop-button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Configure Wheel Modal -->
+<div class="modal fade" id="configureWheelModal" tabindex="-1" role="dialog" aria-labelledby="configureWheelModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="configureWheelModalLabel">Configure Wheel</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="wheelSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond
+                        precision):</label>
+                    <input type="text" class="form-control" id="wheelSecondsPerColor">
+                </div>
+                <div class="form-group">
+                    <label for="wheelMinBrightnessSlider">Minium Brightness:</label>
+                    <input id="wheelMinBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0"
+                           step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="wheelMaxBrightnessSlider">Maximum Brightness:</label>
+                    <input id="wheelMaxBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0"
+                           step="0.01">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="configureWheel-button" class="btn btn-default">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sunrise Modal -->
+<div class="modal fade" id="sunriseModal" tabindex="-1" role="dialog" aria-labelledby="sunriseModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="sunriseModalLabel">Configure Sunrise</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sunriseDuration">Duration in Seconds:</label>
+                    <input type="text" class="form-control" id="sunriseDuration">
+                </div>
+                <div class="form-group">
+                    <label for="sunriseBrightnessSlider">Target Brightness:</label>
+                    <input id="sunriseBrightnessSlider" class="sunriseBrightnessSlider" type="range" min="0.2" max="1"
+                           step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="sunriseStarttime">Starttime (HH:MM:SS) (optional):</label>
+                    <input type="text" class="form-control" id="sunriseStarttime">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="startSunrise-button" class="btn btn-default">Sunrise!</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Configure Random Modal -->
+<div class="modal fade" id="configureRandomModal" tabindex="-1" role="dialog"
+     aria-labelledby="configureRandomModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="configureRandomModalLabel">Configure Random Path</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="timePerColor">Duration per Color in Seconds:</label>
+                    <input type="text" class="form-control" id="timePerColor">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="configureRandomPath-button" class="btn btn-default">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Configure Freak Modal -->
+<div class="modal fade" id="configureFreakModal" tabindex="-1" role="dialog" aria-labelledby="configureFreakModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="configureFreakModalLabel">Configure Freak</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="freakSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond
+                        precision):</label>
+                    <input type="text" class="form-control" id="freakSecondsPerColor">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="configureFreak-button" class="btn btn-default">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Predefined Modal -->
+<div class="modal fade" id="predefinedColorModal" tabindex="-1" role="dialog"
+     aria-labelledby="predefinedColorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="predefinedColorModalLabel">Select color</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group" id="predefinedColor-button-group">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Predefined Configuration Modal -->
+<div class="modal fade" id="configurePredefinedColorModal" tabindex="-1" role="dialog"
+     aria-labelledby="configurePredefinedColorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="configurePredefinedColorModalLabel">Configure predefined colors</h4>
+            </div>
+            <div class="modal-body" id="configurePredefinedColor-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="add-new-predefined-button">Add new Color</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Predefined Color Modal -->
+<div class="modal fade" id="editPredefinedColorModal" tabindex="-1" role="dialog"
+     aria-labelledby="editPredefinedColorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editPredefinedColorModalLabel">Choose predefined color</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editPredefinedColorName">Name:</label>
+                    <input type="text" class="form-control" id="editPredefinedColorName">
+                </div>
+                <div class="form-group">
+                    <label for="editPredefinedRedSlider">Red (0-255):</label>
+                    <input id="editPredefinedRedSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="editPredefinedGreenSlider">Green (0-255):</label>
+                    <input id="editPredefinedGreenSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="editPredefinedBlueSlider">Blue (0-255):</label>
+                    <input id="editPredefinedBlueSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="editPredefinedColorDemo">Color:</label>
+                    <span id="editPredefinedColorDemo" style="height: 18pt; width:100px"></span>
+                </div>
+                <div class="form-group left-from-group">
+                    <button type="button" id="editPredefinedPreview-button" class="btn btn-default">Preview</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="savePredefinedColor-button">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FreeColor Modal -->
+<div class="modal fade" id="freeColorModal" tabindex="-1" role="dialog" aria-labelledby="freeColorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="freeColorModalLabel">Select color</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="redSlider">Red (0-255):</label>
+                    <input id="redSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="greenSlider">Green (0-255):</label>
+                    <input id="greenSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="blueSlider">Blue (0-255):</label>
+                    <input id="blueSlider" type="range" min="0" max="255" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="freeColorBrightnessSlider">Brightness:</label>
+                    <input id="freeColorBrightnessSlider" class="brightnessSlider" type="range" min="0" max="1"
+                           step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="colorDemo">Color:</label>
+                    <input id="colorDemo" type="textarea" readonly="true">
+                </div>
+                <div class="form-group left-from-group">
+                    <button type="button" id="freeColorSave-button" class="btn btn-default">Set</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ScheduledOffModal -->
+<div class="modal fade" id="scheduledOffModal" tabindex="-1" role="dialog" aria-labelledby="scheduledOffModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scheduledOffModalLabel">Configure Scheduled Off</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="scheduleOffDuration">Duration in Minutes:</label>
+                    <input type="text" class="form-control" id="scheduleOffDuration">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
+                <button type="button" id="scheduleOffSave-button" class="btn btn-default">Schedule Off</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
     <div class="container">
-      <h1>pi-led-control</h1><span id="status"><span id="currentBrightness"></span><input id="currentColor" type="textarea" readonly="true"></span>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="soft-off-button">Soft Off</button>
-	</div>
-      </div>
-      <div class="row">
-      	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="off-button">Off</button>
-	</div>
-      </div>
-      <div class="row">
-      	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="scheduleOff-button" data-toggle="modal" data-target="#scheduledOffModal">Schedule Off</button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="cancelscheduledOff-button">Cancel scheduled Off</button>
-	</div>
-      </div>
-      <div class="row">
-      	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="setBrightness-button" data-toggle="modal" data-target="#brightnessModal">Set Brightness</button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="white-button">Full White</button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-xs-10 col-md-11 list-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="feed-button">Feed</button>
-	</div>
-	<div class="col-xs-2 col-md-1 config-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="feed-openconfig-button"><span class="icon icon-equalizer"></span></button>
-	</div>
-      </div>
-            <div class="row">
-    <div class="col-xs-10 col-md-11 list-btn-col">
-      <button type="button" class="btn btn-block btn-default" id="4colorloop-button">Color Loop</button>
-    </div>
-    <div class="col-xs-2 col-md-1 config-btn-col">
-      <button type="button" class="btn btn-block btn-default" id="colorloop-openconfig-button"><span class="icon icon-equalizer"></span></button>
-    </div>
-      </div>
-            <div class="row">
-    <div class="col-xs-10 col-md-11 list-btn-col">
-      <button type="button" class="btn btn-block btn-default" id="wheel-button">Wheel</button>
-    </div>
-    <div class="col-xs-2 col-md-1 config-btn-col">
-      <button type="button" class="btn btn-block btn-default" id="wheel-openconfig-button"><span class="icon icon-equalizer"></span></button>
-    </div>
-      </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="sunrise-button" data-toggle="modal" data-target="#sunriseModal">Sunrise</button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-xs-10 col-md-11 list-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="freak-button">Freak</button>
-	</div>
-	<div class="col-xs-2 col-md-1 config-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="freak-openconfig-button"><span class="icon icon-equalizer"></span></button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-xs-10 col-md-11 list-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="randompath-button">Random Path</button>
-	</div>
-	<div class="col-xs-2 col-md-1 config-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="randompath-openconfig-button"><span class="icon icon-equalizer"></span></button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-xs-10 col-md-11 list-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="predefined-button" data-toggle="modal" data-target="#predefinedColorModal">Color</button>
-	</div>
-	<div class="col-xs-2 col-md-1 config-btn-col">
-	  <button type="button" class="btn btn-block btn-default" id="predefined-openconfig-button"><span class="icon icon-equalizer"></span></button>
-	</div>
-      </div>
-      <div class="row">
-	<div class="col-sm-12">
-	  <button type="button" class="btn btn-block btn-default" id="freeButton">Free Color</button>
-	</div>
-      </div>
-    </div>
-    
-    <!-- Brightness Modal -->
-    <div class="modal fade" id="brightnessModal" tabindex="-1" role="dialog" aria-labelledby="brightnessModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="brightnessModalLabel">Set brightness</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="brightnessSlider">Brightness:</label>
-	      <input id="brightnessSlider" class="brightnessSlider" type="range" min="0" max="1" step="0.01">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Feed Modal -->
-    <div class="modal fade" id="configureFeedModal" tabindex="-1" role="dialog" aria-labelledby="feedModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="feedModalLabel">Set brightness for Feed Program</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="feedBrightnessSlider">Brightness:</label>
-	      <input id="feedBrightnessSlider" class="brightnessSlider" type="range" min="0.02" max="1.0" step="0.005">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="configureFeed-button" class="btn btn-default">OK</button>
-	  </div>
-	</div>
-	    </div>
-      </div>
-      
-    <!-- Colorloop Configuration Modal -->
-    <div class="modal fade" id="configureColorLoopModal" tabindex="-1" role="dialog" aria-labelledby="configureColorLoopModalLabel">
-      <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="configureColorLoopModalLabel">Configure color loop</h4>
-      </div>
-      <div class="modal-body">
-      <div class="form-group">
-          <label for="loopSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
-          <input type="text" class="form-control" id="loopSecondsPerColor">
-        </div> 
-      <div id="configureColorLoop-body"></div>
-      </div>
-      <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" class="btn btn-default" id="save-configureColorLoop-button">Save</button>
-      </div>
-    </div>
-      </div>
-    </div>
-    <!-- Configure Wheel Modal -->
-    <div class="modal fade" id="configureWheelModal" tabindex="-1" role="dialog" aria-labelledby="configureWheelModalLabel">
-      <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="configureWheelModalLabel">Configure Wheel</h4>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="wheelSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
-          <input type="text" class="form-control" id="wheelSecondsPerColor">
-        </div>
-        <div class="form-group">
-          <label for="wheelMinBrightnessSlider">Minium Brightness:</label>
-          <input id="wheelMinBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
-        </div>
-        <div class="form-group">
-          <label for="wheelMaxBrightnessSlider">Maximum Brightness:</label>
-          <input id="wheelMaxBrightnessSlider" class="brightnessSlider" type="range" min="0.0" max="1.0" step="0.01">
-        </div>
-      </div>
-      <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="configureWheel-button" class="btn btn-default">OK</button>
-      </div>
-    </div>
-      </div>
-    </div>
-    <!-- Sunrise Modal -->
-    <div class="modal fade" id="sunriseModal" tabindex="-1" role="dialog" aria-labelledby="sunriseModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="sunriseModalLabel">Configure Sunrise</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="sunriseDuration">Duration in Seconds:</label>
-	      <input type="text" class="form-control" id="sunriseDuration">
-	    </div>
-	    <div class="form-group">
-	      <label for="sunriseBrightnessSlider">Target Brightness:</label>
-	      <input id="sunriseBrightnessSlider" class="sunriseBrightnessSlider" type="range" min="0.2" max="1" step="0.01">
-	    </div>
-	    <div class="form-group">
-	      <label for="sunriseStarttime">Starttime (HH:MM:SS) (optional):</label>
-	      <input type="text" class="form-control" id="sunriseStarttime">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="startSunrise-button" class="btn btn-default">Sunrise!</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Configure Random Modal -->
-    <div class="modal fade" id="configureRandomModal" tabindex="-1" role="dialog" aria-labelledby="configureRandomModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="configureRandomModalLabel">Configure Random Path</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="timePerColor">Duration per Color in Seconds:</label>
-	      <input type="text" class="form-control" id="timePerColor">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="configureRandomPath-button" class="btn btn-default">OK</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Configure Freak Modal -->
-    <div class="modal fade" id="configureFreakModal" tabindex="-1" role="dialog" aria-labelledby="configureFreakModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="configureFreakModalLabel">Configure Freak</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="freakSecondsPerColor">Duration per Color in Seconds (use '.' for subsecond precision):</label>
-	      <input type="text" class="form-control" id="freakSecondsPerColor">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="configureFreak-button" class="btn btn-default">OK</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Predefined Modal -->
-    <div class="modal fade" id="predefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="predefinedColorModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="predefinedColorModalLabel">Select color</h4>
-	  </div>
-	  <div class="modal-body">
-            <ul class="list-group" id="predefinedColor-button-group">
-	    </ul>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- Predefined Configuration Modal -->
-    <div class="modal fade" id="configurePredefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="configurePredefinedColorModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="configurePredefinedColorModalLabel">Configure predefined colors</h4>
-	  </div>
-	  <div class="modal-body" id="configurePredefinedColor-body">	    
-	  </div>
-	  <div class="modal-footer">
-	    <button type="button" class="btn btn-default" id="add-new-predefined-button">Add new Color</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-
-    <!-- Edit Predefined Color Modal -->
-    <div class="modal fade" id="editPredefinedColorModal" tabindex="-1" role="dialog" aria-labelledby="editPredefinedColorModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="editPredefinedColorModalLabel">Choose predefined color</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="editPredefinedColorName">Name:</label>
-	      <input type="text" class="form-control" id="editPredefinedColorName">
-	    </div>
-	    <div class="form-group">
-	      <label for="editPredefinedRedSlider">Red (0-255):</label>
-	      <input id="editPredefinedRedSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="editPredefinedGreenSlider">Green (0-255):</label>
-	      <input id="editPredefinedGreenSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="editPredefinedBlueSlider">Blue (0-255):</label>
-	      <input id="editPredefinedBlueSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="editPredefinedColorDemo">Color:</label>
-	      <span id="editPredefinedColorDemo" style="height: 18pt; width:100px"></span>
-	    </div>
-	    <div class="form-group left-from-group">
-              <button type="button" id="editPredefinedPreview-button" class="btn btn-default">Preview</button>
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal" id="savePredefinedColor-button">Save</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-
-    <!-- FreeColor Modal -->
-    <div class="modal fade" id="freeColorModal" tabindex="-1" role="dialog" aria-labelledby="freeColorModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="freeColorModalLabel">Select color</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="redSlider">Red (0-255):</label>
-	      <input id="redSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="greenSlider">Green (0-255):</label>
-	      <input id="greenSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="blueSlider">Blue (0-255):</label>
-	      <input id="blueSlider" type="range" min="0" max="255" step="1">
-	    </div>
-	    <div class="form-group">
-	      <label for="freeColorBrightnessSlider">Brightness:</label>
-	      <input id="freeColorBrightnessSlider" class="brightnessSlider" type="range" min="0" max="1" step="0.01">
-	    </div>
-	    <div class="form-group">
-	      <label for="colorDemo">Color:</label>
-	      <input id="colorDemo" type="textarea" readonly="true" rows="4" cols="50">
-	    </div>
-	    <div class="form-group left-from-group">
-              <button type="button" id="freeColorSave-button" class="btn btn-default">Set</button>
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <!-- ScheduledOffModal -->
-    <div class="modal fade" id="scheduledOffModal" tabindex="-1" role="dialog" aria-labelledby="scheduledOffModalLabel">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="scheduledOffModalLabel">Configure Scheduled Off</h4>
-	  </div>
-	  <div class="modal-body">
-	    <div class="form-group">
-	      <label for="scheduleOffDuration">Duration in Minutes:</label>
-	      <input type="text" class="form-control" id="scheduleOffDuration">
-	    </div>
-	  </div>
-	  <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Abort</button>
-            <button type="button" id="scheduleOffSave-button" class="btn btn-default">Schedule Off</button>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <div id="footer">
-      <div class="container">
         <p class="text-muted credit">
-	  Copyright (c) 2016 Sebastian Kanis
-	  <a href="https://github.com/s0riak/pi-led-control" target="_blank">pi-led-control</a> is licensed under the <a href="http://www.gnu.org/licenses/" target="_blank">AGPL V3</a>
-	</p>
-      </div>
+            Copyright (c) 2016 Sebastian Kanis
+            <a href="https://github.com/s0riak/pi-led-control" target="_blank">pi-led-control</a> is licensed under the
+            <a href="http://www.gnu.org/licenses/" target="_blank">AGPL V3</a>
+        </p>
     </div>
-  </body>
+</div>
+</body>
 </html>

@@ -17,6 +17,7 @@
 from random import randint
 import random
 
+from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 import logging
 
@@ -41,7 +42,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         r = max(0, r - round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
@@ -49,7 +50,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         r = min(1, r + round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break
@@ -58,7 +59,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         g = max(0, r - round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
@@ -66,7 +67,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         g = min(1, r + round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break
@@ -75,7 +76,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         b = max(0, r - round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
@@ -83,7 +84,7 @@ class SmoothRandomWalkProgram(AbstractProgram):
                     for i in range(0,stepsInOneDirection):
                         b = min(1, r + round(random.uniform(0, self._maxDiff),3))
                         logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break
