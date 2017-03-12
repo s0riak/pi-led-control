@@ -25,8 +25,13 @@ def getInterpolationValue(currentValue, nextValue, pointIndex, numberOfPoints):
     if currentValue == nextValue:
         return nextValue
     else:
-        return currentValue + ((nextValue - currentValue)/numberOfPoints)*pointIndex
-
+        new_value = currentValue + ((nextValue - currentValue) / numberOfPoints) * pointIndex
+        if new_value > 1.0:
+            return 1.0
+        elif new_value < 0.0:
+            return 0.0
+        else:
+            return new_value
 
 def getInterpolationPoint(currentPoint, nextPoint, pointIndex, numberOfPoints):
     red = getInterpolationValue(currentPoint.red, nextPoint.red, pointIndex, numberOfPoints)
