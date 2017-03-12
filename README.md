@@ -11,6 +11,8 @@ If you have a single color LED strip you need to connect it to your raspberry pi
 You can find a very basic tutorial to connect a LED strip to your pi under https://github.com/s0riak/pi-led-control/blob/master/hardware/hardware.md
 Please follow the instruction in https://github.com/sarfata/pi-blaster to setup pi-blaster.
 
+In case imports fail, all can installed with pip3.
+
 ###Mocking the LED strip
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
@@ -75,6 +77,16 @@ The list of programs available in the ledui is about the same but naming is diff
 
 The current color of the LED strip (as far as known to pi-led-control) is shown in the top right corner.
 
+###Asynchronous Updates
+If crossbar (http://crossbar.io) is available it is utilized to push status updates from the server to the client via websockets. If crossbar is not installed the client falls back to polling.
+
+To install crossbar use:
+
+    
+    sudo pip3 install crossbar
+
+This might fail on the pi due to libffi-dev and libssl-dev not being installed. In this case install them via apt-get
+
 ##Time initialization
 
 To set the time of a sunrise(-program) the localtime system time is used.
@@ -90,6 +102,32 @@ Add the following to your root crontab to autostart pi-blaster at start up of yo
 Add the following to your user crontab to autostart pi-led-control at start up of your system
 
    @reboot python3 /home/pi/pi-led-control/src/main.py
+
+##Flic Button integration
+Flic Buttons (https://flic.io/) can be easily integrated, to do so follow the steps at https://github.com/50ButtonsEach/fliclib-linux-hci to setup the server for the buttons and pair them.
+
+To setup the integration start the flic binary and:
+   ./flic-integrator.py
+   
+This will toogle between the programs "feed" and "softOff" on any button down.
+To start both at startup, add the following to your root crontab:
+   
+   @reboot /bin/sleep 5 ; /home/pi/fliclib-linux-hci/bin/armv6l/flicd -f /home/pi/flic.sqlite3
+
+and the follwing to your user crontab:
+
+   @reboot /bin/sleep 6 ; python3 /home/pi/pi-led-control/src/flicintegration/flicintegrator.py
+
+The sleep is needed to wait for the HCI to come up after system boot.
+To avoid interference with the standard bluetooth service, disable it:
+   
+   sudo update-rc.d bluetooth disable
+
+After that when everything (flicserver, flic-integrator and ledserver) is running and flic-buttons are paired with the flicserver (can be done with the simpleClient provided by flic) you use the button for the following:
+
+0. Single Click - If the state is 'off the Feedprogram is started, if state is 'on' the softoff program
+0. Double Click - The Full White program is started
+0. Hold - The following programs are rotated with every hold: randomPath, 4colorloop, wheel, freak
 
 ##Screenshots
 

@@ -52,6 +52,12 @@ class LEDManager:
         self.controlThread = LEDControlThread(program)
         self.controlThread.start()
         self.sem.release()
+        
+    def getCurrentProgram(self):
+        if self.controlThread != None:
+            if self.controlThread.program != None:
+                return self.controlThread.program
+        return None
 
     def getCurrentValue(self):
         if self.controlThread is not None:
