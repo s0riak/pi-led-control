@@ -85,7 +85,7 @@ def traverseAndExecute(config, path, leafFunction):
                 raise KeyError("invalid Path " + path)
 
 
-class ConfigurationManager():
+class ConfigurationManager:
     
     def __init__(self, configPath="config.json"):
         self._configPath = configPath

@@ -62,14 +62,15 @@ class ColorPathProgram(AbstractProgram):
             for color in self._colorPath:
                 result = result + str(color) + " "
             return result
-            
-    #timePerColor is the time the color is shown at each interpolationPoint not for one point on the colorpath
+
+    # timePerColor is the time the color is shown at each interpolationPoint not for one point on the color path
     def __init__(self, colorPath, interpolationPoints, timePerColor, startFromCurrent=False):
         super().__init__()
         self._colorPath = colorPath
         self._interpolationPoints = interpolationPoints
         self._timePerColor = timePerColor
         self._startFromCurrent = startFromCurrent
+        self._colorIterator = None
 
     def initColorIterator(self, colorPath):
         self._colorIterator = ColorPathProgram.PathIterator(colorPath)

@@ -1,10 +1,11 @@
-from chardet.universaldetector import UniversalDetector
-from http.server import CGIHTTPRequestHandler
 import inspect
 import json
 import logging
 import os
 import traceback
+from http.server import CGIHTTPRequestHandler
+
+from chardet.universaldetector import UniversalDetector
 
 from server.exceptions.parameterexception import ParameterExeption
 from server.ledstate import LEDState
@@ -46,6 +47,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         self._clientResourceBaseDir = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/client/"
         self._jsonBody = None
+        self.ledManager = None
         super().__init__(request, client_address, server)
         
     def log_error(self, logformat, *args):

@@ -1,12 +1,12 @@
 # Hardware for pi-led-control
 ## Introduction
-This tuturial describes how to connect a single color RGB LED strip with the GPIO pins of a raspberry pi so that it can be controlled by pi-blaster (https://github.com/sarfata/pi-blaster)
+This tutorial describes how to connect a single color RGB LED strip with the GPIO pins of a raspberry pi so that it can be controlled by pi-blaster (https://github.com/sarfata/pi-blaster)
 
 ##Circuit Layout
-Basically the component discribed here replaces the rgb-controller of any available single color RGB strip to make it controllable with the pi.
+Basically the component described here replaces the rgb-controller of any available single color RGB strip to make it controllable with the pi.
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
-The component connects the powersupply (of the original strip), ledstrip and the GPIO PINs of the raspberry pi using the following layout:
+The component connects the power supply (of the original strip), led strip and the GPIO PINs of the raspberry pi using the following layout:
 ![circuit layout to control the led strip](https://raw.githubusercontent.com/s0riak/pi-led-control/master/hardware/circuit-layout.png)
 
 ## Board result 
@@ -21,10 +21,10 @@ Solder the components as shown in the circuit layout.
 
 The result should look something like this:
 ![upside of the control board](https://raw.githubusercontent.com/s0riak/pi-led-control/master/hardware/upside.jpg)
-Headers on the right handside connects the GPIOs of the pi. Headers on the left drive the LED strip. Powersupply is on the bottom right.
+Headers on the right hand side connects the GPIOs of the pi. Headers on the left drive the LED strip. Power supply is on the bottom right.
 The Underside of the board: 
 ![underside of the control board](https://raw.githubusercontent.com/s0riak/pi-led-control/master/hardware/underside.jpg)
-Headers on the right handside connects the GPIOs of the pi. Headers on the left drive the LED strip. Powersupply is on the top right.
+Headers on the right hand side connects the GPIOs of the pi. Headers on the left drive the LED strip. Power supply is on the top right.
 
 ##Shopping Cart
 

@@ -26,7 +26,7 @@ from server.ledstate import LEDState
 from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
 
 
-class LEDManager():
+class LEDManager:
     
 
     def __init__(self):

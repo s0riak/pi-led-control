@@ -50,7 +50,7 @@ class ColorSetter:
                 piblaster.close()
             except:
                 self._ledState = LEDState()
-                errorMessage = "error writing {}={} to {}".format(channel, value, piBlasterPath)
+                errorMessage = "error writing {}={} to {} ({})".format(channel, value, piBlasterPath, channelName)
                 piblaster.close()
                 raise PiBlasterUnavailableException(errorMessage)      
 

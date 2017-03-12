@@ -16,12 +16,12 @@
 
 def validateValue(value):
     if not isinstance( value , float ):
-        raise TypeError("LEDValue only accepts floats, got {}".format(str(value)))
+        raise TypeError("LEDValue only accepts floats, got " + str(value))
     if value < 0 or value > 1:
-        raise ValueError("LEDValue only accepts floats between 0 and 1, got ".format(str(value)))
+        raise ValueError("LEDValue only accepts floats between 0 and 1, got " + str(value))
 
 
-class LEDState():
+class LEDState:
 
     #all values handled by this class are between 0 and 1 any other value cause an error
 

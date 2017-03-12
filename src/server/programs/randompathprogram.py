@@ -15,7 +15,10 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
+
 from server.programs.colorpathprogram import ColorPathProgram
+
+
 class RandomPathProgram(ColorPathProgram):
 
     class RandomIterator:
@@ -30,7 +33,7 @@ class RandomPathProgram(ColorPathProgram):
             if self._iteration % 2 == 0:
                 newItem = random.choice(self._colorSet)
                 #make sure the next point differs from the current point
-                while(self._nextItem == newItem):
+                while self._nextItem == newItem:
                     newItem = random.choice(self._colorSet)
                 self._nextItem = newItem
             self._iteration += 1
@@ -40,6 +43,7 @@ class RandomPathProgram(ColorPathProgram):
         interpolationPoints = 60
         durationPerInterpolationPoint = durationPerPoint / interpolationPoints
         super().__init__(colorSet, interpolationPoints, durationPerInterpolationPoint)
+        self._colorIterator = None
 
     def initColorIterator(self, colorPath):
         self._colorIterator = RandomPathProgram.RandomIterator(colorPath)
