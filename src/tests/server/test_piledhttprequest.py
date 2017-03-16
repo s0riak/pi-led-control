@@ -14,76 +14,83 @@
 
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
-
-from unittest import mock
+import inspect
+import os
 import unittest
 from unittest.mock import patch, MagicMock, call
 
 from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 
+mock_makeDevBuild = MagicMock()
+
+
+def mock_init(self, request, client_address, server):
+    self._clientResourceBaseDir = os.path.dirname(
+        os.path.dirname(os.path.realpath(inspect.getfile(PiLEDHTTPRequestHandler)))) + "/client/"
+    self._jsonBody = None
+    self.ledManager = None
 
 class PiLEDHTTPRequestHandlerTests(unittest.TestCase):
+
     
     def setUp(self):
         unittest.TestCase.setUp(self)
-        self.patcher = patch.object(PiLEDHTTPRequestHandler, '__bases__', (mock.MagicMock,))  # @UndefinedVariable
-        with self.patcher:
-            self.patcher.is_local = True
+        with patch('server.piledhttprequesthandler.PiLEDHTTPRequestHandler.__init__', new=mock_init):
             self.handler = PiLEDHTTPRequestHandler(None, None, None)
             
     def test_getClientFilesValidBinaryFilesReturn200OctetStreamAndContent(self):
         testPath = "/blub"
         testFileContent = bytes("testdata", "UTF-8")
         self.handler._clientResourceBaseDir = "/testBaseDir/"
-        _getFileEncodingMock = MagicMock()
-        _getFileEncodingMock.return_value = None
-        self.handler._getFileEncoding = _getFileEncodingMock
-        _readFileToBytesMock = MagicMock()
-        _readFileToBytesMock.return_value = testFileContent
-        self.handler._readFileToBytes = _readFileToBytesMock
-        _sendResponseMock = MagicMock()
-        self.handler.send_response = _sendResponseMock
-        _sendHeaderMock = MagicMock()
-        self.handler.send_header = _sendHeaderMock
-        _endHeadersMock = MagicMock()
-        self.handler.end_headers = _endHeadersMock
-        self.handler.wfile = MagicMock()
-        _wFileWriteMock = MagicMock()
-        self.handler.wfile.write = _wFileWriteMock
-        self.handler._getClientFile(testPath)
-        _getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
-        _readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], None)
-        _sendResponseMock.assert_called_once_with(200)
-        _sendHeaderMock.assert_called_once_with("Content-type", "application/octet-stream")
-        assert _endHeadersMock.called
-        _wFileWriteMock.assert_called_with(testFileContent)
+        getFileEncodingMock = MagicMock()
+        getFileEncodingMock.return_value = None
+        readFileToBytesMock = MagicMock()
+        readFileToBytesMock.return_value = testFileContent
+        with patch('server.piledhttprequesthandler.getFileEncoding', new=getFileEncodingMock), \
+             patch('server.piledhttprequesthandler.readFileToBytes', new=readFileToBytesMock):
+            _sendResponseMock = MagicMock()
+            self.handler.send_response = _sendResponseMock
+            _sendHeaderMock = MagicMock()
+            self.handler.send_header = _sendHeaderMock
+            _endHeadersMock = MagicMock()
+            self.handler.end_headers = _endHeadersMock
+            self.handler.wfile = MagicMock()
+            _wFileWriteMock = MagicMock()
+            self.handler.wfile.write = _wFileWriteMock
+            self.handler._getClientFile(testPath)
+            getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
+            readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], None)
+            _sendResponseMock.assert_called_once_with(200)
+            _sendHeaderMock.assert_called_once_with("Content-type", "application/octet-stream")
+            assert _endHeadersMock.called
+            _wFileWriteMock.assert_called_with(testFileContent)
         
     def test_getClientFilesValidTextFilesReturn200ContentTypeBasedOnFileNameAndContent(self):
         testPath = "/blub.css"
         testFileContent = bytes("testdata", "UTF-8")
         self.handler._clientResourceBaseDir = "/testBaseDir/"
-        _getFileEncodingMock = MagicMock()
-        _getFileEncodingMock.return_value = "UTF-8"
-        self.handler._getFileEncoding = _getFileEncodingMock
-        _readFileToBytesMock = MagicMock()
-        _readFileToBytesMock.return_value = testFileContent
-        self.handler._readFileToBytes = _readFileToBytesMock
-        _sendResponseMock = MagicMock()
-        self.handler.send_response = _sendResponseMock
-        _sendHeaderMock = MagicMock()
-        self.handler.send_header = _sendHeaderMock
-        _endHeadersMock = MagicMock()
-        self.handler.end_headers = _endHeadersMock
-        self.handler.wfile = MagicMock()
-        _wFileWriteMock = MagicMock()
-        self.handler.wfile.write = _wFileWriteMock
-        self.handler._getClientFile(testPath)
-        _getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
-        _readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], "UTF-8")
-        _sendResponseMock.assert_called_once_with(200)
-        _sendHeaderMock.assert_called_once_with("Content-type", "text/css")
-        assert _endHeadersMock.called
-        _wFileWriteMock.assert_called_with(testFileContent)
+        getFileEncodingMock = MagicMock()
+        getFileEncodingMock.return_value = "UTF-8"
+        readFileToBytesMock = MagicMock()
+        readFileToBytesMock.return_value = testFileContent
+        with patch('server.piledhttprequesthandler.getFileEncoding', new=getFileEncodingMock), \
+             patch('server.piledhttprequesthandler.readFileToBytes', new=readFileToBytesMock):
+            _sendResponseMock = MagicMock()
+            self.handler.send_response = _sendResponseMock
+            _sendHeaderMock = MagicMock()
+            self.handler.send_header = _sendHeaderMock
+            _endHeadersMock = MagicMock()
+            self.handler.end_headers = _endHeadersMock
+            self.handler.wfile = MagicMock()
+            _wFileWriteMock = MagicMock()
+            self.handler.wfile.write = _wFileWriteMock
+            self.handler._getClientFile(testPath)
+            getFileEncodingMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:])
+            readFileToBytesMock.assert_called_once_with(self.handler._clientResourceBaseDir + testPath[1:], "UTF-8")
+            _sendResponseMock.assert_called_once_with(200)
+            _sendHeaderMock.assert_called_once_with("Content-type", "text/css")
+            assert _endHeadersMock.called
+            _wFileWriteMock.assert_called_with(testFileContent)
         
     def test_getClientFilesPassesExceptionFromGetFileEncoding(self):
         testPath = "/blub.css"

@@ -18,8 +18,8 @@
 import os
 import time
 import unittest
-from server.configmanager import ConfigurationManager
 
+from server.configmanager import ConfigurationManager
 
 testData = {
             "dictOfDicts":
