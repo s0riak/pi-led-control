@@ -20,6 +20,7 @@ from unittest.mock import MagicMock, call
 import requests
 
 from flicintegration.eventhelper import EventHelper
+from tests.testing_helpers import deep_sort
 
 
 class EventHelperTest(unittest.TestCase):
@@ -169,9 +170,11 @@ class EventHelperTest(unittest.TestCase):
                 post_mock = MagicMock()
                 requests.post = post_mock
                 self.eventHelper.handleEvent(EventHelper.eventTypes["togglePrograms"])
-                post_mock.assert_called_once_with(EventHelper.piLedHost + "/startProgram",
-                                                  '{"name": "' + self.eventHelper._programs[
-                                                      i % len(self.eventHelper._programs)] + '", "params": []}')
+                # post_mock.assert_any_call()
+                call_args = post_mock.call_args
+                self.assertEqual(deep_sort(eval(post_mock.call_args[0][1])),
+                                 deep_sort({"name": self.eventHelper._programs[ \
+                                     i % len(self.eventHelper._programs)], "params": []}))
 
     def test_startFeedProgramAndScheduledOffProgramOnToggleTimer(self):
         startProgramMock = MagicMock()
