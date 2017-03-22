@@ -16,13 +16,12 @@
 import logging
 import traceback
 
+from server.crossbarintegration import statuspublisher
 from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.ledstate import LEDState
-from server.crossbarintegration import statuspublisher
 
 
 class ColorSetter:
-
     def __init__(self, brightness):
         self._ledState = LEDState()
         self._ledState.brightness = brightness
@@ -31,7 +30,9 @@ class ColorSetter:
     def setBrightness(self, brightness):
         self._ledState.brightness = brightness
         if self._ledState.isComplete():
-            logging.getLogger("main").info("resetting color after brightness change {}, {}".format(self._ledState.brightness, self._ledState.getColor()))
+            logging.getLogger("main").info(
+                "resetting color after brightness change {}, {}".format(self._ledState.brightness,
+                                                                        self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -53,25 +54,27 @@ class ColorSetter:
                 self._ledState = LEDState()
                 errorMessage = "error writing {}={} to {} ({})".format(channel, value, piBlasterPath, channelName)
                 piblaster.close()
-                raise PiBlasterUnavailableException(errorMessage)      
+                raise PiBlasterUnavailableException(errorMessage)
 
     def setValue(self, ledState):
         if ledState.brightness is not None and ledState.brightness != self._ledState.brightness:
-            logging.getLogger("main").warning("updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(ledState.brightness))
+            logging.getLogger("main").warning(
+                "updating brightness in setValue from " + str(self._ledState.brightness) + " to " + str(
+                    ledState.brightness))
         self._ledState.updateAvailableValues(ledState)
         if self._ledState.isComplete():
-            redValue = round(self._ledState.red*self._ledState.brightness, self._colorRounding)
-            greenValue = round(self._ledState.green*self._ledState.brightness, self._colorRounding)
-            blueValue = round(self._ledState.blue*self._ledState.brightness, self._colorRounding)
-            self._writePiBlasterValue(17, "red" , redValue)
-            self._writePiBlasterValue(22, "green" , greenValue)
-            self._writePiBlasterValue(24, "blue" , blueValue)
-            logging.getLogger("main").debug("updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
+            redValue = round(self._ledState.red * self._ledState.brightness, self._colorRounding)
+            greenValue = round(self._ledState.green * self._ledState.brightness, self._colorRounding)
+            blueValue = round(self._ledState.blue * self._ledState.brightness, self._colorRounding)
+            self._writePiBlasterValue(17, "red", redValue)
+            self._writePiBlasterValue(22, "green", greenValue)
+            self._writePiBlasterValue(24, "blue", blueValue)
+            logging.getLogger("main").debug(
+                "updated pi-blaster: red={}, green={}, blue={}".format(redValue, greenValue, blueValue))
             try:
                 statuspublisher.getStatusPublisher().publishStatus()
             except Exception as e:
                 logging.getLogger("main").warning("Error during publishStatus " + str(e))
-                
-            
+
     def getCurrentValue(self):
         return self._ledState

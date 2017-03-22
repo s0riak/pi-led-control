@@ -20,19 +20,20 @@ from server.programs.colorpathprogram import ColorPathProgram
 
 
 class RandomPathProgram(ColorPathProgram):
-
     class RandomIterator:
         def __init__(self, colorSet):
             self._colorSet = colorSet
             self._iteration = 0
             self._nextItem = None
+
         def __iter__(self):
             return self
+
         def __next__(self):
-            #only change the color every second point
+            # only change the color every second point
             if self._iteration % 2 == 0:
                 newItem = random.choice(self._colorSet)
-                #make sure the next point differs from the current point
+                # make sure the next point differs from the current point
                 while self._nextItem == newItem:
                     newItem = random.choice(self._colorSet)
                 self._nextItem = newItem

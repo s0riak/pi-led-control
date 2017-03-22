@@ -15,22 +15,21 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 def validateValue(value):
-    if not isinstance( value , float ):
+    if not isinstance(value, float):
         raise TypeError("LEDValue only accepts floats, got " + str(value))
     if value < 0 or value > 1:
         raise ValueError("LEDValue only accepts floats between 0 and 1, got " + str(value))
 
 
 class LEDState:
-
-    #all values handled by this class are between 0 and 1 any other value cause an error
+    # all values handled by this class are between 0 and 1 any other value cause an error
 
     def __str__(self):
         return "red: {}, green: {}, blue: {}, brightness: {}".format(self.red, self.green, self.blue, self.brightness)
-    
+
     def __repr__(self):
         return self.__str__()
-           
+
     def __init__(self, red=None, green=None, blue=None, brightness=None):
         if red is None:
             self.__red = None
@@ -61,7 +60,7 @@ class LEDState:
         self.__red = red
 
     red = property(__getRed, __setRed)
-        
+
     def __getGreen(self):
         return self.__green
 
@@ -104,8 +103,8 @@ class LEDState:
             self.blue = newState.blue
         if not newState.brightness is None:
             self.brightness = newState.brightness
-    
-    #doesn't take brightness into account for equality check
+
+    # doesn't take brightness into account for equality check
     def colorsEqual(self, comparedState):
         if self.red != comparedState.red:
             return False

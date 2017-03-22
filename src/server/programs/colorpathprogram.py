@@ -33,6 +33,7 @@ def getInterpolationValue(currentValue, nextValue, pointIndex, numberOfPoints):
         else:
             return new_value
 
+
 def getInterpolationPoint(currentPoint, nextPoint, pointIndex, numberOfPoints):
     red = getInterpolationValue(currentPoint.red, nextPoint.red, pointIndex, numberOfPoints)
     green = getInterpolationValue(currentPoint.green, nextPoint.green, pointIndex, numberOfPoints)
@@ -45,18 +46,20 @@ def getInterpolationPoint(currentPoint, nextPoint, pointIndex, numberOfPoints):
 
 
 class ColorPathProgram(AbstractProgram):
-
     class PathIterator:
         def __init__(self, colorPath):
             self._colorPath = colorPath
             self._currentIndex = -1
+
         def __iter__(self):
             return self
+
         def __next__(self):
             self._currentIndex += 1
             if self._currentIndex >= len(self._colorPath):
                 raise StopIteration
             return self._colorPath[self._currentIndex]
+
         def __repr__(self):
             result = "PathIterator: "
             for color in self._colorPath:
@@ -74,7 +77,7 @@ class ColorPathProgram(AbstractProgram):
 
     def initColorIterator(self, colorPath):
         self._colorIterator = ColorPathProgram.PathIterator(colorPath)
-        
+
     def setTimePerColor(self, timePerColor):
         self._timePerColor = timePerColor
 
@@ -92,10 +95,10 @@ class ColorPathProgram(AbstractProgram):
                 currentPoint = color
                 continue
             nextPoint = color
-            for j in range(0, self._interpolationPoints+1):
+            for j in range(0, self._interpolationPoints + 1):
                 self._setValue(getInterpolationPoint(currentPoint, nextPoint, j, self._interpolationPoints))
                 self._waitIfNotStopped(self._timePerColor)
             currentPoint = color
-            
+
         currentPoint = self._colorPath[-1]
         self._setValue(currentPoint)

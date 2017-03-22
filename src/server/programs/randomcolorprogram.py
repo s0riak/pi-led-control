@@ -15,10 +15,12 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
+
 from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
-class RandomColorProgram(AbstractProgram):
 
+
+class RandomColorProgram(AbstractProgram):
     def __init__(self, minColor, maxColor, secondsPerColor):
         super().__init__()
         self._minColor = minColor

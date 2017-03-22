@@ -14,14 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
+from server.ledstate import LEDState
 from server.programs.programchainprogram import ProgramChainProgram
 from server.programs.singlecolorprogram import SingleColorProgram
 from server.programs.waitprogram import WaitProgram
-from server.ledstate import LEDState
 
 
 class DemoProgram(ProgramChainProgram):
-
     def __init__(self, timePerColor=3):
         programs = [SingleColorProgram(LEDState(1.0, 0.0, 0.0, 0.0)), WaitProgram(timePerColor),
                     SingleColorProgram(LEDState(0.0, 1.0, 0.0, 0.0)), WaitProgram(timePerColor),

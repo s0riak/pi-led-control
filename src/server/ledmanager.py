@@ -27,8 +27,6 @@ from server.programs.smoothnextcolorprogram import SmoothNextColorProgram
 
 
 class LEDManager:
-    
-
     def __init__(self):
         self.threadStopEvent = Event()
         self.sem = Semaphore()
@@ -41,7 +39,7 @@ class LEDManager:
 
     def getBrightness(self):
         return self._colorSetter.getBrightness()
-    
+
     def startProgram(self, program):
         self.sem.acquire()
         program.setColorSetter(self._colorSetter)
@@ -52,10 +50,10 @@ class LEDManager:
         self.controlThread = LEDControlThread(program)
         self.controlThread.start()
         self.sem.release()
-        
+
     def getCurrentProgram(self):
-        if self.controlThread != None:
-            if self.controlThread.program != None:
+        if self.controlThread is not None:
+            if self.controlThread.program is not None:
                 return self.controlThread.program
         return None
 
@@ -65,7 +63,7 @@ class LEDManager:
                 return self.controlThread.program.getCurrentValue()
         return None
 
-    def powerOffWaiter(self,duration, cancelEvent):
+    def powerOffWaiter(self, duration, cancelEvent):
         cancelEvent.wait(duration)
         if cancelEvent.is_set():
             logging.getLogger("main").info("canceled power off")
@@ -73,7 +71,7 @@ class LEDManager:
         logging.getLogger("main").info("wait finished starting SoftOffProgram")
         self.startProgram(SmoothNextColorProgram(LEDState(0.0, 0.0, 0.0, 1.0), 1, 3))
         self._cancelPowerOffEvent = None
-        
+
     def schedulePowerOff(self, duration):
         if self._cancelPowerOffEvent is not None:
             self._cancelPowerOffEvent.set()

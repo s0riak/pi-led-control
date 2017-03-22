@@ -20,9 +20,9 @@ import os.path
 from pprint import pprint
 
 
-#to work correctly configuration key must not contain '/'s and '='s
-#paths must be given as key1/key2/key3 in case all levels are dictionaries
-#in case a level is an array two modes are supported: integers can be used to access entries at a given index (key1/4/key2, returns the 5th element of the array given by key1), attribute selectors like 'attributeName=attributeValue' can be used to select the entry with attributeValue in the attribute with attributeName 
+# to work correctly configuration key must not contain '/'s and '='s
+# paths must be given as key1/key2/key3 in case all levels are dictionaries
+# in case a level is an array two modes are supported: integers can be used to access entries at a given index (key1/4/key2, returns the 5th element of the array given by key1), attribute selectors like 'attributeName=attributeValue' can be used to select the entry with attributeValue in the attribute with attributeName
 def convertsToInt(variable):
     try:
         int(variable)
@@ -42,7 +42,7 @@ def traverseAndExecute(config, path, leafFunction):
         return leafFunction(config)
     currentConfig = config
     pathParts = path.split('/')
-    for i in range(0, len(pathParts)) :
+    for i in range(0, len(pathParts)):
         pathPart = pathParts[i]
         if isinstance(currentConfig, dict):
             if convertsToInt(pathPart):
@@ -86,15 +86,14 @@ def traverseAndExecute(config, path, leafFunction):
 
 
 class ConfigurationManager:
-    
     def __init__(self, configPath="config.json"):
         self._configPath = configPath
-        
+
     def loadConfig(self):
         if not os.path.isfile(self._configPath):
             logging.getLogger("main").warning("no configuration found, writing default to " + self._configPath)
             self.storeConfig(self._getDefaultConfiguration())
-        with open(self._configPath) as configFile:    
+        with open(self._configPath) as configFile:
             return json.load(configFile)
 
     def storeConfig(self, config):
@@ -113,17 +112,17 @@ class ConfigurationManager:
                     "colorloop": {"colors": ["red", "yellow", "green", "blue"], "secondsPerColor": 2.0}
                 },
             "userDefinedColors":
-            [
-                {"name": "red",  "values": {"red": 1.0, "green": 0.0, "blue": 0.0}},
-                {"name": "green",  "values": {"red": 0.0, "green": 1.0, "blue": 0.0}},
-                {"name": "blue", "values": {"red": 0.0, "green": 0.0, "blue": 1.0}},
-                {"name": "yellow", "values": {"red": 1.0, "green": 1.0, "blue": 0.0}},
-                {"name": "violet", "values": {"red": 0.58, "green": 0.0, "blue": 0.82}},
-                {"name": "orange", "values": {"red": 1.0, "green": 0.65, "blue": 0.0}},
-                {"name": "darkorange", "values": {"red": 1.0, "green": 0.56, "blue": 0.06}},
-                {"name": "pink", "values": {"red": 0.99, "green": 0.0, "blue": 0.59}},
-                {"name": "turquoise", "values": {"red": 0.0, "green": 0.88, "blue": 0.78}}
-            ]
+                [
+                    {"name": "red", "values": {"red": 1.0, "green": 0.0, "blue": 0.0}},
+                    {"name": "green", "values": {"red": 0.0, "green": 1.0, "blue": 0.0}},
+                    {"name": "blue", "values": {"red": 0.0, "green": 0.0, "blue": 1.0}},
+                    {"name": "yellow", "values": {"red": 1.0, "green": 1.0, "blue": 0.0}},
+                    {"name": "violet", "values": {"red": 0.58, "green": 0.0, "blue": 0.82}},
+                    {"name": "orange", "values": {"red": 1.0, "green": 0.65, "blue": 0.0}},
+                    {"name": "darkorange", "values": {"red": 1.0, "green": 0.56, "blue": 0.06}},
+                    {"name": "pink", "values": {"red": 0.99, "green": 0.0, "blue": 0.59}},
+                    {"name": "turquoise", "values": {"red": 0.0, "green": 0.88, "blue": 0.78}}
+                ]
         }
 
     def pprint(self):
@@ -138,17 +137,17 @@ class ConfigurationManager:
             return False
         except KeyError:
             return False
-    
+
     def getValue(self, path, config=None):
         if config is None:
             config = self.loadConfig()
         return traverseAndExecute(config, path, lambda x: x)
-    
+
     def getChildCount(self, path, config=None):
         if config is None:
             config = self.loadConfig()
         return traverseAndExecute(config, path, lambda x: len(x))
-    
+
     def setValue(self, path, value, createNewLeafs=False):
         if not self.pathExists(path) and not createNewLeafs:
             raise KeyError("invalid Path " + path)
@@ -156,12 +155,12 @@ class ConfigurationManager:
             config = value
         else:
             config = self.loadConfig()
-            pathParts = path.rsplit('/',1)
+            pathParts = path.rsplit('/', 1)
             if len(pathParts) == 1:
                 key = pathParts[0]
                 parent = config
             else:
-                key = pathParts[1]                
+                key = pathParts[1]
                 parentPath = pathParts[0]
                 if not self.pathExists(parentPath):
                     raise KeyError("invalid Path " + path)
@@ -196,7 +195,7 @@ class ConfigurationManager:
                     else:
                         parent[int(key)] = value
         self.storeConfig(config)
-        
+
     def removeChild(self, path, childId=None):
         if not self.pathExists(path):
             raise KeyError("invalid Path " + path)
@@ -214,7 +213,7 @@ class ConfigurationManager:
                 elif isinstance(parent, list):
                     parent[:] = []
                 else:
-                    raise KeyError("invalid Path " + path + "not a list or dict") 
+                    raise KeyError("invalid Path " + path + "not a list or dict")
             else:
                 if '=' in childId:
                     if isinstance(parent, dict):
@@ -245,5 +244,5 @@ class ConfigurationManager:
                         else:
                             raise KeyError("invalid child " + childId)
                     else:
-                        raise KeyError("path " + path + " doesn't contain dict or list")                               
+                        raise KeyError("path " + path + " doesn't contain dict or list")
         self.storeConfig(config)
