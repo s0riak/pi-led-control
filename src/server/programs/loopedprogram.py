@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from server.programs.abstractprogram import AbstractProgram
 import logging
-class LoopedProgram(AbstractProgram):
 
+from server.programs.abstractprogram import AbstractProgram
+
+
+class LoopedProgram(AbstractProgram):
     def __init__(self, program, iterations=0):
         super().__init__()
         self._program = program
@@ -31,7 +33,7 @@ class LoopedProgram(AbstractProgram):
                 if curIter > 0:
                     self._program.setLastValue(self._program.getCurrentValue())
                 self._program.run()
-                curIter = curIter + 1
+                curIter += 1
         else:
             for i in range(0, self._iterations):
                 logging.getLogger("main").debug("current iteration: " + str(i))
@@ -41,7 +43,7 @@ class LoopedProgram(AbstractProgram):
 
     def setThreadStopEvent(self, threadStopEvent):
         self._program.setThreadStopEvent(threadStopEvent)
-    
+
     def getCurrentValue(self):
         return self._program.getCurrentValue()
 
@@ -51,4 +53,3 @@ class LoopedProgram(AbstractProgram):
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
         self._program.setColorSetter(colorSetter)
-

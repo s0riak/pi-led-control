@@ -15,10 +15,12 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-from server.programs.abstractprogram import AbstractProgram
 import logging
-class ScheduledProgram(AbstractProgram):
 
+from server.programs.abstractprogram import AbstractProgram
+
+
+class ScheduledProgram(AbstractProgram):
     def __init__(self, program, timeOfDay):
         super().__init__()
         self._program = program
@@ -38,7 +40,7 @@ class ScheduledProgram(AbstractProgram):
     def setThreadStopEvent(self, threadStopEvent):
         self.threadStopEvent = threadStopEvent
         self._program.setThreadStopEvent(threadStopEvent)
-    
+
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
         self._program.setColorSetter(colorSetter)

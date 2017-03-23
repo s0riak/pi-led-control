@@ -25,12 +25,11 @@ from server.programs.abstractprogram import AbstractProgram
 
 
 class LEDControlThread(Thread):
-  
     def __init__(self, program):
         Thread.__init__(self)
         self.program = program
         self.threadStopEvent = Event()
-        
+
     def run(self):
         assert isinstance(self.program, AbstractProgram)
         try:
@@ -39,5 +38,5 @@ class LEDControlThread(Thread):
         except InterruptionException:
             logging.getLogger("main").info("killed thread doing " + type(self.program).__name__)
         except PiBlasterUnavailableException as e:
-            logging.getLogger("main").error("thread failed doing " + type(self.program).__name__ + ", message: " + str(e))
-                
+            logging.getLogger("main").error(
+                "thread failed doing " + type(self.program).__name__ + ", message: " + str(e))

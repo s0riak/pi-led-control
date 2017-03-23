@@ -18,36 +18,32 @@ from server.programs.abstractprogram import AbstractProgram
 
 
 class ProgramChainProgram(AbstractProgram):
-
     def __init__(self, programs):
         super().__init__()
         assert len(programs) >= 1
         self._programs = programs
         self._currentProgram = None
 
-    def run(self):        
+    def run(self):
         self._currentProgram = self._programs[0]
         self._currentProgram.run()
         for program in self._programs[1:]:
             program.setLastValue(self._currentProgram.getCurrentValue())
             self._currentProgram = program
             program.run()
-        
+
     def setThreadStopEvent(self, threadStopEvent):
-        self.threadStopEvent = threadStopEvent 
+        self.threadStopEvent = threadStopEvent
         for program in self._programs:
             program.setThreadStopEvent(threadStopEvent)
-    
+
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
         for program in self._programs:
             program.setColorSetter(colorSetter)
 
-            
     def getCurrentValue(self):
         return self._currentProgram.getCurrentValue()
 
     def setLastValue(self, lastValue):
         self._programs[0].setLastValue(lastValue)
-
-

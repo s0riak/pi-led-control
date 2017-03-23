@@ -15,7 +15,6 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 class PiBlasterUnavailableException(Exception):
-    
     def __init__(self, message):
         # Call the base class constructor with the parameters it needs
         super(PiBlasterUnavailableException, self).__init__(message)

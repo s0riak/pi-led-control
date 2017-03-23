@@ -20,23 +20,21 @@ from server.programs.singlecolorprogram import SingleColorProgram
 
 
 class SmoothNextColorProgram(ProgramChainProgram):
-
     def __init__(self, ledValue, minSwitchTime, maxSwitchTime):
         colorPath = [ledValue]
         self._minSwitchTime = minSwitchTime
         self._maxSwitchTime = maxSwitchTime
         interpolationPoints = 50
-        timePerColor =  maxSwitchTime/interpolationPoints
+        timePerColor = maxSwitchTime / interpolationPoints
         self._colorPathProgram = ColorPathProgram(colorPath, interpolationPoints, timePerColor, True)
         super().__init__([self._colorPathProgram, SingleColorProgram(ledValue)])
 
-    #overridding setLastColor to change duration of softoff based on hue of last Color
-    def setLastColor(self, lastColor):
-        if lastColor != None:
-            lastHue = lastColor[0] + lastColor[1] + lastColor[2]
-            totalTime = min(self._maxSwitchTime, max(self._minSwitchTime, self._maxSwitchTime * lastHue / (255*3)))
+    # overridding setLastColor to change duration of softoff based on hue of last Color
+    def setLastValue(self, lastColor):
+        if lastColor is not None:
+            lastHue = lastColor.red + lastColor.green + lastColor.blue
+            totalTime = min(self._maxSwitchTime, max(self._minSwitchTime, self._maxSwitchTime * lastHue / (255 * 3)))
         else:
-            totalTime= 1
-        self._colorPathProgram.setTimePerColor(totalTime/50)
-        super().setLastColor(lastColor)
-
+            totalTime = 1
+        self._colorPathProgram.setTimePerColor(totalTime / 50)
+        super().setLastValue(lastColor)

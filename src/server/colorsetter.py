@@ -16,14 +16,14 @@
 import logging
 import traceback
 
+from server.crossbarintegration import statuspublisher
 from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.ledstate import LEDState
 from server.colorfilters.polynomialbrightnessfilter import PolynomialBrightnessFilter
 from html5lib.treebuilders._base import ActiveFormattingElements
 from server.crossbarintegration import statuspublisher
 
-class ColorSetter():
-
+class ColorSetter:
     def __init__(self, brightness):
         self._ledState = LEDState()
         self._ledState.brightness = brightness
@@ -34,7 +34,8 @@ class ColorSetter():
         if self._ledState.isComplete():
             logging.getLogger("main").info(
                 "resetting color after brightness change {}, {}".format(
-                    self._ledState.brightness, self._ledState.getColor()))
+                    self._ledState.brightness,
+                                                                        self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -54,10 +55,10 @@ class ColorSetter():
                 piblaster.close()
             except:
                 self._ledState = LEDState()
-                errorMessage = "error writing {}={} to {}".format(channel, value, piBlasterPath)
+                errorMessage = "error writing {}={} to {} ({})".format(channel, value, piBlasterPath, channelName)
                 piblaster.close()
                 raise PiBlasterUnavailableException(errorMessage)
-            
+
     def getValueForPiBlaster(self):
         myFilter = PolynomialBrightnessFilter(2.0)
         filteredState = myFilter.filter(self._ledState)
@@ -88,6 +89,6 @@ class ColorSetter():
                 statuspublisher.getStatusPublisher().publishStatus()
             except Exception as e:
                 logging.getLogger("main").warning("Error during publishStatus " + str(e))
-            
+
     def getCurrentValue(self):
         return self._ledState

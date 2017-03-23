@@ -16,6 +16,7 @@
 from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 
+
 class OffProgram(AbstractProgram):
     def run(self):
         self._setValue(LEDState(0.0, 0.0, 0.0, 1.0))

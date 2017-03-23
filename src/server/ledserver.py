@@ -15,16 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from http.server import HTTPServer
 import logging
 import os
+from http.server import HTTPServer
 
-from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 from server.crossbarintegration import statuspublisher
+from server.piledhttprequesthandler import PiLEDHTTPRequestHandler
 
 
 class LEDServer(HTTPServer):
-
     def __init__(self, connection, ledManager, configManager):
         self._connection = connection
         self.ledManager = ledManager
@@ -33,16 +32,18 @@ class LEDServer(HTTPServer):
         statuspublisher.initStatusPublisher(self)
         super().__init__(connection, PiLEDHTTPRequestHandler)
 
-                
     def serve_forever(self, poll_interval=0.5):
-        logging.getLogger("main").info("running %s from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
+        logging.getLogger("main").info("running %s from %s at %s:%s", __name__,
+                                       os.path.dirname(os.path.realpath(__file__)), self._connection[0],
+                                       self._connection[1])
         self._serverStarted = True
         HTTPServer.serve_forever(self, poll_interval=poll_interval)
-        
+
     def server_close(self):
         if self._serverStarted:
-            logging.getLogger("main").info("stopping %s, was running from %s at %s:%s", __name__, os.path.dirname(os.path.realpath(__file__)), self._connection[0], self._connection[1])
+            logging.getLogger("main").info("stopping %s, was running from %s at %s:%s", __name__,
+                                           os.path.dirname(os.path.realpath(__file__)), self._connection[0],
+                                           self._connection[1])
         HTTPServer.server_close(self)
         if self._serverStarted:
             logging.getLogger("main").info("teardown complete")
-        

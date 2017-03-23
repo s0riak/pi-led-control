@@ -20,38 +20,37 @@ from server.exceptions.interruptionexception import InterruptionException
 
 
 class AbstractProgram(ABC):
-
     def __init__(self):
         super().__init__()
         self.threadStopEvent = None
         self._lastValue = None
         self._colorSetter = None
 
-    #needs to be called before run
+    # needs to be called before run
     def setColorSetter(self, colorSetter):
         self._colorSetter = colorSetter
-                
+
     def _setValue(self, value):
         self._colorSetter.setValue(value)
 
     def getCurrentValue(self):
-        if self._colorSetter != None:
+        if self._colorSetter is not None:
             return self._colorSetter.getCurrentValue()
         else:
             return None
 
     def setLastValue(self, lastValue):
         self._lastValue = lastValue
-        
+
     @abstractmethod
     def run(self):
         raise NotImplementedError
 
     def setThreadStopEvent(self, threadStopEvent):
         self.threadStopEvent = threadStopEvent
-        
+
     def _waitIfNotStopped(self, time):
-        assert self.threadStopEvent != None            
+        assert self.threadStopEvent is not None
         if self.threadStopEvent.is_set():
             raise InterruptionException
         self.threadStopEvent.wait(time)

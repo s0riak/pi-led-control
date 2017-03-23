@@ -11,7 +11,7 @@ If you have a single color LED strip you need to connect it to your raspberry pi
 You can find a very basic tutorial to connect a LED strip to your pi under https://github.com/s0riak/pi-led-control/blob/master/hardware/hardware.md
 Please follow the instruction in https://github.com/sarfata/pi-blaster to setup pi-blaster.
 
-In case imports fail, all can installed with pip3.
+In case imports fail, all can be installed with pip3.
 
 ###Mocking the LED strip
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.

@@ -14,15 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-from random import randint
-import random
-
-from server.programs.abstractprogram import AbstractProgram
 import logging
+import random
+from random import randint
+
+from server.ledstate import LEDState
+from server.programs.abstractprogram import AbstractProgram
 
 
 class SmoothRandomWalkProgram(AbstractProgram):
-
     def __init__(self, maxDiff, secondsPerColor):
         super().__init__()
         self._maxDiff = maxDiff
@@ -34,56 +34,56 @@ class SmoothRandomWalkProgram(AbstractProgram):
         b = round(random.uniform(0.0, 0.5), 3)
         stepsInOneDirection = 50
         while True:
-            colorRand = randint(0,2)
+            colorRand = randint(0, 2)
             upDownRand = bool(random.getrandbits(1))
             if colorRand == 0:
                 if upDownRand:
-                    for i in range(0,stepsInOneDirection):
-                        r = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        r = max(0, r - round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
                 else:
-                    for i in range(0,stepsInOneDirection):
-                        r = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        r = min(1, r + round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break
             elif colorRand == 1:
                 if upDownRand:
-                    for i in range(0,stepsInOneDirection):
-                        g = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        g = max(0, r - round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
                 if upDownRand:
-                    for i in range(0,stepsInOneDirection):
-                        g = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        g = min(1, r + round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break
             else:
                 if upDownRand:
-                    for i in range(0,stepsInOneDirection):
-                        b = max(0, r - round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        b = max(0, r - round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 0:
                             break
                 if upDownRand:
-                    for i in range(0,stepsInOneDirection):
-                        b = min(1, r + round(random.uniform(0, self._maxDiff),3))
-                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-                        self._setColor(r, g, b)
+                    for i in range(0, stepsInOneDirection):
+                        b = min(1, r + round(random.uniform(0, self._maxDiff), 3))
+                        logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+                        self._setValue(LEDState(r, g, b, 0.0))
                         self._waitIfNotStopped(self._secondsPerColor)
                         if r == 1:
                             break

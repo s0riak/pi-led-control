@@ -15,11 +15,12 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 from server.programs.abstractprogram import AbstractProgram
-class SingleColorProgram(AbstractProgram):
 
+
+class SingleColorProgram(AbstractProgram):
     def __init__(self, value):
         super().__init__()
         self.__value = value
-        
+
     def run(self):
         self._setValue(self.__value)

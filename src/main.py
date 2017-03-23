@@ -15,20 +15,20 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-from logging import handlers
 import logging
 import os
 import signal
 import sys
+from logging import handlers
 
 from server.configmanager import ConfigurationManager
 from server.crossbarintegration.crossbarmanager import CrossbarManager
 from server.ledmanager import LEDManager
 from server.ledserver import LEDServer
 
-
 crossbarManager = None
 ledServer = None
+
 
 def initLogger(loggerName, logPath, fileLogLevel, consoleLogLevel):
     logger = logging.getLogger(loggerName)
@@ -44,7 +44,8 @@ def initLogger(loggerName, logPath, fileLogLevel, consoleLogLevel):
     consoleHandler.setFormatter(logFormatter)
     consoleHandler.setLevel(consoleLogLevel)
     logger.addHandler(consoleHandler)
-    
+
+
 def initLogging(logPath, fileLogLevel, consoleLogLevel, accessLogToConsole):
     initLogger("main", logPath + "/piledcontrol.log", fileLogLevel, consoleLogLevel)
     if accessLogToConsole:
@@ -53,18 +54,25 @@ def initLogging(logPath, fileLogLevel, consoleLogLevel, accessLogToConsole):
         consoleLogLevel = logging.CRITICAL
     initLogger("access", logPath + "/piledcontrol_access.log", fileLogLevel, consoleLogLevel)
     logging.getLogger().setLevel(100)
-    
+
+
 def getArguments():
     parser = argparse.ArgumentParser(description='This is the server of pi-led-control')
     parser.add_argument('-n', '--name', help='the hostname on which pi-led-control is served', default='')
     parser.add_argument('-p', '--port', help='the port on which pi-led-control is served', type=int, default=9000)
-    parser.add_argument('-c', '--configPath', help='the path to the config file to be used', default="../pi-led-control.config")
+    parser.add_argument('-c', '--configPath', help='the path to the config file to be used',
+                        default="../pi-led-control.config")
     logLevelsRange = [logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARN, logging.ERROR, logging.CRITICAL]
-    parser.add_argument('-l', '--logPath', help='the path to the log folder to be used', default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-    parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', type=int, choices=logLevelsRange, default=logging.INFO)
-    parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', type=int, choices=logLevelsRange, default=logging.ERROR)
-    parser.add_argument('-atc', '--accessLogToConsole', help='set to True to print access log entries to console', type=bool, default=False)
+    parser.add_argument('-l', '--logPath', help='the path to the log folder to be used',
+                        default=os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    parser.add_argument('-fl', '--fileLogLevel', help='the log level for the logfile', type=int, choices=logLevelsRange,
+                        default=logging.INFO)
+    parser.add_argument('-cl', '--consoleLogLevel', help='the log level for the console', type=int,
+                        choices=logLevelsRange, default=logging.ERROR)
+    parser.add_argument('-atc', '--accessLogToConsole', help='set to True to print access log entries to console',
+                        type=bool, default=False)
     return vars(parser.parse_args())
+
 
 def startCrossbar(crossbarConfigPath):
     global crossbarManager
@@ -74,6 +82,7 @@ def startCrossbar(crossbarConfigPath):
         logging.info("crossbar started with config " + crossbarConfigPath)
     except Exception as e:
         logging.warning("failed to start crossbar " + str(e))
+
 
 def startServer(hostName, port, configPath):
     global ledServer
@@ -89,24 +98,26 @@ def startServer(hostName, port, configPath):
             ledServer.serve_forever()
         except KeyboardInterrupt:
             cleanUpAndExit(None, None)
-            
-def cleanUpAndExit(signal, frame):
+
+
+def cleanUpAndExit(signal_type, frame):
     global ledServer
     global crossbarManager
     print('Cancelled!')
     crossbarManager.stop()
     ledServer.server_close()
     sys.exit(0)
-    
+
+
 def main():
-    
     args = getArguments()
-    
+
     initLogging(args['logPath'], args['fileLogLevel'], args['consoleLogLevel'], args['accessLogToConsole'])
-    
+
     signal.signal(signal.SIGINT, cleanUpAndExit)
     startCrossbar(os.path.dirname(os.path.realpath(__file__)) + "/server/crossbarintegration/crossbar_config")
     startServer(args['name'], args['port'], args['configPath'])
+
 
 if __name__ == '__main__':
     main()

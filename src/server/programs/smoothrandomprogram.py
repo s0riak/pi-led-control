@@ -15,31 +15,31 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from random import randint
 import random
+from random import randint
 
+from server.ledstate import LEDState
 from server.programs.abstractprogram import AbstractProgram
 
 
 class SmoothRandomProgram(AbstractProgram):
-
     def __init__(self, maxDiff, secondsPerColor):
         super().__init__()
         self._maxDiff = maxDiff
         self._secondsPerColor = secondsPerColor
 
     def _getNextValue(self, oldValue):
-        return max(0, min(1, oldValue + round(random.uniform(-1*self._maxDiff, self._maxDiff),3)))
+        return max(0, min(1, oldValue + round(random.uniform(-1 * self._maxDiff, self._maxDiff), 3)))
 
     def run(self):
         r = round(random.uniform(0.0, 0.5), 3)
         g = round(random.uniform(0.0, 0.5), 3)
         b = round(random.uniform(0.0, 0.5), 3)
         while True:
-            logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r,g,b))
-            self._setColor(r, g, b)
+            logging.getLogger("main").debug("r: {}, g: {}, b: {}".format(r, g, b))
+            self._setValue(LEDState(r, g, b, 1.0))
             self._waitIfNotStopped(0.05)
-            colorRand = randint(0,2)
+            colorRand = randint(0, 2)
             if colorRand == 0:
                 r = self._getNextValue(r)
             elif colorRand == 1:

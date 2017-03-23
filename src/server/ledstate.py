@@ -14,57 +14,58 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
-class LEDState():
+def validateValue(value):
+    if not isinstance(value, float):
+        raise TypeError("LEDValue only accepts floats, got " + str(value))
+    if value < 0 or value > 1:
+        raise ValueError("LEDValue only accepts floats between 0 and 1, got " + str(value))
 
-    #all values handled by this class are between 0 and 1 any other value cause an error
-    def __validateValue(self, value):
-        if not isinstance( value , float ):
-            raise TypeError("LEDValue only accepts floats, got {}".format(str(value)))
-        if value < 0 or value > 1:
-            raise ValueError("LEDValue only accepts floats between 0 and 1, got ".format(str(value)))
+
+class LEDState:
+    # all values handled by this class are between 0 and 1 any other value cause an error
 
     def __str__(self):
         return "red: {}, green: {}, blue: {}, brightness: {}".format(self.red, self.green, self.blue, self.brightness)
-    
+
     def __repr__(self):
         return self.__str__()
-           
+
     def __init__(self, red=None, green=None, blue=None, brightness=None):
-        if red == None:
+        if red is None:
             self.__red = None
         else:
-            self.__validateValue(red)
+            validateValue(red)
             self.__red = red
-        if green == None:
+        if green is None:
             self.__green = None
         else:
-            self.__validateValue(green)
+            validateValue(green)
             self.__green = green
-        if blue == None:
+        if blue is None:
             self.__blue = None
         else:
-            self.__validateValue(blue)
+            validateValue(blue)
             self.__blue = blue
-        if brightness == None:
+        if brightness is None:
             self.__brightness = None
         else:
-            self.__validateValue(brightness)
+            validateValue(brightness)
             self.__brightness = brightness
 
     def __getRed(self):
         return self.__red
 
     def __setRed(self, red):
-        self.__validateValue(red)
+        validateValue(red)
         self.__red = red
 
     red = property(__getRed, __setRed)
-        
+
     def __getGreen(self):
         return self.__green
 
     def __setGreen(self, green):
-        self.__validateValue(green)
+        validateValue(green)
         self.__green = green
 
     green = property(__getGreen, __setGreen)
@@ -73,7 +74,7 @@ class LEDState():
         return self.__blue
 
     def __setBlue(self, blue):
-        self.__validateValue(blue)
+        validateValue(blue)
         self.__blue = blue
 
     blue = property(__getBlue, __setBlue)
@@ -82,28 +83,28 @@ class LEDState():
         return self.__brightness
 
     def __setBrightness(self, brightness):
-        self.__validateValue(brightness)
+        validateValue(brightness)
         self.__brightness = brightness
 
     brightness = property(__getBrightness, __setBrightness)
 
     def isComplete(self):
-        return not self.red == None and not self.green == None and not self.blue == None and not self.brightness == None
+        return not self.red is None and not self.green is None and not self.blue is None and not self.brightness is None
 
     def getColor(self):
         return [self.__getRed(), self.__getGreen(), self.__getBlue()]
 
     def updateAvailableValues(self, newState):
-        if not newState.red == None:
+        if not newState.red is None:
             self.red = newState.red
-        if not newState.green == None:
+        if not newState.green is None:
             self.green = newState.green
-        if not newState.blue == None:
+        if not newState.blue is None:
             self.blue = newState.blue
-        if not newState.brightness == None:
+        if not newState.brightness is None:
             self.brightness = newState.brightness
-    
-    #doesn't take brightness into account for equality check
+
+    # doesn't take brightness into account for equality check
     def colorsEqual(self, comparedState):
         if self.red != comparedState.red:
             return False
