@@ -16,12 +16,11 @@
 import logging
 import traceback
 
+from server.colorfilters.polynomialbrightnessfilter import PolynomialBrightnessFilter
 from server.crossbarintegration import statuspublisher
 from server.exceptions.piblasterunavailableexception import PiBlasterUnavailableException
 from server.ledstate import LEDState
-from server.colorfilters.polynomialbrightnessfilter import PolynomialBrightnessFilter
-from html5lib.treebuilders._base import ActiveFormattingElements
-from server.crossbarintegration import statuspublisher
+
 
 class ColorSetter:
     def __init__(self, brightness):
@@ -35,7 +34,7 @@ class ColorSetter:
             logging.getLogger("main").info(
                 "resetting color after brightness change {}, {}".format(
                     self._ledState.brightness,
-                                                                        self._ledState.getColor()))
+                    self._ledState.getColor()))
             self.setValue(self._ledState)
 
     def getBrightness(self):
@@ -63,15 +62,15 @@ class ColorSetter:
         myFilter = PolynomialBrightnessFilter(2.0)
         filteredState = myFilter.filter(self._ledState)
         return {"red": round(filteredState.red * filteredState.brightness,
-                self._colorRounding),
+                             self._colorRounding),
                 "green": round(filteredState.green * filteredState.brightness,
-                self._colorRounding),
+                               self._colorRounding),
                 "blue": round(filteredState.blue * filteredState.brightness,
-                self._colorRounding)}
+                              self._colorRounding)}
 
     def setValue(self, ledState):
-        if (ledState.brightness != None and
-            ledState.brightness != self._ledState.brightness):
+        if (ledState.brightness is not None and
+                    ledState.brightness != self._ledState.brightness):
             logging.getLogger("main").warning(
                 "updating brightness in setValue from "
                 + str(self._ledState.brightness)

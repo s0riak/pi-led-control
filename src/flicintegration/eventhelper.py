@@ -58,6 +58,7 @@ def get_dict_value_from_JSON_webservice(host, path, dict_key_path):
                                                    + str(dict_key_path) + " " + str(e))
         raise e
 
+
 def isColorValid(color):
     if not type(color) == dict:
         return False
