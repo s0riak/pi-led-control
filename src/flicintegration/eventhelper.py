@@ -20,6 +20,7 @@
 import json
 import logging
 import traceback
+from json import JSONDecodeError
 
 import requests
 from requests.exceptions import HTTPError
@@ -36,24 +37,26 @@ def startProgram(programName, params=None):
         raise e
 
 
-def getFeedRed():
+def get_dict_value_from_JSON_webservice(host, path, dict_key_path):
     try:
-        configurationRequestResult = requests.get(EventHelper.piLedHost + "/getConfiguration")
+        webservice_result = requests.get(host + path)
     except (ConnectionError, HTTPError) as e:
-        logging.getLogger("flicintegration").error("getConfiguration failed with error " + str(e))
+        logging.getLogger("flicintegration").error(path + "failed with error " + str(e))
         raise e
-    configurationJsonBody = json.loads(configurationRequestResult.text)
-    return configurationJsonBody["programs"]["feed"]["brightness"]
-
-
-def getCurrentColor():
     try:
-        statusRequestResult = requests.get(EventHelper.piLedHost + "/getStatus")
-    except (ConnectionError, HTTPError) as e:
-        logging.getLogger("flicintegration").error("getStatus failed with error " + str(e))
+        json_result = json.loads(webservice_result.text)
+    except JSONDecodeError as e:
+        logging.getLogger("flicintegration").error("result of " + path + " could not be parsed " + str(e))
         raise e
-    return json.loads(statusRequestResult.text)["color"]
-
+    try:
+        current_value = json_result
+        for path_part in dict_key_path:
+            current_value = current_value[path_part]
+        return current_value
+    except KeyError as e:
+        logging.getLogger("flicintegration").error("result of " + path + " is missing path "
+                                                   + str(dict_key_path) + " " + str(e))
+        raise e
 
 def isColorValid(color):
     if not type(color) == dict:
@@ -70,23 +73,24 @@ def isColorValid(color):
 
 
 def isFullWhiteProgramActive():
-    statusColor = getCurrentColor()
+    statusColor = get_dict_value_from_JSON_webservice(EventHelper.piLedHost, "/getStatus", ["color"])
     if not isColorValid(statusColor):
         return False
-    if float(statusColor["blue"]) != 1.0:
+    elif float(statusColor["blue"]) != 1.0:
         return False
-    if float(statusColor["green"]) != 1.0:
+    elif float(statusColor["green"]) != 1.0:
         return False
-    if float(statusColor["red"]) != 1.0:
+    elif float(statusColor["red"]) != 1.0:
         return False
     return True
 
 
 def isFeedProgramActive():
-    statusColor = getCurrentColor()
+    statusColor = get_dict_value_from_JSON_webservice(EventHelper.piLedHost, "/getStatus", ["color"])
     if not isColorValid(statusColor):
         return False
-    configurationRed = getFeedRed()
+    configurationRed = get_dict_value_from_JSON_webservice(EventHelper.piLedHost, "/getConfiguration",
+                                                           ["programs", "feed", "brightness"])
     if float(statusColor["blue"]) != 0.0:
         return False
     if float(statusColor["green"]) != 0.0:
