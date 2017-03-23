@@ -5,18 +5,18 @@ pi-led-control enables you to control a single color RGB led strip attached to t
 pi-led-control is implemented as python webserver and a webui using jquery and bootstrap.
 It provides several programs (scheduled and configurable) to control a single color LED strip.
 
-##Requirements
-###Hardware and pi-blaster
+## Requirements
+### Hardware and pi-blaster
 If you have a single color LED strip you need to connect it to your raspberry pi and setup pi-blaster.
 You can find a very basic tutorial to connect a LED strip to your pi under https://github.com/s0riak/pi-led-control/blob/master/hardware/hardware.md
 Please follow the instruction in https://github.com/sarfata/pi-blaster to setup pi-blaster.
 
 In case imports fail, all can be installed with pip3.
 
-###Mocking the LED strip
+### Mocking the LED strip
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
-##Usage
+## Usage
 To start pi-led-control execute:
 
 main.py [-h] [-n NAME] [-p PORT] [-c CONFIGPATH] [-l LOGPATH]
@@ -54,7 +54,7 @@ pi-led-control creates two log files:
 0. piledcontrol.log - logging all relevant information on state changes and errors to a rotating logfile (1 per day, keeping those of last week) and stdout
 0. piledcontrol_access.log - logging all requests and http error handled by pi-led-control to a rotating logfile (same rotation as for main log) and to stdout if ACCESSLOGTOCONSOLE is true
 
-##Available programs
+## Available programs
 
 Several programs are available to control the LED strip:
 
@@ -73,11 +73,11 @@ Several programs are available to control the LED strip:
 
 The list of programs available in the ledui is about the same but naming is different but printed in the CLI program
 
-##Status of the LED strip
+## Status of the LED strip
 
 The current color of the LED strip (as far as known to pi-led-control) is shown in the top right corner.
 
-###Asynchronous Updates
+### Asynchronous Updates
 If crossbar (http://crossbar.io) is available it is utilized to push status updates from the server to the client via websockets. If crossbar is not installed the client falls back to polling.
 
 To install crossbar use:
@@ -87,14 +87,14 @@ To install crossbar use:
 
 This might fail on the pi due to libffi-dev and libssl-dev not being installed. In this case install them via apt-get
 
-##Time initialization
+## Time initialization
 
 To set the time of a sunrise(-program) the localtime system time is used.
 Thus the timezone must be configured correctly, to wake at the expected time:
 	
    sudo dpkg-reconfigure tzdata
 
-##Automatic startup at boot
+## Automatic startup at boot
 Add the following to your root crontab to autostart pi-blaster at start up of your system
 
    @reboot /home/pi/pi-blaster-master/pi-blaster
@@ -103,7 +103,7 @@ Add the following to your user crontab to autostart pi-led-control at start up o
 
    @reboot python3 /home/pi/pi-led-control/src/main.py
 
-##Flic Button integration
+## Flic Button integration
 Flic Buttons (https://flic.io/) can be easily integrated, to do so follow the steps at https://github.com/50ButtonsEach/fliclib-linux-hci to setup the server for the buttons and pair them.
 
 To setup the integration start the flic binary and:
@@ -129,7 +129,7 @@ After that when everything (flicserver, flic-integrator and ledserver) is runnin
 0. Double Click - The Full White program is started
 0. Hold - The following programs are rotated with every hold: randomPath, 4colorloop, wheel, freak
 
-##Screenshots
+## Screenshots
 
 ![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-main.png)
 ![Dialog for scheduled off program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-off.png)
@@ -139,10 +139,10 @@ After that when everything (flicserver, flic-integrator and ledserver) is runnin
 ![Dialog for editing a single color for the color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-loop-configure.png)
 ![Dialog for free color program of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-freecolor.png)
 
-##Environment
+## Environment
 pi-led-control is currently only tested on Ubuntu 15.10 and Raspbian GNU/Linux 8 (jessie).
 
-##Licences
+## Licences
 pi-led-control is licensed under GPL and makes use of the following work:
 
 0. bootstrap (https://github.com/twbs/bootstrap) licensed under the MIT License
