@@ -22,7 +22,11 @@ from pprint import pprint
 
 # to work correctly configuration key must not contain '/'s and '='s
 # paths must be given as key1/key2/key3 in case all levels are dictionaries
-# in case a level is an array two modes are supported: integers can be used to access entries at a given index (key1/4/key2, returns the 5th element of the array given by key1), attribute selectors like 'attributeName=attributeValue' can be used to select the entry with attributeValue in the attribute with attributeName
+# in case a level is an array two modes are supported:
+#  integers can be used to access entries at a given index
+#  (key1/4/key2, returns the 5th element of the array given by key1),
+#  attribute selectors like 'attributeName=attributeValue' can be used to select the entry with attributeValue
+#  in the attribute with attributeName
 def convertsToInt(variable):
     try:
         int(variable)

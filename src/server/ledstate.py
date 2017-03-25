@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 
+
 def validateValue(value):
     if not isinstance(value, float):
         raise TypeError("LEDValue only accepts floats, got " + str(value))
@@ -89,19 +90,19 @@ class LEDState:
     brightness = property(__getBrightness, __setBrightness)
 
     def isComplete(self):
-        return not self.red is None and not self.green is None and not self.blue is None and not self.brightness is None
+        return self.red is not None and self.green is not None and self.blue is not None and self.brightness is not None
 
     def getColor(self):
         return [self.__getRed(), self.__getGreen(), self.__getBlue()]
 
     def updateAvailableValues(self, newState):
-        if not newState.red is None:
+        if newState.red is not None:
             self.red = newState.red
-        if not newState.green is None:
+        if newState.green is not None:
             self.green = newState.green
-        if not newState.blue is None:
+        if newState.blue is not None:
             self.blue = newState.blue
-        if not newState.brightness is None:
+        if newState.brightness is not None:
             self.brightness = newState.brightness
 
     # doesn't take brightness into account for equality check

@@ -90,7 +90,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
     def _getStatus(self):
         resultDict = {"powerOffScheduled": self.server.ledManager.isPowerOffScheduled()}
         value = self.server.ledManager.getCurrentValue()
-        if not value is None and value.isComplete():
+        if value is not None and value.isComplete():
             resultDict["color"] = {"red": value.red, "green": value.green, "blue": value.blue}
             resultDict["brightness"] = value.brightness
         else:
@@ -128,7 +128,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
             self.send_error(500, "Error processing request for " + self.path, traceback.format_exc())
 
     def getParamsFromJson(self, result):
-        if not "params" in self._jsonBody:
+        if "params" not in self._jsonBody:
             raise ValueError("missing params in jsonBody")
         for key, value in result.items():
             if key in self._jsonBody["params"]:
@@ -253,7 +253,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.server.ledManager.schedulePowerOff(params["duration"])
 
     def _startProgram(self):
-        if not "name" in self._jsonBody:
+        if "name" not in self._jsonBody:
             self.send_response(400, "no program name in request body")
             self.end_headers()
             return
@@ -339,7 +339,7 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.server.config.setValue("programs/freak/secondsPerColor", params["secondsPerColor"])
 
     def _configureProgram(self):
-        if not "name" in self._jsonBody:
+        if "name" not in self._jsonBody:
             self.send_response(400, "no program name in request body")
             self.end_headers()
             return

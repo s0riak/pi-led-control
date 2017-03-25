@@ -17,14 +17,13 @@
 from server.colorfilters.abstractcolorfilter import AbstractColorFilter
 from server.ledstate import LEDState
 
-class PolynomialBrightnessFilter(AbstractColorFilter):
 
+class PolynomialBrightnessFilter(AbstractColorFilter):
 
     def __init__(self, degree):
         assert(degree > 0.0)
         self._degree = degree
         super().__init__()
-        
-        
+
     def filter(self, ledstate):
         return LEDState(ledstate.red, ledstate.green, ledstate.blue, ledstate.brightness**self._degree)

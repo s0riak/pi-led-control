@@ -20,7 +20,14 @@ class CrossbarManager(object):
         self._crossbarProcess = subprocess.Popen(self._crossbarCall)
 
     def stop(self):
-        self._crossbarProcess.kill()
+        if self._crossbarProcess is not None:
+            if self._crossbarProcess.returncode is None:
+                self._crossbarProcess.terminate()
+                if self._crossbarProcess.returncode is None:
+                    self._crossbarProcess.kill()
+                    if self._crossbarProcess.returncode is not None:
+                        print("failed to kill crossbar")
+                        return
         print("crossbar killed")
 
 

@@ -16,12 +16,9 @@
 
 from abc import abstractmethod
 
+
 class AbstractColorFilter(object):
-    
-    #def __init__(self):
-    #    super().__init__()
 
     @abstractmethod
     def filter(self, ledstate):
         raise NotImplementedError
-        

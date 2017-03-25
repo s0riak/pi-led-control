@@ -26,6 +26,18 @@ from flicintegration.eventhelper import EventHelper, isColorValid, isFeedProgram
 from tests.testing_helpers import deep_sort
 
 
+def generate_get_dict_value_from_JSON_webservice_return_value(getStatus, getConfiguration):
+    def get_dict_value_from_JSON_webservice_return_value(*args, **kwargs):
+        if args[1] == "/getStatus":
+            return getStatus
+        elif args[1] == "/getConfiguration":
+            return getConfiguration
+        else:
+            raise Exception("invalid call to mock")
+
+    return get_dict_value_from_JSON_webservice_return_value
+
+
 class EventHelperTest(unittest.TestCase):
     def setUp(self):
         self.eventHelper = EventHelper()
@@ -51,7 +63,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFullWhiteProgramActiveIfWhite(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             dict(red=1.0, green=1.0, blue=1.0), 0.5))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -59,7 +71,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFullWhiteProgramInActiveIfRed50Percent(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             dict(red=0.5, green=0.0, blue=0.0), None))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -67,7 +79,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFullWhiteProgramInActiveIfBlue100Percent(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             dict(red=0.0, green=0.0, blue=1.0), None))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -77,27 +89,16 @@ class EventHelperTest(unittest.TestCase):
         isColorValidMock = MagicMock()
         isColorValidMock.return_value = False
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             None, None))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock), \
              patch('flicintegration.eventhelper.isColorValid', new=isColorValidMock):
             self.assertFalse(isFullWhiteProgramActive())
 
-    def generate_get_dict_value_from_JSON_webservice_return_value(self, getStatus, getConfiguration):
-        def get_dict_value_from_JSON_webservice_return_value(*args, **kwargs):
-            if args[1] == "/getStatus":
-                return getStatus
-            elif args[1] == "/getConfiguration":
-                return getConfiguration
-            else:
-                raise Exception("invalid call to mock")
-
-        return get_dict_value_from_JSON_webservice_return_value
-
     def test_isFeedProgramActiveIfRedCorrectValue(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             {"red": 0.5, "green": 0.0, "blue": 0.0}, 0.5))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -105,7 +106,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFeedProgramActiveIfRedInCorrectValue(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             {"red": 0.5, "green": 0.0, "blue": 0.0}, 0.6))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -113,7 +114,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFeedProgramActiveIfRedCorrectValueButBlue(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             dict(red=0.5, green=0.0, blue=0.3), 0.5))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):
@@ -123,7 +124,7 @@ class EventHelperTest(unittest.TestCase):
         isColorValidMock = MagicMock()
         isColorValidMock.return_value = False
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             None, 0.5))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock), \
@@ -132,7 +133,7 @@ class EventHelperTest(unittest.TestCase):
 
     def test_isFeedProgramActiveIfWhite(self):
         get_dict_value_from_JSON_webservice_mock \
-            = MagicMock(side_effect=self.generate_get_dict_value_from_JSON_webservice_return_value(
+            = MagicMock(side_effect=generate_get_dict_value_from_JSON_webservice_return_value(
             {"red": 1.0, "green": 1.0, "blue": 1.0}, 1.0))
         with patch('flicintegration.eventhelper.get_dict_value_from_JSON_webservice',
                    new=get_dict_value_from_JSON_webservice_mock):

@@ -38,7 +38,7 @@ def getInterpolationPoint(currentPoint, nextPoint, pointIndex, numberOfPoints):
     red = getInterpolationValue(currentPoint.red, nextPoint.red, pointIndex, numberOfPoints)
     green = getInterpolationValue(currentPoint.green, nextPoint.green, pointIndex, numberOfPoints)
     blue = getInterpolationValue(currentPoint.blue, nextPoint.blue, pointIndex, numberOfPoints)
-    if not nextPoint.brightness is None:
+    if nextPoint.brightness is not None:
         brightness = getInterpolationValue(currentPoint.brightness, nextPoint.brightness, pointIndex, numberOfPoints)
     else:
         brightness = currentPoint.brightness

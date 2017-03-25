@@ -64,7 +64,7 @@ def isColorValid(color):
         return False
     requiredKeys = ["red", "green", "blue"]
     for requiredKey in requiredKeys:
-        if not requiredKey in color:
+        if requiredKey not in color:
             return False
         elif type(color[requiredKey]) != float:
             return False
