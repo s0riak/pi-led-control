@@ -20,7 +20,6 @@
 import json
 import logging
 import traceback
-from json import JSONDecodeError
 
 import requests
 from requests.exceptions import HTTPError
@@ -45,7 +44,7 @@ def get_dict_value_from_JSON_webservice(host, path, dict_key_path):
         raise e
     try:
         json_result = json.loads(webservice_result.text)
-    except JSONDecodeError as e:
+    except ValueError as e:
         logging.getLogger("flicintegration").error("result of " + path + " could not be parsed " + str(e))
         raise e
     try:

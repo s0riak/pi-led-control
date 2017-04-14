@@ -16,7 +16,6 @@
 # along with pi-led-control.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import unittest
-from json import JSONDecodeError
 from unittest.mock import MagicMock, call, patch
 
 import requests
@@ -263,11 +262,11 @@ class EventHelperTest(unittest.TestCase):
         get_mock.return_value = return_value
         requests.get = get_mock
         loads_mock = MagicMock()
-        loads_mock.side_effect = JSONDecodeError("", "", 0)
+        loads_mock.side_effect = ValueError("", "", 0)
         logger = logging.getLogger('flicintegration')
         with patch.object(logger, 'error') as log_mock, patch('json.loads', new=loads_mock):
             from flicintegration import eventhelper
-            self.assertRaises(JSONDecodeError,
+            self.assertRaises(ValueError,
                               lambda: eventhelper.get_dict_value_from_JSON_webservice(EventHelper.piLedHost,
                                                                                       "/getConfiguration",
                                                                                       ["programs", "feed",
