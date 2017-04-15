@@ -112,7 +112,7 @@ class ConfigurationManager:
                     "feed": {"brightness": 0.05},
                     "freak": {"secondsPerColor": 2.0},
                     "wheel": {"minBrightness": 0.0, "maxBrightness": 1.0, "timePerColor": 5.0},
-                    "sunrise": {"duration": 300, "timeOfDay": -1, "brightness": 1},
+                    "sunrise": {"duration": 300, "timeOfDay": -1, "brightness": 1, "sound_file": None},
                     "colorloop": {"colors": ["red", "yellow", "green", "blue"], "secondsPerColor": 2.0}
                 },
             "userDefinedColors":

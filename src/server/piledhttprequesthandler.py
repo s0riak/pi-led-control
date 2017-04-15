@@ -191,7 +191,8 @@ class PiLEDHTTPRequestHandler(CGIHTTPRequestHandler):
         self.server.config.setValue("programs/sunrise/brightness", params["brightness"])
         if params["timeOfDay"] == -1:
             self.server.ledManager.setBrightness(params["brightness"])
-            self.server.ledManager.startProgram(SunriseProgram(params["duration"]))
+            self.server.ledManager.startProgram(
+                SunriseProgram(params["duration"], self.server.config.getValue("programs/sunrise/sound_file")))
         else:
             self.server.ledManager.setBrightness(params["brightness"])
             self.server.ledManager.startProgram(

@@ -129,6 +129,14 @@ After that when everything (flicserver, flic-integrator and ledserver) is runnin
 0. Double Click - The Full White program is started
 0. Hold - The following programs are rotated with every hold: randomPath, 4colorloop, wheel, freak
 
+## Sound integration
+
+The sunrise program can be configured to play an audio file. A prerequisite for that is that you install pygame (https://www.pygame.org):
+
+   sudo pip3 install pygame
+
+The configuration for the audio file must be done manually in the pi-led-control.json in the key "programs/sunrise/sound_file". The Sound can be loaded from an OGG audio file or from an uncompressed WAV (as supported by pygame).
+
 ## Screenshots
 
 ![UI of pi-led-control](https://raw.githubusercontent.com/s0riak/pi-led-control/master/screenshots/pi-led-control-main.png)
