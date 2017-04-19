@@ -2,7 +2,7 @@
 ## Introduction
 This tutorial describes how to connect a single color RGB LED strip with the GPIO pins of a raspberry pi so that it can be controlled by pi-blaster (https://github.com/sarfata/pi-blaster)
 
-##Circuit Layout
+## Circuit Layout
 Basically the component described here replaces the rgb-controller of any available single color RGB strip to make it controllable with the pi.
 If you don't have a single color LED strip, you can use https://github.com/s0riak/pi-blaster-mock to mock it.
 
@@ -11,11 +11,9 @@ The component connects the power supply (of the original strip), led strip and t
 
 ## Board result 
 
----
 **WARNING:**
 Working with electronics is dangerous and might be restricted in your jurisdiction.
 Please make sure that you know what you are doing!
----
 
 Solder the components as shown in the circuit layout.
 
@@ -26,7 +24,7 @@ The Underside of the board:
 ![underside of the control board](https://raw.githubusercontent.com/s0riak/pi-led-control/master/hardware/underside.jpg)
 Headers on the right hand side connects the GPIOs of the pi. Headers on the left drive the LED strip. Power supply is on the top right.
 
-##Shopping Cart
+## Shopping Cart
 
 As it might be confusing for software guys ( ;) )to get the correct components here is a full list:
 Component | Description | Quantity | approx. Price
@@ -55,7 +53,7 @@ LITZE GN | Insulated braided copper wire, 10 m, 1 x 0.14 mm, green | 1 | 0,75€
 
 The transistors used are Darlington transistors (https://en.wikipedia.org/wiki/Darlington_transistor)
 
-##Acknowledgement
+## Acknowledgement
 The following instructions helped in the creation of this guide:
 
 0. http://www.forum-raspberrypi.de/Thread-hyperion-tutorial-ambilight-mit-standard-led-strips 
