@@ -89,6 +89,11 @@ class LEDState:
 
     brightness = property(__getBrightness, __setBrightness)
 
+    def __getCombinedBrightness(self):
+        return (self.red + self.green + self.blue) * self.brightness
+
+    combinedBrightness = property(__getCombinedBrightness)
+
     def isComplete(self):
         return self.red is not None and self.green is not None and self.blue is not None and self.brightness is not None
 
